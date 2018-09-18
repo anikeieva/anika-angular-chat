@@ -1,0 +1,16 @@
+mat-sidenav-container {
+  background-color: blueviolet;
+  padding: 20px;
+}
+.mat-sidenav-tittle {
+  font-size: 23px;
+  color: white;
+  vertical-align: middle;
+}
+.menu-button {
+  margin-right: 35px;
+}
+.menu-button-icon {
+  font-size: 36px;
+  color: white;
+}

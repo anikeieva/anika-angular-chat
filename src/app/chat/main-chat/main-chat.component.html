@@ -1,0 +1,9 @@
+<mat-card class="chat-container">
+  <mat-card-content></mat-card-content>
+  <mat-card-footer>
+    <mat-form-field class="message-input">
+      <mat-label>Type a message</mat-label>
+      <input matInput (keyup.enter)="sendMessage()" [(ngModel)]="messageContent">
+    </mat-form-field>
+  </mat-card-footer>
+</mat-card>

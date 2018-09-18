@@ -1,0 +1,10 @@
+.chat-container {
+  height: 100%;
+}
+.message-input {
+  width: 100%;
+  max-width: 800px;
+}
+mat-card-footer {
+  margin: 20px;
+}

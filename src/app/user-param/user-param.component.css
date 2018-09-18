@@ -1,0 +1,21 @@
+mat-card {
+  max-width: 400px;
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  align-content: center;
+}
+mat-card-title {
+  font-size: 32px!important;
+  color: blueviolet;
+}
+mat-form-field {
+  width: 100%;
+}
+mat-radio-button:first-child {
+  margin-right: 20px;
+}
+.submit-button {
+  display: block;
+  margin: 15px auto 0 auto;
+}

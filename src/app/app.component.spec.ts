@@ -16,12 +16,12 @@ describe('AppComponent', () => {
   it(`should have as title 'form-mat'`, async(() => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.debugElement.componentInstance;
-    expect(app.title).toEqual('form-mat');
+    expect(app.title).toEqual('anika-angular-chat');
   }));
   it('should render title in a h1 tag', async(() => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('h1').textContent).toContain('Welcome to form-mat!');
+    expect(compiled.querySelector('h1').textContent).toContain('Welcome to anika-angular-chat!');
   }));
 });

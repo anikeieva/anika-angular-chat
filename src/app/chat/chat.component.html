@@ -1,0 +1,17 @@
+<mat-sidenav-container>
+  <mat-sidenav-content>
+    <button mat-icon-button [matMenuTriggerFor]="menu" class="menu-button">
+      <mat-icon class="menu-button-icon">menu</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item disabled>
+        Edit user
+      </button>
+      <button mat-menu-item routerLink="/">
+        Exit
+      </button>
+    </mat-menu>
+    <span class="mat-sidenav-tittle">Anika Angular chat</span>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+<app-main-chat></app-main-chat>
