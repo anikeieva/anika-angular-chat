@@ -1,6 +1,15 @@
-<mat-card class="chat-container">
-  <mat-card-content></mat-card-content>
+<mat-card class="chat-container" layot="column">
+  <mat-card-content>
+    <mat-list>
+      <mat-list-item *ngFor="let message of messages">
+        <img mat-list-avatar [src]="user.avatar">
+        <p mat-line>{{user.firstName}} {{user.lastName}}</p>
+        <p mat-line>{{message}}</p>
+      </mat-list-item>
+    </mat-list>
+  </mat-card-content>
   <mat-card-footer>
+    <mat-icon>create</mat-icon>
     <mat-form-field class="message-input">
       <mat-label>Type a message</mat-label>
       <input matInput (keyup.enter)="sendMessage()" [(ngModel)]="messageContent">
