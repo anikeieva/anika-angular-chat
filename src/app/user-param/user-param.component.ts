@@ -1,4 +1,4 @@
-import {Component, OnInit, Output} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import { User} from '../shared/model/user';
 import {SharedService} from '../shared/servises/shared.service';
@@ -19,10 +19,14 @@ export class UserParamComponent implements OnInit {
   ngOnInit() {
     this.userParameters = new FormGroup({
       firstName: new FormControl('', Validators.required),
-      lastName: new FormControl('', Validators.required),
+      lastName: new FormControl(''),
       gender: new FormControl('')
     });
     this.genders = ['male', 'female'];
+  }
+
+  isEnabledSubmit() {
+    return this.userParameters.status === 'VALID';
   }
 
   onSubmit() {
