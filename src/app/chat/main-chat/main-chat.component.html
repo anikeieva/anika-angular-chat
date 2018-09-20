@@ -1,17 +1,18 @@
 <mat-card class="chat-container" layot="column">
   <mat-card-content>
     <mat-list>
-      <mat-list-item *ngFor="let message of messages">
+      <mat-list-item *ngFor="let message of messages" [ngClass]="[(message.action === action.sentMessage) ? 'message-item' : '']">
         <p mat-line *ngIf="message.action === action.joined" class="action-line">
           {{message.user.firstName}} {{message.user.lastName}} joined to conversation
         </p>
         <img mat-list-avatar *ngIf="message.action === action.sentMessage" [src]="user.avatar">
-        <p mat-line *ngIf="message.action === action.sentMessage">
+        <p mat-line class="message-item-user-name" *ngIf="message.action === action.sentMessage">
           {{message.user.firstName}} {{message.user.lastName}}
         </p>
         <p mat-line *ngIf="message.action === action.sentMessage">
           {{message.messageContent}}
         </p>
+        <div *ngIf="message.action === action.sentMessage" class="message-item-time">{{timeNow | date: 'h:mma'}}</div>
       </mat-list-item>
     </mat-list>
   </mat-card-content>

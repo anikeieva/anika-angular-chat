@@ -22,3 +22,20 @@
 .action-line {
   text-align: center;
 }
+
+.message-item {
+  background-color: #4c62691a;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.message-item-user-name {
+  font-size: 16px!important;
+  font-weight: bold!important;
+  margin-bottom: 10px!important;
+}
+.message-item-time {
+  position: relative;
+  right: 0;
+  top: 0;
+}

@@ -20,6 +20,7 @@ export class MainChatComponent implements OnInit {
   public message: Message;
   public user: User;
   public action = Action;
+  public timeNow = new Date();
 
   constructor(private sharedService: SharedService) {
   }

@@ -10,7 +10,8 @@ import {ChatsInfo} from '../shared/model/chatsInfo';
 })
 export class ChatComponent implements OnInit {
   public user: User;
-  public wasChosen = false;
+  public wasChosenChat = false;
+  public wasChosenEdit = false;
   public mainChatInfo: ChatsInfo;
 
   constructor(private sharedService: SharedService) { }
@@ -21,7 +22,13 @@ export class ChatComponent implements OnInit {
   }
 
   onOpenChat() {
-    this.wasChosen = true;
+    this.wasChosenChat = true;
+    this.wasChosenEdit = false;
+  }
+
+  onEditProfile() {
+    this.wasChosenEdit = true;
+    this.wasChosenChat = false;
   }
 
 }

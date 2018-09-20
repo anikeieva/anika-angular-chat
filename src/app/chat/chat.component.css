@@ -38,12 +38,16 @@ mat-sidenav-container {
   padding: 30px 20px 40px 20px;
 }
 .user-avatar {
-  height: 60px;
-  width: 60px;
-  border: 2px solid blueviolet;
+  height: 80px;
+  width: 80px;
+  border: 2px solid #cabbd8;
   padding: 10px;
 }
-.mat-card-subtitle {
+.side-bar-title {
+  font-size: 20px;
+}
+.side-bar-item {
+  font-size: 16px;
   outline: none;
   cursor: pointer;
 }
@@ -51,6 +55,11 @@ mat-sidenav-container {
   width: 350px;
   padding: 20px 15px;
   cursor: pointer;
+  transition: background-color 1s ease;
+}
+
+.chat-item:hover {
+  background-color: #35459221;
 }
 
 .chat-item-avatar {
