@@ -9,11 +9,11 @@ export class SharedService {
 
   constructor() { }
 
-  setData(data: any) {
+  setUser(data: any) {
     this.user = data;
   }
 
-  getData() {
+  getUser() {
     return this.user;
   }
 }

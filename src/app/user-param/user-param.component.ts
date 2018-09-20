@@ -32,7 +32,7 @@ export class UserParamComponent implements OnInit {
   onSubmit() {
     this.user = this.userParameters.value;
     this.user.avatar = `src/app/images/avatars/${this.user.gender}/${this.getRandomInt(3)}.png`;
-    this.sharedService.setData(this.user);
+    this.sharedService.setUser(this.user);
   }
 
   private getRandomInt(max: number) {

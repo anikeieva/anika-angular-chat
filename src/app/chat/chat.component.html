@@ -11,7 +11,29 @@
         Exit
       </button>
     </mat-menu>
-    <span class="mat-sidenav-tittle">Anika Angular chat</span>
+    <span class="mat-sidenav-title">Anika Angular chat</span>
   </mat-sidenav-content>
 </mat-sidenav-container>
-<app-main-chat></app-main-chat>
+<mat-card class="side-bar">
+  <mat-card-header class="side-bar-header">
+    <img mat-card-avatar class="user-avatar" [src]="user.avatar">
+    <mat-card-title>{{user.firstName}} {{user.lastName}}</mat-card-title>
+    <mat-card-subtitle>Edit Profile</mat-card-subtitle>
+    <mat-card-subtitle routerLink="/">Exit</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-card class="chat-item" (click)="onOpenChat()">
+      <mat-card-header>
+        <img mat-card-avatar class="chat-item-avatar" [src]="mainChatInfo.avatar">
+        <mat-card-title class="chat-item-title">{{mainChatInfo.name}}t</mat-card-title>
+        <mat-card-subtitle>{{mainChatInfo.message}}</mat-card-subtitle>
+      </mat-card-header>
+    </mat-card>
+  </mat-card-content>
+</mat-card>
+
+<app-main-chat *ngIf="wasChosen" class="chat-container"></app-main-chat>
+
+<div *ngIf="!wasChosen" class="chat-container chat-container-no-chosen">
+  <p>Choose a chat</p>
+</div>

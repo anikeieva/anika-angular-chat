@@ -11,8 +11,8 @@
       <mat-label>Last name</mat-label>
       <input matInput formControlName="lastName">
     </mat-form-field>
-    <mat-radio-group formControlName="gender">
-      <mat-radio-button *ngFor="let gender of genders; let i = index" [value]="gender" [checked]="i === 0">{{gender}}</mat-radio-button>
+    <mat-radio-group formControlName="gender" required>
+      <mat-radio-button *ngFor="let gender of genders" [value]="gender">{{gender}}</mat-radio-button>
     </mat-radio-group>
     <button mat-raised-button color="primary" [disabled]="!isEnabledSubmit()" class="submit-button" routerLink="/chat" (click)="onSubmit()">Sign up</button>
   </form>
