@@ -12,7 +12,7 @@
         <p mat-line *ngIf="message.action === action.sentMessage">
           {{message.messageContent}}
         </p>
-        <div *ngIf="message.action === action.sentMessage" class="message-item-time">{{timeNow | date: 'h:mma'}}</div>
+        <div *ngIf="message.action === action.sentMessage" class="message-item-time">{{message.sendingTime | date: 'h:mma'}}</div>
       </mat-list-item>
     </mat-list>
   </mat-card-content>

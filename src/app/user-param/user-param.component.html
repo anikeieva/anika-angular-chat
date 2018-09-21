@@ -1,19 +1,22 @@
 <mat-card>
   <mat-card-header>
-    <mat-card-title>Sign up</mat-card-title>
+    <mat-card-title>{{title}}</mat-card-title>
   </mat-card-header>
   <form [formGroup]="userParameters">
     <mat-form-field appearance="legacy">
       <mat-label>First name</mat-label>
-      <input matInput formControlName="firstName" required>
+      <input matInput formControlName="firstName" required [value]="(isEdit) ? userParam.firstName : ''">
     </mat-form-field>
     <mat-form-field appearance="legacy">
       <mat-label>Last name</mat-label>
-      <input matInput formControlName="lastName">
+      <input matInput formControlName="lastName" [value]="(isEdit) ? userParam.lastName : ''">
     </mat-form-field>
     <mat-radio-group formControlName="gender" required>
-      <mat-radio-button *ngFor="let gender of genders" [value]="gender">{{gender}}</mat-radio-button>
+      <mat-radio-button *ngFor="let gender of genders" [value]="gender" [checked]="isChecked(gender)">{{gender}}</mat-radio-button>
     </mat-radio-group>
-    <button mat-raised-button color="primary" [disabled]="!isEnabledSubmit()" class="submit-button" routerLink="/chat" (click)="onSubmit()">Sign up</button>
+    <button mat-raised-button *ngIf="!isEdit" color="primary" [disabled]="!isEnabledSubmit()" class="submit-button" routerLink="/chat" (click)="onSubmit()">
+      {{submitTitle}}
+    </button>
+    <button mat-raised-button *ngIf="isEdit" color="primary" class="submit-button" (click)="onSave()">{{submitTitle}}</button>
   </form>
 </mat-card>

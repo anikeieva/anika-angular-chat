@@ -10,6 +10,7 @@ import {ChatComponent} from './chat/chat.component';
 import {MaterialModule} from '../shared/material/material.module';
 import {MainChatComponent} from './chat/main-chat/main-chat.component';
 import {EditUserParamComponent} from './chat/edit-user-param/edit-user-param.component';
+import { WelcomePageComponent } from './welcome-page/welcome-page.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import {EditUserParamComponent} from './chat/edit-user-param/edit-user-param.com
     UserParamComponent,
     ChatComponent,
     MainChatComponent,
-    EditUserParamComponent
+    EditUserParamComponent,
+    WelcomePageComponent
   ],
   imports: [
     BrowserModule,

@@ -20,7 +20,7 @@ export class MainChatComponent implements OnInit {
   public message: Message;
   public user: User;
   public action = Action;
-  public timeNow = new Date();
+  public timeNow: Date;
 
   constructor(private sharedService: SharedService) {
   }
@@ -28,12 +28,14 @@ export class MainChatComponent implements OnInit {
   ngOnInit() {
     this.messages = [];
     this.user = this.sharedService.getUser();
-    this.message = new Message(this.user, this.action.joined, '');
+    this.timeNow = new Date();
+    this.message = new Message(this.user, this.action.joined, '', this.timeNow);
     this.messages.push(this.message);
   }
 
   sendMessage() {
-    this.message = new Message(this.user, this.action.sentMessage, this.messageContent);
+    this.timeNow = new Date();
+    this.message = new Message(this.user, this.action.sentMessage, this.messageContent, this.timeNow);
     this.messages.push(this.message);
     this.messageContent = null;
   }

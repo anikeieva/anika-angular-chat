@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import { User} from '../shared/model/user';
 import {SharedService} from '../shared/servises/shared.service';
@@ -12,6 +12,10 @@ export class UserParamComponent implements OnInit {
   public user: User;
   public userParameters: FormGroup;
   public genders: Array<string>;
+  @Input() title: string;
+  @Input() submitTitle: string;
+  @Input() isEdit: boolean;
+  @Input() userParam: User;
 
   constructor(private sharedService: SharedService) {
   }
@@ -37,6 +41,17 @@ export class UserParamComponent implements OnInit {
 
   private getRandomInt(max: number) {
     return Math.floor(Math.random() * Math.floor(max));
+  }
+
+  onSave() {
+    console.log('save');
+  }
+
+  isChecked(gender: string) {
+    if (this.isEdit) {
+      return (this.userParam.gender === gender);
+    }
+    return false;
   }
 
 }

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import {SharedService} from '../../shared/servises/shared.service';
+import {User} from '../../shared/model/user';
 
 @Component({
   selector: 'app-edit-user-param',
@@ -6,10 +8,12 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./edit-user-param.component.css']
 })
 export class EditUserParamComponent implements OnInit {
+  public user: User;
 
-  constructor() { }
+  constructor(private sharedService: SharedService) { }
 
   ngOnInit() {
+    this.user = this.sharedService.getUser();
   }
 
 }
