@@ -4,7 +4,7 @@
       <mat-icon class="menu-button-icon">menu</mat-icon>
     </button>
     <mat-menu #menu="matMenu">
-      <button mat-menu-item disabled (click)="onEditProfile()">
+      <button mat-menu-item disabled routerLink="edit-profile">
         Edit user
       </button>
       <button mat-menu-item routerLink="/">
@@ -18,11 +18,11 @@
   <mat-card-header class="side-bar-header">
     <img mat-card-avatar class="user-avatar" [src]="user.avatar">
     <mat-card-title class="side-bar-title">{{user.firstName}} {{user.lastName}}</mat-card-title>
-    <mat-card-subtitle class="side-bar-item" (click)="onEditProfile()">Edit Profile</mat-card-subtitle>
+    <mat-card-subtitle class="side-bar-item" routerLink="edit-profile">Edit Profile</mat-card-subtitle>
     <mat-card-subtitle class="side-bar-item" routerLink="/">Exit</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
-    <mat-card class="chat-item" (click)="onOpenChat()">
+    <mat-card class="chat-item" routerLink="main-chat">
       <mat-card-header>
         <img mat-card-avatar class="chat-item-avatar" [src]="mainChatInfo.avatar">
         <mat-card-title class="chat-item-title">{{mainChatInfo.name}}t</mat-card-title>
@@ -32,10 +32,6 @@
   </mat-card-content>
 </mat-card>
 
-<div *ngIf="!wasChosenChat && !wasChosenEdit" class="chat-container chat-container-no-chosen">
-  <p>Choose a chat</p>
+<div class="chat-container">
+  <router-outlet></router-outlet>
 </div>
-
-<app-main-chat *ngIf="wasChosenChat" class="chat-container"></app-main-chat>
-
-<app-edit-user-param *ngIf="wasChosenEdit" class="chat-container"></app-edit-user-param>

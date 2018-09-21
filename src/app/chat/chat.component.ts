@@ -10,8 +10,8 @@ import {ChatsInfo} from '../shared/model/chatsInfo';
 })
 export class ChatComponent implements OnInit {
   public user: User;
-  public wasChosenChat = false;
-  public wasChosenEdit = false;
+  // public wasChosenChat = false;
+  // public wasChosenEdit = false;
   public mainChatInfo: ChatsInfo;
 
   constructor(private sharedService: SharedService) { }
@@ -21,14 +21,14 @@ export class ChatComponent implements OnInit {
     this.mainChatInfo = new ChatsInfo('Main chat', 'src/app/images/chat/chat.png', 'Online chat');
   }
 
-  onOpenChat() {
-    this.wasChosenChat = true;
-    this.wasChosenEdit = false;
-  }
-
-  onEditProfile() {
-    this.wasChosenEdit = true;
-    this.wasChosenChat = false;
-  }
+  // onOpenChat() {
+  //   this.wasChosenChat = true;
+  //   this.wasChosenEdit = false;
+  // }
+  //
+  // onEditProfile() {
+  //   this.wasChosenEdit = true;
+  //   this.wasChosenChat = false;
+  // }
 
 }

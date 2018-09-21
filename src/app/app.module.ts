@@ -24,8 +24,8 @@ import {EditUserParamComponent} from './chat/edit-user-param/edit-user-param.com
     ReactiveFormsModule,
     MaterialModule,
     BrowserAnimationsModule,
-    AppRoutingModule,
-    FormsModule
+    FormsModule,
+    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]
