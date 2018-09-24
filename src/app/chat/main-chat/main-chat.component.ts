@@ -27,7 +27,7 @@ export class MainChatComponent implements OnInit {
 
   ngOnInit() {
     this.messages = [];
-    this.user = this.sharedService.getUser();
+    this.sharedService.getUser().subscribe(user => this.user = user);
     this.timeNow = new Date();
     this.message = new Message(this.user, this.action.joined, '', this.timeNow);
     this.messages.push(this.message);

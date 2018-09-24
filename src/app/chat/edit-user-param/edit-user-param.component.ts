@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {SharedService} from '../../shared/servises/shared.service';
 import {User} from '../../shared/model/user';
 
@@ -13,7 +13,10 @@ export class EditUserParamComponent implements OnInit {
   constructor(private sharedService: SharedService) { }
 
   ngOnInit() {
-    this.user = this.sharedService.getUser();
+    this.sharedService.getUser().subscribe(user => this.user = user);
+    console.log(this.user);
   }
+
+
 
 }

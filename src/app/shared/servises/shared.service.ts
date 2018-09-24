@@ -1,11 +1,13 @@
-import { Injectable } from '@angular/core';
+import {EventEmitter, Injectable, Output} from '@angular/core';
 import {User} from '../model/user';
+import {Observable, of} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SharedService {
-  private user: User;
+  public user: User;
+  @Output() public updateUser: EventEmitter<any> = new EventEmitter();
 
   constructor() { }
 
@@ -13,7 +15,7 @@ export class SharedService {
     this.user = data;
   }
 
-  getUser() {
-    return this.user;
+  getUser(): Observable<User> {
+    return of(this.user);
   }
 }

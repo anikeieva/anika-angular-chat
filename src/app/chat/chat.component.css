@@ -14,13 +14,6 @@ mat-sidenav-container {
   font-size: 36px;
   color: white;
 }
-.side-bar {
-  width: 350px;
-  position: fixed;
-  height: 100%;
-  padding: 0;
-}
-
 .chat-container {
   width: calc(100% - 350px);
   position: fixed;
@@ -34,6 +27,12 @@ mat-sidenav-container {
   text-align: center;
 }
 
+.side-bar {
+  width: 350px;
+  position: fixed;
+  height: 100%;
+  padding: 0;
+}
 .side-bar-header {
   padding: 30px 20px 40px 20px;
 }
@@ -79,4 +78,5 @@ mat-sidenav-container {
 .mat-card-avatar {
   margin-right: 20px;
 }
+
 

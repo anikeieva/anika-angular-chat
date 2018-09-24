@@ -1,6 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
-import { User} from '../shared/model/user';
+import {User} from '../shared/model/user';
 import {SharedService} from '../shared/servises/shared.service';
 
 @Component({
@@ -18,15 +18,27 @@ export class UserParamComponent implements OnInit {
   @Input() userParam: User;
 
   constructor(private sharedService: SharedService) {
+    this.getUserParams();
+    this.genders = ['male', 'female'];
   }
 
-  ngOnInit() {
+  private getUserParams() {
     this.userParameters = new FormGroup({
       firstName: new FormControl('', Validators.required),
       lastName: new FormControl(''),
       gender: new FormControl('')
     });
-    this.genders = ['male', 'female'];
+  }
+
+  ngOnInit() {
+    if (this.isEdit) {
+      this.userParameters.setValue({
+        firstName: this.userParam.firstName,
+        lastName: this.userParam.lastName,
+        gender: this.userParam.gender
+      });
+      console.log(this.userParameters.value);
+    }
   }
 
   isEnabledSubmit() {
@@ -36,7 +48,9 @@ export class UserParamComponent implements OnInit {
   onSubmit() {
     this.user = this.userParameters.value;
     this.user.avatar = `src/app/images/avatars/${this.user.gender}/${this.getRandomInt(3)}.png`;
+    this.user.action = 'joined';
     this.sharedService.setUser(this.user);
+    console.log(this.user);
   }
 
   private getRandomInt(max: number) {
@@ -44,7 +58,12 @@ export class UserParamComponent implements OnInit {
   }
 
   onSave() {
-    console.log('save');
+    this.user = this.userParameters.value;
+    this.user.avatar = `src/app/images/avatars/${this.user.gender}/${this.getRandomInt(3)}.png`;
+    this.user.action = 'edit';
+    this.sharedService.setUser(this.user);
+    this.sharedService.updateUser.emit(this.user);
+    console.log(this.user);
   }
 
   isChecked(gender: string) {

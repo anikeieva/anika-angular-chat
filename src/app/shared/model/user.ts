@@ -3,4 +3,5 @@ export interface User {
   lastName: string;
   gender: string;
   avatar: string;
+  action: string;
 }

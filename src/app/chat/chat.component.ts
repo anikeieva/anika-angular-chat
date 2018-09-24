@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {User} from '../shared/model/user';
 import {SharedService} from '../shared/servises/shared.service';
 import {ChatsInfo} from '../shared/model/chatsInfo';
@@ -10,25 +10,14 @@ import {ChatsInfo} from '../shared/model/chatsInfo';
 })
 export class ChatComponent implements OnInit {
   public user: User;
-  // public wasChosenChat = false;
-  // public wasChosenEdit = false;
   public mainChatInfo: ChatsInfo;
 
-  constructor(private sharedService: SharedService) { }
-
-  ngOnInit() {
-    this.user = this.sharedService.getUser();
+  constructor(private sharedService: SharedService) {
+    this.sharedService.updateUser.subscribe(data => this.user = data);
     this.mainChatInfo = new ChatsInfo('Main chat', 'src/app/images/chat/chat.png', 'Online chat');
   }
 
-  // onOpenChat() {
-  //   this.wasChosenChat = true;
-  //   this.wasChosenEdit = false;
-  // }
-  //
-  // onEditProfile() {
-  //   this.wasChosenEdit = true;
-  //   this.wasChosenChat = false;
-  // }
-
+  ngOnInit() {
+    this.sharedService.getUser().subscribe(user => this.user = user);
+  }
 }
