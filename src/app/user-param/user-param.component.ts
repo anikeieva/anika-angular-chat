@@ -1,7 +1,8 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {User} from '../shared/model/user';
 import {SharedService} from '../shared/servises/shared.service';
+import {UserAction} from '../shared/model/userAction';
 
 @Component({
   selector: 'app-user-param',
@@ -16,6 +17,7 @@ export class UserParamComponent implements OnInit {
   @Input() submitTitle: string;
   @Input() isEdit: boolean;
   @Input() userParam: User;
+  private currentAction: UserAction;
 
   constructor(private sharedService: SharedService) {
     this.getUserParams();
@@ -48,7 +50,13 @@ export class UserParamComponent implements OnInit {
   onSubmit() {
     this.user = this.userParameters.value;
     this.user.avatar = `src/app/images/avatars/${this.user.gender}/${this.getRandomInt(3)}.png`;
-    this.user.action = 'joined';
+    this.user.action = {
+      signed: true,
+      edit: false,
+      joined: false,
+      sentMessage: false
+    };
+    // this.user.action = 'signed';
     this.sharedService.setUser(this.user);
     console.log(this.user);
   }
@@ -58,9 +66,11 @@ export class UserParamComponent implements OnInit {
   }
 
   onSave() {
+    this.currentAction = this.userParam.action;
     this.user = this.userParameters.value;
     this.user.avatar = `src/app/images/avatars/${this.user.gender}/${this.getRandomInt(3)}.png`;
-    this.user.action = 'edit';
+    this.user.action = this.currentAction;
+    this.user.action.edit = true;
     this.sharedService.setUser(this.user);
     this.sharedService.updateUser.emit(this.user);
     console.log(this.user);

@@ -3,11 +3,6 @@ import {User} from '../../shared/model/user';
 import {SharedService} from '../../shared/servises/shared.service';
 import {Message} from '../../shared/model/message';
 
-const Action = {
-  joined: 'joined',
-  sentMessage: 'sentMessage'
-};
-
 @Component({
   selector: 'app-main-chat',
   templateUrl: './main-chat.component.html',
@@ -19,7 +14,6 @@ export class MainChatComponent implements OnInit {
   public messages: Array<Message>;
   public message: Message;
   public user: User;
-  public action = Action;
   public timeNow: Date;
 
   constructor(private sharedService: SharedService) {
@@ -28,15 +22,17 @@ export class MainChatComponent implements OnInit {
   ngOnInit() {
     this.messages = [];
     this.sharedService.getUser().subscribe(user => this.user = user);
-    this.timeNow = new Date();
-    this.message = new Message(this.user, this.action.joined, '', this.timeNow);
-    this.messages.push(this.message);
   }
 
   sendMessage() {
     this.timeNow = new Date();
-    this.message = new Message(this.user, this.action.sentMessage, this.messageContent, this.timeNow);
+    this.message = new Message(this.user, this.messageContent, this.timeNow);
+    this.user.action.sentMessage = true;
     this.messages.push(this.message);
     this.messageContent = null;
+  }
+
+  onJoin() {
+    this.user.action.joined = true;
   }
 }
