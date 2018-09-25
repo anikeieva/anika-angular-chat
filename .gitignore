@@ -2,19 +2,14 @@
 
 ## server
 /server/node_modules
-/server/dist
 /server/npm-debug.log
+/server/dist
 
 ## client
-# compiled output
+/client/node_modules
+/client/npm-debug.log
 /client/dist
 /client/tmp
-
-# dependencies
-/client/node_modules
-
-# misc
-/client/npm-debug.log
 
 # e2e
 /client/e2e/*.js
