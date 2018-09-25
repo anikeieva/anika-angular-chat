@@ -1,0 +1,82 @@
+mat-sidenav-container {
+  background-color: blueviolet;
+  padding: 20px;
+}
+.mat-sidenav-title {
+  font-size: 23px;
+  color: white;
+  vertical-align: middle;
+}
+.menu-button {
+  margin-right: 35px;
+}
+.menu-button-icon {
+  font-size: 36px;
+  color: white;
+}
+.chat-container {
+  width: calc(100% - 350px);
+  position: fixed;
+  left: 350px;
+  height: 100%;
+}
+
+.chat-container-no-chosen {
+  display: grid;
+  align-content: center;
+  text-align: center;
+}
+
+.side-bar {
+  width: 350px;
+  position: fixed;
+  height: 100%;
+  padding: 0;
+}
+.side-bar-header {
+  padding: 30px 20px 40px 20px;
+}
+.user-avatar {
+  height: 80px;
+  width: 80px;
+  border: 2px solid #cabbd8;
+  padding: 10px;
+}
+.side-bar-title {
+  font-size: 20px;
+}
+.side-bar-item {
+  font-size: 16px;
+  outline: none;
+  cursor: pointer;
+}
+.chat-item {
+  width: 350px;
+  padding: 20px 15px;
+  cursor: pointer;
+  transition: background-color 1s ease;
+}
+
+.chat-item:hover {
+  background-color: #35459221;
+}
+
+.chat-item-avatar {
+  width: 50px;
+  height: 50px;
+}
+
+.mat-list-item-content {
+  padding: 0;
+}
+
+.chat-item-title {
+  font-size: 20px;
+  color: blueviolet;
+}
+
+.mat-card-avatar {
+  margin-right: 20px;
+}
+
+

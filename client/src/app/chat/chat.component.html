@@ -1,0 +1,39 @@
+<mat-sidenav-container>
+  <mat-sidenav-content>
+    <button mat-icon-button [matMenuTriggerFor]="menu" class="menu-button">
+      <mat-icon class="menu-button-icon">menu</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item disabled routerLink="edit-profile">
+        Edit user
+      </button>
+      <button mat-menu-item routerLink="/">
+        Exit
+      </button>
+    </mat-menu>
+    <span class="mat-sidenav-title">Anika Angular chat</span>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+<mat-card class="side-bar">
+  <mat-card-header class="side-bar-header">
+    <img mat-card-avatar class="user-avatar" [src]="user.avatar">
+    <mat-card-title class="side-bar-title">{{user.firstName}} {{user.lastName}}</mat-card-title>
+    <mat-card-subtitle class="side-bar-item" routerLink="edit-profile">Edit Profile</mat-card-subtitle>
+    <mat-card-subtitle class="side-bar-item" routerLink="/">Exit</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-card class="chat-item" routerLink="main-chat">
+      <mat-card-header>
+        <img mat-card-avatar class="chat-item-avatar" [src]="mainChatInfo.avatar">
+        <mat-card-title class="chat-item-title">{{mainChatInfo.name}}t</mat-card-title>
+        <mat-card-subtitle>{{mainChatInfo.message}}</mat-card-subtitle>
+      </mat-card-header>
+    </mat-card>
+  </mat-card-content>
+</mat-card>
+
+
+<div class="chat-container">
+  <router-outlet></router-outlet>
+</div>

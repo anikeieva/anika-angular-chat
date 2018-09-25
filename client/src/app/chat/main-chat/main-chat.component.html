@@ -1,0 +1,32 @@
+<mat-card class="chat-container" layot="column" *ngIf="user.action.joined">
+  <mat-card-content>
+    <mat-list>
+      <mat-list-item *ngFor="let message of messages" [ngClass]="[(message.action === 'sentMessage') ? 'message-item' : '']">
+        <p mat-line class="action-line" *ngIf="message.action === 'joined'">
+          {{message.messageContent}}
+        </p>
+        <p mat-line class="action-line" *ngIf="message.action === 'edit'">
+          User already is {{user.firstName}} {{user.lastName}}
+        </p>
+        <img mat-list-avatar [src]="user.avatar" *ngIf="message.action === 'sentMessage'">
+        <p mat-line class="message-item-user-name" *ngIf="message.action === 'sentMessage'">
+          {{message.user.firstName}} {{message.user.lastName}}
+        </p>
+        <p mat-line *ngIf="message.action === 'sentMessage'">
+          {{message.messageContent}}
+        </p>
+        <div class="message-item-time" *ngIf="message.action === 'sentMessage'">{{message.sendingTime | date: 'h:mma'}}</div>
+      </mat-list-item>
+    </mat-list>
+  </mat-card-content>
+  <mat-card-footer>
+    <mat-icon>create</mat-icon>
+    <mat-form-field class="message-input">
+      <mat-label>Type a message</mat-label>
+      <input matInput (keyup.enter)="sendMessage()" [(ngModel)]="messageContent">
+    </mat-form-field>
+  </mat-card-footer>
+</mat-card>
+<mat-card class="chat-container" layot="column" *ngIf="!user.action.joined">
+  <button mat-button class="join-button" (click)="onJoin()">Join</button>
+</mat-card>
