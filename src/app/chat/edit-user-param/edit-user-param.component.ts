@@ -14,7 +14,6 @@ export class EditUserParamComponent implements OnInit {
 
   ngOnInit() {
     this.sharedService.getUser().subscribe(user => this.user = user);
-    console.log(this.user);
   }
 
 

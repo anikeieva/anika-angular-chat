@@ -17,6 +17,7 @@ export class MainChatComponent implements OnInit {
   public timeNow: Date;
 
   constructor(private sharedService: SharedService) {
+    this.sharedService.listen().subscribe(event => this.onEditUser(event));
   }
 
   ngOnInit() {
@@ -26,13 +27,26 @@ export class MainChatComponent implements OnInit {
 
   sendMessage() {
     this.timeNow = new Date();
-    this.message = new Message(this.user, this.messageContent, this.timeNow);
     this.user.action.sentMessage = true;
+    this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage');
     this.messages.push(this.message);
     this.messageContent = null;
+    console.log(this.messages);
   }
 
   onJoin() {
+    this.timeNow = new Date();
     this.user.action.joined = true;
+    this.message = new Message(this.user, `${this.user.firstName} ${this.user.lastName} joined to conversation`, this.timeNow, 'joined');
+    this.messages.push(this.message);
+  }
+
+  onEditUser(event) {
+    console.log(event);
+    this.timeNow = new Date();
+    this.user.action.edit = true;
+    this.message = new Message(this.user, '', this.timeNow, 'edit');
+    this.messages.push(this.message);
+    console.log(this.messages);
   }
 }

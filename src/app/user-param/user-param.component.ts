@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {User} from '../shared/model/user';
 import {SharedService} from '../shared/servises/shared.service';
@@ -65,7 +65,7 @@ export class UserParamComponent implements OnInit {
     return Math.floor(Math.random() * Math.floor(max));
   }
 
-  onSave() {
+  onSave(event: Event) {
     this.currentAction = this.userParam.action;
     this.user = this.userParameters.value;
     this.user.avatar = `src/app/images/avatars/${this.user.gender}/${this.getRandomInt(3)}.png`;
@@ -73,6 +73,7 @@ export class UserParamComponent implements OnInit {
     this.user.action.edit = true;
     this.sharedService.setUser(this.user);
     this.sharedService.updateUser.emit(this.user);
+    this.sharedService.editUser(event);
     console.log(this.user);
   }
 
