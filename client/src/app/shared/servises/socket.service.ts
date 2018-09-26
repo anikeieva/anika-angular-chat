@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
 import * as socketIo from 'socket.io-client'
 import {Message} from "../model/message";
@@ -33,6 +33,14 @@ export class SocketService {
   public onEvent(event: Event): Observable<any> {
     return new Observable<Event>(observer => {
       this.socket.on(event, () => observer.next());
+    });
+  }
+
+  public onMessages(): Observable<Message[]> {
+    return new Observable<Message[]>( observer => {
+      this.socket.on('messages', (messages: Array<Message>) => {
+        observer.next(messages);
+      });
     });
   }
 }

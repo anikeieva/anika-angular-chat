@@ -8,16 +8,16 @@ import {Observable, of, Subject} from 'rxjs';
 export class SharedService {
   public user: User;
   @Output() public updateUser: EventEmitter<any> = new EventEmitter();
-  private _listeners = new Subject<any>();
+  private listenerUser = new Subject<any>();
 
   constructor() { }
 
-  listen(): Observable<any> {
-    return this._listeners.asObservable();
+  listenUser(): Observable<any> {
+    return this.listenerUser.asObservable();
   }
 
   editUser(event: Event) {
-    this._listeners.next(event);
+    this.listenerUser.next(event);
   }
 
   setUser(data: any) {

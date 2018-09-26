@@ -29,7 +29,6 @@ import {WelcomePageComponent} from './welcome-page/welcome-page.component';
     FormsModule,
     AppRoutingModule
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -4,7 +4,6 @@ import {SharedService} from '../../shared/servises/shared.service';
 import {Message} from '../../shared/model/message';
 import {SocketService} from "../../shared/servises/socket.service";
 import {Event} from "../../shared/model/event";
-import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-main-chat',
@@ -14,23 +13,20 @@ import {ActivatedRoute} from "@angular/router";
 export class MainChatComponent implements OnInit {
 
   public messageContent: string;
-  public messages: Array<Message>;
+  public messages: Message[];
   public message: Message;
   public user: User;
   public timeNow: Date;
   public ioConnection: any;
 
   constructor(private sharedService: SharedService,
-              private socketService: SocketService,
-              route: ActivatedRoute) {
-    console.log(route.snapshot.data.messages);
-    this.messages = (route.snapshot.data.messages) ? route.snapshot.data.messages : [];
+              private socketService: SocketService) {
+    this.messages = [];
   }
 
   ngOnInit() {
-    setTimeout(() => {
-      this.getUser();
-    }, 0);
+    this.getUser();
+    this.initIoConnection();
     console.log('init messages: ',this.messages);
   }
 
@@ -51,7 +47,8 @@ export class MainChatComponent implements OnInit {
 
   private getUser() {
     this.sharedService.getUser().subscribe(user => this.user = user);
-    this.sharedService.listen().subscribe(event => this.onEditUser(event));
+    this.sharedService.listenUser().subscribe(event => this.onEditUser(event));
+    this.socketService.onMessages().subscribe((messages) => this.messages = messages);
   }
 
   sendMessage(messageContent: string) {
@@ -71,7 +68,6 @@ export class MainChatComponent implements OnInit {
 
   onJoin() {
     this.user.action.joined = true;
-    this.initIoConnection();
     this.sendNotification();
     console.log('join messages: ',this.messages);
   }
