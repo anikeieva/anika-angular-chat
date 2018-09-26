@@ -1,6 +1,6 @@
 <mat-card class="chat-container" layot="column" *ngIf="user.action.joined">
   <mat-card-content>
-    <mat-list>
+    <mat-list class="message-list">
       <mat-list-item *ngFor="let message of messages" [ngClass]="[(message.action === 'sentMessage') ? 'message-item' : '']">
         <p mat-line class="action-line" *ngIf="message.action === 'joined'">
           {{message.messageContent}}

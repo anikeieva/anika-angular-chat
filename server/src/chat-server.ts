@@ -10,6 +10,7 @@ export class ChatServer {
     private server: Server;
     private io: SocketIO.Server;
     private port: string | number;
+    public messages: Array<Message> = [];
 
     constructor() {
         this.createApp();
@@ -43,9 +44,12 @@ export class ChatServer {
         this.io.on('connect', (socket: any) => {
             console.log('Connected client on port %s.', this.port);
             socket.on('message', (m: Message) => {
+                this.messages.push(m);
                 console.log('[server](message): %s', JSON.stringify(m));
                 this.io.emit('message', m);
             });
+
+            this.io.emit('messages', this.messages);
 
             socket.on('disconnect', () => {
                 console.log('Client disconnected');

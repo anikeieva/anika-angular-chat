@@ -24,6 +24,15 @@
   text-align: center;
 }
 
+.message-list {
+  overflow: auto;
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  bottom: 240px;
+  right: 40px;
+}
+
 .message-item {
   background-color: #4c62691a;
   border-radius: 10px;

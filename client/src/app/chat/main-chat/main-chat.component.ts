@@ -1,16 +1,17 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {User} from '../../shared/model/user';
 import {SharedService} from '../../shared/servises/shared.service';
 import {Message} from '../../shared/model/message';
 import {SocketService} from "../../shared/servises/socket.service";
 import {Event} from "../../shared/model/event";
+import {MatList, MatListItem} from "@angular/material";
 
 @Component({
   selector: 'app-main-chat',
   templateUrl: './main-chat.component.html',
   styleUrls: ['./main-chat.component.css']
 })
-export class MainChatComponent implements OnInit {
+export class MainChatComponent implements OnInit, AfterViewInit {
 
   public messageContent: string;
   public messages: Message[];
@@ -19,15 +20,31 @@ export class MainChatComponent implements OnInit {
   public timeNow: Date;
   public ioConnection: any;
 
+  @ViewChild(MatList, { read: ElementRef }) matList: ElementRef;
+  @ViewChildren(MatListItem, { read: ElementRef }) matListItems: QueryList<MatListItem>;
+
   constructor(private sharedService: SharedService,
               private socketService: SocketService) {
-    this.messages = [];
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.getUser();
     this.initIoConnection();
+    this.socketService.onMessages().subscribe((messages) => this.messages = messages);
     console.log('init messages: ',this.messages);
+  }
+
+  ngAfterViewInit(): void {
+    this.matListItems.changes.subscribe(elements => {
+      this.scrollToBottom();
+    });
+  }
+
+  private scrollToBottom(): void {
+    try {
+      this.matList.nativeElement.scrollTop = this.matList.nativeElement.scrollHeight;
+    } catch (err) {
+    }
   }
 
   private initIoConnection(): void {
@@ -48,10 +65,9 @@ export class MainChatComponent implements OnInit {
   private getUser() {
     this.sharedService.getUser().subscribe(user => this.user = user);
     this.sharedService.listenUser().subscribe(event => this.onEditUser(event));
-    this.socketService.onMessages().subscribe((messages) => this.messages = messages);
   }
 
-  sendMessage(messageContent: string) {
+  sendMessage(messageContent: string): void {
     if (!messageContent) {
       return;
     }
@@ -66,20 +82,20 @@ export class MainChatComponent implements OnInit {
     console.log('sentMessage messages: ',this.messages);
   }
 
-  onJoin() {
+  onJoin(): void {
     this.user.action.joined = true;
     this.sendNotification();
     console.log('join messages: ',this.messages);
   }
 
-  onEditUser(event) {
+  onEditUser(event): void {
     console.log(event);
     this.user.action.edit = true;
     this.sendNotification();
     console.log('edit messages: ',this.messages);
   }
 
-  sendNotification() {
+  sendNotification(): void {
     this.timeNow = new Date();
 
     if (this.user.action.joined) {
