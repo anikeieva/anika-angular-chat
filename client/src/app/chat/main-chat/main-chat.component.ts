@@ -2,6 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {User} from '../../shared/model/user';
 import {SharedService} from '../../shared/servises/shared.service';
 import {Message} from '../../shared/model/message';
+import {SocketService} from "../../shared/servises/socket.service";
+import {Event} from "../../shared/model/event";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-main-chat',
@@ -15,38 +18,79 @@ export class MainChatComponent implements OnInit {
   public message: Message;
   public user: User;
   public timeNow: Date;
+  public ioConnection: any;
 
-  constructor(private sharedService: SharedService) {
-    this.sharedService.listen().subscribe(event => this.onEditUser(event));
+  constructor(private sharedService: SharedService,
+              private socketService: SocketService,
+              route: ActivatedRoute) {
+    console.log(route.snapshot.data.messages);
+    this.messages = (route.snapshot.data.messages) ? route.snapshot.data.messages : [];
   }
 
   ngOnInit() {
-    this.messages = [];
-    this.sharedService.getUser().subscribe(user => this.user = user);
+    setTimeout(() => {
+      this.getUser();
+    }, 0);
+    console.log('init messages: ',this.messages);
   }
 
-  sendMessage() {
+  private initIoConnection(): void {
+    this.socketService.initSocket();
+
+    this.ioConnection = this.socketService.onMessage()
+      .subscribe((message: Message) => {
+        this.messages.push(message);
+      });
+
+    this.socketService.onEvent(Event.connect)
+      .subscribe(() => console.log('connected'));
+
+    this.socketService.onEvent(Event.disconnect)
+      .subscribe(() => console.log('disconnected'));
+  }
+
+  private getUser() {
+    this.sharedService.getUser().subscribe(user => this.user = user);
+    this.sharedService.listen().subscribe(event => this.onEditUser(event));
+  }
+
+  sendMessage(messageContent: string) {
+    if (!messageContent) {
+      return;
+    }
+
     this.timeNow = new Date();
     this.user.action.sentMessage = true;
     this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage');
-    this.messages.push(this.message);
+    // this.messages.push(this.message);
+    this.socketService.send(this.message);
+
     this.messageContent = null;
-    console.log(this.messages);
+    console.log('sentMessage messages: ',this.messages);
   }
 
   onJoin() {
-    this.timeNow = new Date();
     this.user.action.joined = true;
-    this.message = new Message(this.user, `${this.user.firstName} ${this.user.lastName} joined to conversation`, this.timeNow, 'joined');
-    this.messages.push(this.message);
+    this.initIoConnection();
+    this.sendNotification();
+    console.log('join messages: ',this.messages);
   }
 
   onEditUser(event) {
     console.log(event);
-    this.timeNow = new Date();
     this.user.action.edit = true;
-    this.message = new Message(this.user, '', this.timeNow, 'edit');
-    this.messages.push(this.message);
-    console.log(this.messages);
+    this.sendNotification();
+    console.log('edit messages: ',this.messages);
+  }
+
+  sendNotification() {
+    this.timeNow = new Date();
+
+    if (this.user.action.joined) {
+      this.message = new Message(this.user, `${this.user.firstName} ${this.user.lastName} joined to conversation`, this.timeNow, 'joined');
+    } else if (this.user.action.edit) {
+      this.message = new Message(this.user, `User already is ${this.user.firstName} ${this.user.lastName}`, this.timeNow, 'edit');
+    }
+    this.socketService.send(this.message);
   }
 }

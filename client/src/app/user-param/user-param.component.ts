@@ -58,7 +58,7 @@ export class UserParamComponent implements OnInit {
     };
     // this.user.action = 'signed';
     this.sharedService.setUser(this.user);
-    console.log(this.user);
+    console.log('onSubmit this.user: ',this.user);
   }
 
   private getRandomInt(max: number) {
@@ -74,7 +74,7 @@ export class UserParamComponent implements OnInit {
     this.sharedService.setUser(this.user);
     this.sharedService.updateUser.emit(this.user);
     this.sharedService.editUser(event);
-    console.log(this.user);
+    console.log('onSave this.user: ',this.user);
   }
 
   isChecked(gender: string) {

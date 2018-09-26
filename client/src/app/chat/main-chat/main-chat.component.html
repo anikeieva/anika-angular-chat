@@ -23,7 +23,7 @@
     <mat-icon>create</mat-icon>
     <mat-form-field class="message-input">
       <mat-label>Type a message</mat-label>
-      <input matInput (keyup.enter)="sendMessage()" [(ngModel)]="messageContent">
+      <input matInput (keyup.enter)="sendMessage(messageContent)" [(ngModel)]="messageContent">
     </mat-form-field>
   </mat-card-footer>
 </mat-card>
