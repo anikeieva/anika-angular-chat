@@ -56,8 +56,8 @@ export class UserParamComponent implements OnInit {
       joined: false,
       sentMessage: false
     };
-    // this.user.action = 'signed';
     this.sharedService.setUser(this.user);
+    this.sharedService.updateUser.emit(this.user);
     console.log('onSubmit this.user: ',this.user);
   }
 
@@ -65,15 +65,26 @@ export class UserParamComponent implements OnInit {
     return Math.floor(Math.random() * Math.floor(max));
   }
 
-  onSave(event: Event) {
+  onSave() {
     this.currentAction = this.userParam.action;
     this.user = this.userParameters.value;
-    this.user.avatar = `src/app/images/avatars/${this.user.gender}/${this.getRandomInt(3)}.png`;
+
+    if (this.user.gender === this.userParam.gender) {
+      this.user.avatar = this.userParam.avatar;
+    } else {
+      this.user.avatar = `src/app/images/avatars/${this.user.gender}/${this.getRandomInt(3)}.png`;
+    }
+
     this.user.action = this.currentAction;
     this.user.action.edit = true;
+
     this.sharedService.setUser(this.user);
     this.sharedService.updateUser.emit(this.user);
-    this.sharedService.editUser(event);
+    const param: object = {
+      paramBefore: this.userParam,
+      paramAfter: this.user
+    }
+    this.sharedService.editUser(param);
     console.log('onSave this.user: ',this.user);
   }
 

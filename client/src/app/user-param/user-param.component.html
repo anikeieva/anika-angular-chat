@@ -17,6 +17,6 @@
     <button mat-raised-button *ngIf="!isEdit" color="primary" [disabled]="!isEnabledSubmit()" class="submit-button" routerLink="/chat" (click)="onSubmit()">
       {{submitTitle}}
     </button>
-    <button mat-raised-button *ngIf="isEdit" color="primary" class="submit-button" (click)="onSave($event)">{{submitTitle}}</button>
+    <button mat-raised-button *ngIf="isEdit" color="primary" class="submit-button" (click)="onSave()">{{submitTitle}}</button>
   </form>
 </mat-card>

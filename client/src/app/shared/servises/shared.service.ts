@@ -16,8 +16,8 @@ export class SharedService {
     return this.listenerUser.asObservable();
   }
 
-  editUser(event: Event) {
-    this.listenerUser.next(event);
+  editUser(param) {
+    this.listenerUser.next(param);
   }
 
   setUser(data: any) {

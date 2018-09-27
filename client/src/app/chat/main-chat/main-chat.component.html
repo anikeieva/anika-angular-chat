@@ -6,9 +6,9 @@
           {{message.messageContent}}
         </p>
         <p mat-line class="action-line" *ngIf="message.action === 'edit'">
-          User already is {{user.firstName}} {{user.lastName}}
+          {{message.messageContent}}
         </p>
-        <img mat-list-avatar [src]="user.avatar" *ngIf="message.action === 'sentMessage'">
+        <img mat-list-avatar [src]="message.user.avatar" *ngIf="message.action === 'sentMessage'">
         <p mat-line class="message-item-user-name" *ngIf="message.action === 'sentMessage'">
           {{message.user.firstName}} {{message.user.lastName}}
         </p>

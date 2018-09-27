@@ -15,7 +15,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
   public messageContent: string;
   public messages: Message[];
-  public message: Message;
+  private message: Message;
   public user: User;
   public timeNow: Date;
   public ioConnection: any;
@@ -64,7 +64,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
   private getUser() {
     this.sharedService.getUser().subscribe(user => this.user = user);
-    this.sharedService.listenUser().subscribe(event => this.onEditUser(event));
+    this.sharedService.listenUser().subscribe(paramBefore => this.onEditUser(paramBefore));
   }
 
   sendMessage(messageContent: string): void {
@@ -75,7 +75,6 @@ export class MainChatComponent implements OnInit, AfterViewInit {
     this.timeNow = new Date();
     this.user.action.sentMessage = true;
     this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage');
-    // this.messages.push(this.message);
     this.socketService.send(this.message);
 
     this.messageContent = null;
@@ -84,25 +83,23 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
   onJoin(): void {
     this.user.action.joined = true;
-    this.sendNotification();
+    this.timeNow = new Date();
+    this.message = new Message(this.user, `${this.user.firstName} ${this.user.lastName} joined to conversation`, this.timeNow, 'joined');
+    this.sendNotification(this.message);
     console.log('join messages: ',this.messages);
   }
 
-  onEditUser(event): void {
-    console.log(event);
+  onEditUser(param): void {
+    // console.log(event);
+    this.timeNow = new Date();
+    this.user = param.paramAfter;
     this.user.action.edit = true;
-    this.sendNotification();
+    this.message = new Message(this.user, `${param.paramBefore.firstName} ${param.paramBefore.lastName} already is ${this.user.firstName} ${this.user.lastName}`, this.timeNow, 'edit');
+    this.sendNotification(this.message);
     console.log('edit messages: ',this.messages);
   }
 
-  sendNotification(): void {
-    this.timeNow = new Date();
-
-    if (this.user.action.joined) {
-      this.message = new Message(this.user, `${this.user.firstName} ${this.user.lastName} joined to conversation`, this.timeNow, 'joined');
-    } else if (this.user.action.edit) {
-      this.message = new Message(this.user, `User already is ${this.user.firstName} ${this.user.lastName}`, this.timeNow, 'edit');
-    }
-    this.socketService.send(this.message);
+  sendNotification(message): void {
+    this.socketService.send(message);
   }
 }
