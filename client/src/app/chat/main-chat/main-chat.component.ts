@@ -1,4 +1,12 @@
-import {AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren
+} from '@angular/core';
 import {User} from '../../shared/model/user';
 import {SharedService} from '../../shared/servises/shared.service';
 import {Message} from '../../shared/model/message';
@@ -19,6 +27,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   public user: User;
   public timeNow: Date;
   public ioConnection: any;
+  public subscription;
 
   @ViewChild(MatList, { read: ElementRef }) matList: ElementRef;
   @ViewChildren(MatListItem, { read: ElementRef }) matListItems: QueryList<MatListItem>;
@@ -64,7 +73,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
   private getUser() {
     this.sharedService.getUser().subscribe(user => this.user = user);
-    this.sharedService.listenUser().subscribe(paramBefore => this.onEditUser(paramBefore));
+    this.subscription = this.sharedService.listenUser().subscribe(paramBefore => this.onEditUser(paramBefore));
   }
 
   sendMessage(messageContent: string): void {
@@ -90,13 +99,15 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   }
 
   onEditUser(param): void {
-    // console.log(event);
+    console.log('user: ' ,this.user);
     this.timeNow = new Date();
     this.user = param.paramAfter;
     this.user.action.edit = true;
-    this.message = new Message(this.user, `${param.paramBefore.firstName} ${param.paramBefore.lastName} already is ${this.user.firstName} ${this.user.lastName}`, this.timeNow, 'edit');
+    const messageContent = `${param.paramBefore.firstName} ${param.paramBefore.lastName} already is ${this.user.firstName} ${this.user.lastName}`;
+    this.message = new Message(this.user, messageContent, this.timeNow, 'edit');
     this.sendNotification(this.message);
-    console.log('edit messages: ',this.messages);
+    console.log('edit messages: ',this.messages);//
+    this.subscription.unsubscribe();
   }
 
   sendNotification(message): void {

@@ -39,7 +39,7 @@ export class UserParamComponent implements OnInit {
         lastName: this.userParam.lastName,
         gender: this.userParam.gender
       });
-      console.log(this.userParameters.value);
+      console.log('user-param init:',this.userParameters.value);
     }
   }
 
@@ -85,7 +85,6 @@ export class UserParamComponent implements OnInit {
       paramAfter: this.user
     }
     this.sharedService.editUser(param);
-    console.log('onSave this.user: ',this.user);
   }
 
   isChecked(gender: string) {
