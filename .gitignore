@@ -4,6 +4,7 @@
 /server/node_modules
 /server/npm-debug.log
 /server/dist
+/server/data/*.json
 
 ## client
 /client/node_modules
