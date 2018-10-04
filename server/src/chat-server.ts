@@ -44,7 +44,12 @@ export class ChatServer {
 
         fs.readFile('data/messages.json', (err, data) => {
            if (err) {
-               this.messages = [];
+               if (err.code === 'ENOENT') {
+                   this.messages = [];
+               } else {
+                   throw err;
+               }
+               
            } else {
                this.messages = JSON.parse(data.toString());
            }
@@ -54,12 +59,12 @@ export class ChatServer {
             console.log('Connected client on port %s.', this.port);
             socket.on('message', (m: Message) => {
                 this.messages.push(m);
-
+                
                 fs.writeFile('data/messages.json', JSON.stringify(this.messages), (err) => {
                     if (err) throw err;
                     console.log('Messages written to messages.json');
                 });
-
+                
                 console.log('[server](message): %s', JSON.stringify(m));
                 this.io.emit('message', m);
             });

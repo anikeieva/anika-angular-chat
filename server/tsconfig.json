@@ -5,6 +5,6 @@
   ],
   "compilerOptions": {
     "target": "es5",
-    "lib": ["es5", "es6", "dom"]
+    "lib": ["es5", "es6", "dom", "es2015.promise"]
   }
 }
