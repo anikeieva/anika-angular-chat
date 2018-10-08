@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import {
   MatButtonModule,
   MatButtonToggleModule,
-  MatCardModule,
+  MatCardModule, MatDialogModule,
   MatIconModule,
   MatInputModule, MatListModule,
   MatMenuModule,
@@ -19,7 +19,7 @@ import {
     MatCardModule,
     MatButtonToggleModule,
     MatIconModule,
-    MatMenuModule, MatSidenavModule, MatToolbarModule, MatListModule
+    MatMenuModule, MatSidenavModule, MatToolbarModule, MatListModule, MatDialogModule
   ],
   exports: [
     MatInputModule,
@@ -28,7 +28,7 @@ import {
     MatCardModule,
     MatButtonToggleModule,
     MatIconModule,
-    MatMenuModule, MatSidenavModule, MatToolbarModule, MatListModule
+    MatMenuModule, MatSidenavModule, MatToolbarModule, MatListModule, MatDialogModule
   ],
   declarations: []
 })

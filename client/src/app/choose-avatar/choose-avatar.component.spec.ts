@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { UserParamComponent } from './user-param.component';
+import { ChooseAvatarComponent } from './choose-avatar.component';
 
 describe('ChooseAvatarComponent', () => {
-  let component: UserParamComponent;
-  let fixture: ComponentFixture<UserParamComponent>;
+  let component: ChooseAvatarComponent;
+  let fixture: ComponentFixture<ChooseAvatarComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UserParamComponent ]
+      declarations: [ ChooseAvatarComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(UserParamComponent);
+    fixture = TestBed.createComponent(ChooseAvatarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -14,9 +14,25 @@
     <mat-radio-group formControlName="gender" required>
       <mat-radio-button *ngFor="let gender of genders" [value]="gender" [checked]="isChecked(gender)">{{gender}}</mat-radio-button>
     </mat-radio-group>
-    <button mat-raised-button *ngIf="!isEdit" color="primary" [disabled]="!isEnabledSubmit()" class="submit-button" routerLink="/chat" (click)="onSubmit()">
+     <button mat-raised-button *ngIf="!isEdit" color="primary" [disabled]="!isEnabledSubmit()" class="submit-button" routerLink="/chat" (click)="onSubmit()">
       {{submitTitle}}
     </button>
     <button mat-raised-button *ngIf="isEdit" color="primary" class="submit-button" (click)="onSave()">{{submitTitle}}</button>
   </form>
+  <div class="change-avatar" *ngIf="isEdit">
+    <h2>Change Avatar</h2>
+    <div class="change-avatar-item">
+      <p class="choose-avatar-text">Choose your own</p>
+      <label for="choose-avatar" class="circle-choose-avatar">
+        <mat-icon class="choose-avatar-icon">photo_camera</mat-icon>
+      </label>
+      <input type="file" (change)="onSelectAvatar($event)" id="choose-avatar">
+    </div>
+    <div class="change-avatar-item">
+      <p class="choose-avatar-text">Choose one of default</p>
+      <span class="circle-choose-avatar" (click)="chooseAvatar()">
+        <mat-icon class="choose-avatar-icon">account_circle</mat-icon>
+      </span>
+    </div>
+  </div>
 </mat-card>

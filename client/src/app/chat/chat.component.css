@@ -37,9 +37,8 @@ mat-sidenav-container {
   padding: 30px 20px 40px 20px;
 }
 .user-avatar {
-  height: 80px;
-  width: 80px;
-  border: 2px solid #cabbd8;
+  height: 100px;
+  width: 100px;
   padding: 10px;
 }
 .side-bar-title {

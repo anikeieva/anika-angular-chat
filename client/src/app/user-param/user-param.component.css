@@ -19,3 +19,47 @@ mat-radio-button:first-child {
   display: block;
   margin: 15px auto 0 auto;
 }
+
+.change-avatar {
+  margin: 15px 0;
+}
+
+.change-avatar-item {
+  float: left;
+  width: 50%;
+}
+
+.choose-avatar-text {
+  font-size: 13px;
+  text-align: center;
+}
+
+.circle-choose-avatar {
+  cursor: pointer;
+  display: grid;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  background-color: blueviolet;
+  margin: 0 auto;
+}
+
+.choose-avatar-icon {
+  font-size: 30px!important;
+  color: white;
+  width: 30px;
+  height: 30px;
+  margin: 0 auto;
+  transition: font-size 1s ease;
+}
+
+.choose-avatar-icon:hover {
+  font-size: 33px!important;
+  width: 33px;
+  height: 33px;
+}
+
+#choose-avatar {
+  display: none;
+}

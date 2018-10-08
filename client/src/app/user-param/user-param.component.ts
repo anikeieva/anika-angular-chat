@@ -1,8 +1,10 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {User} from '../shared/model/user';
 import {SharedService} from '../shared/servises/shared.service';
 import {UserAction} from '../shared/model/userAction';
+import {MatDialog} from "@angular/material";
+import {ChooseAvatarComponent} from "../choose-avatar/choose-avatar.component";
 
 @Component({
   selector: 'app-user-param',
@@ -18,8 +20,10 @@ export class UserParamComponent implements OnInit {
   @Input() isEdit: boolean;
   @Input() userParam: User;
   private currentAction: UserAction;
+  public selectedAvatar: string | ArrayBuffer;
 
-  constructor(private sharedService: SharedService) {
+  constructor(private sharedService: SharedService,
+              private dialog: MatDialog) {
     this.getUserParams();
     this.genders = ['male', 'female'];
   }
@@ -94,4 +98,31 @@ export class UserParamComponent implements OnInit {
     return false;
   }
 
+  onSelectAvatar(event) {
+    const fileReader = new FileReader();
+    const file = event.target.files[0];
+
+    fileReader.readAsDataURL(file);
+    fileReader.onload = () => {
+      this.selectedAvatar = fileReader.result;
+
+      if (!this.user) {
+        this.user = this.userParam;
+      }
+      console.log(this.user);
+      console.log(this.selectedAvatar);
+      this.user.avatar = this.selectedAvatar;
+      this.sharedService.setUser(this.user);
+      this.sharedService.updateUser.emit(this.user);
+      console.log(this.user);
+    };
+  }
+
+  chooseAvatar() {
+    const dialogRef = this.dialog.open(ChooseAvatarComponent);
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(result);
+    });
+  }
 }

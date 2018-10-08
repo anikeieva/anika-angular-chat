@@ -11,6 +11,9 @@ import {MaterialModule} from '../shared/material/material.module';
 import {MainChatComponent} from './chat/main-chat/main-chat.component';
 import {EditUserParamComponent} from './chat/edit-user-param/edit-user-param.component';
 import {WelcomePageComponent} from './welcome-page/welcome-page.component';
+import {HttpClientModule} from "@angular/common/http";
+import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
+import {ChooseAvatarComponent} from "./choose-avatar/choose-avatar.component";
 
 @NgModule({
   declarations: [
@@ -19,7 +22,8 @@ import {WelcomePageComponent} from './welcome-page/welcome-page.component';
     ChatComponent,
     MainChatComponent,
     EditUserParamComponent,
-    WelcomePageComponent
+    WelcomePageComponent,
+    ChooseAvatarComponent
   ],
   imports: [
     BrowserModule,
@@ -27,7 +31,12 @@ import {WelcomePageComponent} from './welcome-page/welcome-page.component';
     MaterialModule,
     BrowserAnimationsModule,
     FormsModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule,
+    FontAwesomeModule
+  ],
+  entryComponents: [
+    ChooseAvatarComponent
   ],
   bootstrap: [AppComponent]
 })
