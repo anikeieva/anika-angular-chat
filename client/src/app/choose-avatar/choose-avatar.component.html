@@ -3,7 +3,8 @@
     <img mat-card-avatar class="avatar-item" *ngFor="let avatar of avatars" [src]="avatar" (click)="changeAvatar(avatar)">
   </mat-card-content>
   <mat-card-actions>
-    <button mat-button>Choose</button>
-    <button mat-button>Close</button>
+    <button mat-icon-button (click)="closeDialog()">
+      <mat-icon>close</mat-icon>
+    </button>
   </mat-card-actions>
 </mat-card>

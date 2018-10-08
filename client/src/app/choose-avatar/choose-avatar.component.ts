@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {SharedService} from "../shared/servises/shared.service";
 import {User} from "../shared/model/user";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 
 @Component({
   selector: 'app-choose-avatar',
@@ -11,9 +12,10 @@ export class ChooseAvatarComponent implements OnInit {
   public user: User;
   public avatars: Array<string> = [];
   private maxAvatarsNumbers = 2;
-  private gender: string;
 
-  constructor(private sharedService: SharedService) {}
+  constructor(private sharedService: SharedService,
+              private dialogRef: MatDialogRef<ChooseAvatarComponent>,
+              @Inject(MAT_DIALOG_DATA) public data: any) {}
 
   ngOnInit() {
     this.sharedService.getUser().subscribe(user => this.user = user);
@@ -29,5 +31,9 @@ export class ChooseAvatarComponent implements OnInit {
       this.sharedService.setUser(this.user);
       this.sharedService.updateUser.emit(this.user);
     }
+   }
+
+   closeDialog() {
+      this.dialogRef.close();
    }
 }
