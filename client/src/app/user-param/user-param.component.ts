@@ -32,7 +32,9 @@ export class UserParamComponent implements OnInit {
     this.userParameters = new FormGroup({
       firstName: new FormControl('', Validators.required),
       lastName: new FormControl(''),
-      gender: new FormControl('')
+      gender: new FormControl(''),
+      login: new FormControl('', Validators.required),
+      password: new FormControl('', Validators.required)
     });
   }
 
@@ -41,7 +43,9 @@ export class UserParamComponent implements OnInit {
       this.userParameters.setValue({
         firstName: this.userParam.firstName,
         lastName: this.userParam.lastName,
-        gender: this.userParam.gender
+        gender: this.userParam.gender,
+        login: this.userParam.login,
+        password: this.userParam.password
       });
       console.log('user-param init:',this.userParameters.value);
     }

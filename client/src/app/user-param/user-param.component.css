@@ -1,23 +1,43 @@
-mat-card {
+.welcome-component {
   max-width: 400px;
   width: 100%;
-  margin: 50px auto 0 auto;
+  margin: 50px auto;
   display: grid;
   align-content: center;
 }
-mat-card-title {
+
+.edit-user-component {
+  min-height: calc(100vh - 66px - 100px);
+  overflow-y: scroll;
+  padding: 50px;
+  position: absolute;
+  top: 0;
+  bottom: 66px;
+}
+
+.mat-card-title {
   font-size: 32px!important;
   color: blueviolet;
 }
-mat-form-field {
+.mat-form-field {
   width: 100%;
 }
-mat-radio-button:first-child {
+
+.mat-radio-button {
+  margin: 10px 0 20px 0;
+}
+
+.mat-radio-button:first-child {
   margin-right: 20px;
 }
+
 .submit-button {
   display: block;
-  margin: 15px auto 0 auto;
+  margin: 10px auto 0 auto;
+}
+
+h2 {
+  margin: 10px 0;
 }
 
 .change-avatar {
@@ -62,4 +82,8 @@ mat-radio-button:first-child {
 
 #choose-avatar {
   display: none;
+}
+
+input, mat-radio-button {
+  font-size: 14px;
 }
