@@ -14,6 +14,7 @@ import {WelcomePageComponent} from './welcome-page/welcome-page.component';
 import {HttpClientModule} from "@angular/common/http";
 import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
 import {ChooseAvatarComponent} from "./choose-avatar/choose-avatar.component";
+import {StorageServiceModule} from  "angular-webstorage-service";
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import {ChooseAvatarComponent} from "./choose-avatar/choose-avatar.component";
     FormsModule,
     AppRoutingModule,
     HttpClientModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    StorageServiceModule
   ],
   entryComponents: [
     ChooseAvatarComponent

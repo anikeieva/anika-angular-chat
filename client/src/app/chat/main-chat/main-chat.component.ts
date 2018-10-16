@@ -1,7 +1,7 @@
 import {
   AfterViewInit,
   Component,
-  ElementRef,
+  ElementRef, Inject,
   OnInit,
   QueryList,
   ViewChild,
@@ -13,6 +13,8 @@ import {Message} from '../../shared/model/message';
 import {SocketService} from "../../shared/servises/socket.service";
 import {Event} from "../../shared/model/event";
 import {MatList, MatListItem} from "@angular/material";
+import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
+import {USER_STORAGE_TOKEN} from "../../shared/model/userStorageToken";
 
 @Component({
   selector: 'app-main-chat',
@@ -33,7 +35,8 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   @ViewChildren(MatListItem, { read: ElementRef }) matListItems: QueryList<MatListItem>;
 
   constructor(private sharedService: SharedService,
-              private socketService: SocketService) {
+              private socketService: SocketService,
+              @Inject(SESSION_STORAGE) private storage: StorageService) {
   }
 
   ngOnInit(): void {
@@ -74,6 +77,10 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   private getUser() {
     this.sharedService.getUser().subscribe(user => this.user = user);
     this.subscription = this.sharedService.listenUser().subscribe(paramBefore => this.onEditUser(paramBefore));
+    if (!this.user) {
+      this.user = this.storage.get(USER_STORAGE_TOKEN);
+    }
+    this.storage.set(USER_STORAGE_TOKEN, this.user);
   }
 
   sendMessage(messageContent: string): void {
@@ -103,11 +110,18 @@ export class MainChatComponent implements OnInit, AfterViewInit {
     this.timeNow = new Date();
     this.user = param.paramAfter;
     this.user.action.edit = true;
-    const messageContent = `${param.paramBefore.firstName} ${param.paramBefore.lastName} already is ${this.user.firstName} ${this.user.lastName}`;
-    this.message = new Message(this.user, messageContent, this.timeNow, 'edit');
-    this.sendNotification(this.message);
-    console.log('edit messages: ',this.messages);//
-    this.subscription.unsubscribe();
+
+    if (this.user.action.joined === true &&
+      param.paramBefore.firstName !== this.user.firstName ||
+      param.paramBefore.lastName !== this.user.lastName) {
+
+      const messageContent = `${param.paramBefore.firstName} ${param.paramBefore.lastName} already is ${this.user.firstName} ${this.user.lastName}`;
+      this.message = new Message(this.user, messageContent, this.timeNow, 'edit');
+      this.sendNotification(this.message);
+      console.log('edit messages: ',this.messages);//
+      this.subscription.unsubscribe();
+
+    }
   }
 
   sendNotification(message): void {

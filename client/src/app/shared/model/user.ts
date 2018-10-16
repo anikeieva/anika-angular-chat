@@ -1,11 +1,12 @@
 import {UserAction} from './userAction';
 
 export interface User {
-  login: string;
-  password: string;
   firstName: string;
   lastName: string;
   gender: string;
+  login: string;
+  password: string;
   avatar: string | ArrayBuffer;
   action: UserAction;
+  id: number;
 }

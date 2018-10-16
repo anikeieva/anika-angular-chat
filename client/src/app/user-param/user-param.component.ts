@@ -1,10 +1,12 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Inject, Input, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {User} from '../shared/model/user';
 import {SharedService} from '../shared/servises/shared.service';
 import {UserAction} from '../shared/model/userAction';
 import {MatDialog} from "@angular/material";
 import {ChooseAvatarComponent} from "../choose-avatar/choose-avatar.component";
+import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
+import {USER_STORAGE_TOKEN} from "../shared/model/userStorageToken";
 
 @Component({
   selector: 'app-user-param',
@@ -23,7 +25,8 @@ export class UserParamComponent implements OnInit {
   public selectedAvatar: string | ArrayBuffer;
 
   constructor(private sharedService: SharedService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              @Inject(SESSION_STORAGE) private storage: StorageService) {
     this.getUserParams();
     this.genders = ['male', 'female'];
   }
@@ -67,6 +70,8 @@ export class UserParamComponent implements OnInit {
     this.sharedService.setUser(this.user);
     this.sharedService.updateUser.emit(this.user);
     console.log('onSubmit this.user: ',this.user);
+
+    this.storage.set(USER_STORAGE_TOKEN, this.user);
   }
 
   private getRandomInt(max: number) {
@@ -93,6 +98,8 @@ export class UserParamComponent implements OnInit {
       paramAfter: this.user
     }
     this.sharedService.editUser(param);
+
+    this.storage.set(USER_STORAGE_TOKEN, this.user);
   }
 
   isChecked(gender: string) {
@@ -119,6 +126,8 @@ export class UserParamComponent implements OnInit {
       this.sharedService.setUser(this.user);
       this.sharedService.updateUser.emit(this.user);
       console.log(this.user);
+
+      this.storage.set(USER_STORAGE_TOKEN, this.user);
     };
   }
 
