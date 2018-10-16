@@ -99,6 +99,8 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
   onJoin(): void {
     this.user.action.joined = true;
+    this.storage.set(USER_STORAGE_TOKEN, this.user);
+
     this.timeNow = new Date();
     this.message = new Message(this.user, `${this.user.firstName} ${this.user.lastName} joined to conversation`, this.timeNow, 'joined');
     this.sendNotification(this.message);
