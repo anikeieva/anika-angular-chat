@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import * as socketIo from 'socket.io-client'
 import {Message} from "../model/message";
 import {Observable} from "rxjs";
-import {Event} from "../model/event"
+import {User} from "../model/user";
 
 const SERVER_URL = 'http://localhost:8080';
 
@@ -30,17 +30,21 @@ export class SocketService {
     });
   }
 
-  public onEvent(event: Event): Observable<any> {
-    return new Observable<Event>(observer => {
-      this.socket.on(event, () => observer.next());
-    });
-  }
-
   public onMessages(): Observable<Message[]> {
     return new Observable<Message[]>( observer => {
       this.socket.on('messages', (messages: Array<Message>) => {
         observer.next(messages);
       });
     });
+  }
+
+  public sendUser(user: User): void {
+    this.socket.emit('user', user);
+  }
+
+  public onUser(): Observable<User> {
+    return new Observable<User>(observer => {
+      this.socket.on('user', (user: User) => observer.next(user));
+    })
   }
 }

@@ -4,6 +4,7 @@ import * as socketIo from 'socket.io';
 import * as fs from 'fs';
 
 import { Message } from './model';
+import {User} from "../../client/src/app/shared/model/user";
 
 export class ChatServer {
     public static readonly PORT:number = 8080;
@@ -12,6 +13,7 @@ export class ChatServer {
     private io: SocketIO.Server;
     private port: string | number;
     public messages: Array<Message>;
+    public users: Array<User>;
 
     constructor() {
         this.createApp();
@@ -38,6 +40,7 @@ export class ChatServer {
     }
 
     private listen(): void {
+
         this.server.listen(this.port, () => {
             console.log('Running server on port %s', this.port);
         });
@@ -49,22 +52,51 @@ export class ChatServer {
                } else {
                    throw err;
                }
-               
+
            } else {
                this.messages = JSON.parse(data.toString());
            }
         });
 
+        fs.readFile('data/users.json', (err, data) => {
+            if (err) {
+                if (err.code === 'ENOENT') {
+                    this.users = [];
+                } else {
+                    throw err;
+                }
+
+            } else {
+                this.users = JSON.parse(data.toString());
+            }
+        });
+
+
         this.io.on('connect', (socket: any) => {
             console.log('Connected client on port %s.', this.port);
+
+            socket.on('user', (user: User) => {
+                this.users.push(user);
+                user.id = this.users.length - 1;
+
+                console.log('USERS: ', this.users);
+
+                fs.writeFile('data/users.json', JSON.stringify(this.users), (err) => {
+                    if (err) throw err;
+                    console.log('User written to users.json');
+                });
+
+                this.io.emit('user', user);
+            });
+
             socket.on('message', (m: Message) => {
                 this.messages.push(m);
-                
+
                 fs.writeFile('data/messages.json', JSON.stringify(this.messages), (err) => {
                     if (err) throw err;
                     console.log('Messages written to messages.json');
                 });
-                
+
                 console.log('[server](message): %s', JSON.stringify(m));
                 this.io.emit('message', m);
             });

@@ -7,6 +7,7 @@ import {MatDialog} from "@angular/material";
 import {ChooseAvatarComponent} from "../choose-avatar/choose-avatar.component";
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
 import {USER_STORAGE_TOKEN} from "../shared/model/userStorageToken";
+import {SocketService} from "../shared/servises/socket.service";
 
 @Component({
   selector: 'app-user-param',
@@ -26,7 +27,8 @@ export class UserParamComponent implements OnInit {
 
   constructor(private sharedService: SharedService,
               private dialog: MatDialog,
-              @Inject(SESSION_STORAGE) private storage: StorageService) {
+              @Inject(SESSION_STORAGE) private storage: StorageService,
+              private  socketService: SocketService) {
     this.getUserParams();
     this.genders = ['male', 'female'];
   }
@@ -67,6 +69,16 @@ export class UserParamComponent implements OnInit {
       joined: false,
       sentMessage: false
     };
+
+    this.socketService.sendUser(this.user);
+
+    // this.socketService.initSocket();
+    // this.socketService.onUser().subscribe((user: User) => {
+    //   console.log('in', user);
+    //   this.user = user;
+    // });
+    // console.log('out', this.user);
+
     this.sharedService.setUser(this.user);
     this.sharedService.updateUser.emit(this.user);
     console.log('onSubmit this.user: ',this.user);
@@ -112,6 +124,7 @@ export class UserParamComponent implements OnInit {
   onSelectAvatar(event) {
     const fileReader = new FileReader();
     const file = event.target.files[0];
+    console.log(event);
 
     fileReader.readAsDataURL(file);
     fileReader.onload = () => {

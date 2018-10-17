@@ -22,9 +22,12 @@ export class ChatComponent implements OnInit {
 
   ngOnInit() {
     this.sharedService.getUser().subscribe(user => this.user = user);
+
     if (!this.user) {
       this.user = this.storage.get(USER_STORAGE_TOKEN);
     }
     this.storage.set(USER_STORAGE_TOKEN, this.user);
+    console.log(this.user);
+    console.log(this.user.id);
   }
 }

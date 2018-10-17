@@ -11,7 +11,6 @@ import {User} from '../../shared/model/user';
 import {SharedService} from '../../shared/servises/shared.service';
 import {Message} from '../../shared/model/message';
 import {SocketService} from "../../shared/servises/socket.service";
-import {Event} from "../../shared/model/event";
 import {MatList, MatListItem} from "@angular/material";
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
 import {USER_STORAGE_TOKEN} from "../../shared/model/userStorageToken";
@@ -28,7 +27,6 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   private message: Message;
   public user: User;
   public timeNow: Date;
-  public ioConnection: any;
   public subscription;
 
   @ViewChild(MatList, { read: ElementRef }) matList: ElementRef;
@@ -62,16 +60,10 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   private initIoConnection(): void {
     this.socketService.initSocket();
 
-    this.ioConnection = this.socketService.onMessage()
+    this.socketService.onMessage()
       .subscribe((message: Message) => {
         this.messages.push(message);
       });
-
-    this.socketService.onEvent(Event.connect)
-      .subscribe(() => console.log('connected'));
-
-    this.socketService.onEvent(Event.disconnect)
-      .subscribe(() => console.log('disconnected'));
   }
 
   private getUser() {
