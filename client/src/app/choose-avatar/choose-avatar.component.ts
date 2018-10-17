@@ -4,6 +4,7 @@ import {User} from "../shared/model/user";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 import {USER_STORAGE_TOKEN} from "../shared/model/userStorageToken";
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
+import {SocketService} from "../shared/servises/socket.service";
 
 @Component({
   selector: 'app-choose-avatar',
@@ -18,7 +19,8 @@ export class ChooseAvatarComponent implements OnInit {
   constructor(private sharedService: SharedService,
               private dialogRef: MatDialogRef<ChooseAvatarComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any,
-              @Inject(SESSION_STORAGE) private storage: StorageService) {}
+              @Inject(SESSION_STORAGE) private storage: StorageService,
+              private  socketService: SocketService) {}
 
   ngOnInit() {
     this.sharedService.getUser().subscribe(user => this.user = user);
@@ -36,8 +38,8 @@ export class ChooseAvatarComponent implements OnInit {
   changeAvatar(avatar) {
     if (this.user.avatar !== avatar) {
       this.user.avatar = avatar;
-      this.sharedService.setUser(this.user);
-      this.sharedService.updateUser.emit(this.user);
+
+      this.socketService.sendUser(this.user);
       this.storage.set(USER_STORAGE_TOKEN, this.user);
     }
    }

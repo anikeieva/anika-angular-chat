@@ -21,9 +21,10 @@ export class UserParamComponent implements OnInit {
   @Input() title: string;
   @Input() submitTitle: string;
   @Input() isEdit: boolean;
-  @Input() userParam: User;
+  @Input() userBeforeEdit: User;
   private currentAction: UserAction;
   public selectedAvatar: string | ArrayBuffer;
+  private userParametersBeforeEdit: User;
 
   constructor(private sharedService: SharedService,
               private dialog: MatDialog,
@@ -44,15 +45,19 @@ export class UserParamComponent implements OnInit {
   }
 
   ngOnInit() {
+
     if (this.isEdit) {
+      console.log(this.userBeforeEdit);
+
       this.userParameters.setValue({
-        firstName: this.userParam.firstName,
-        lastName: this.userParam.lastName,
-        gender: this.userParam.gender,
-        login: this.userParam.login,
-        password: this.userParam.password
+        firstName: this.userBeforeEdit.firstName,
+        lastName: this.userBeforeEdit.lastName,
+        gender: this.userBeforeEdit.gender,
+        login: this.userBeforeEdit.login,
+        password: this.userBeforeEdit.password
       });
       console.log('user-param init:',this.userParameters.value);
+      this.userParametersBeforeEdit = this.userParameters.value;
     }
   }
 
@@ -71,17 +76,8 @@ export class UserParamComponent implements OnInit {
     };
 
     this.socketService.sendUser(this.user);
-
-    // this.socketService.initSocket();
-    // this.socketService.onUser().subscribe((user: User) => {
-    //   console.log('in', user);
-    //   this.user = user;
-    // });
-    // console.log('out', this.user);
-
     this.sharedService.setUser(this.user);
     this.sharedService.updateUser.emit(this.user);
-    console.log('onSubmit this.user: ',this.user);
 
     this.storage.set(USER_STORAGE_TOKEN, this.user);
   }
@@ -91,22 +87,30 @@ export class UserParamComponent implements OnInit {
   }
 
   onSave() {
-    this.currentAction = this.userParam.action;
-    this.user = this.userParameters.value;
+    console.log(this.userBeforeEdit);
+    console.log(this.userParametersBeforeEdit);
+    this.currentAction = this.userBeforeEdit.action;
+    this.user = this.userBeforeEdit;
 
-    if (this.user.gender === this.userParam.gender) {
-      this.user.avatar = this.userParam.avatar;
-    } else {
+    for (let key in this.user) {
+      if (this.userParameters.value[key] !== undefined) {
+        this.user[key] = this.userParameters.value[key];
+      }
+    }
+
+    if (this.userParametersBeforeEdit.gender !== this.user.gender) {
       this.user.avatar = `src/app/images/avatars/${this.user.gender}/${this.getRandomInt(3)}.png`;
     }
 
     this.user.action = this.currentAction;
     this.user.action.edit = true;
 
-    this.sharedService.setUser(this.user);
-    this.sharedService.updateUser.emit(this.user);
+    console.log(this.user);
+
+    this.socketService.sendUser(this.user);
+
     const param: object = {
-      paramBefore: this.userParam,
+      paramBefore: this.userParametersBeforeEdit,
       paramAfter: this.user
     }
     this.sharedService.editUser(param);
@@ -116,7 +120,7 @@ export class UserParamComponent implements OnInit {
 
   isChecked(gender: string) {
     if (this.isEdit) {
-      return (this.userParam.gender === gender);
+      return (this.userBeforeEdit.gender === gender);
     }
     return false;
   }
@@ -131,15 +135,13 @@ export class UserParamComponent implements OnInit {
       this.selectedAvatar = fileReader.result;
 
       if (!this.user) {
-        this.user = this.userParam;
+        this.user = this.userBeforeEdit;
       }
-      console.log(this.user);
-      console.log(this.selectedAvatar);
-      this.user.avatar = this.selectedAvatar;
-      this.sharedService.setUser(this.user);
-      this.sharedService.updateUser.emit(this.user);
-      console.log(this.user);
 
+      this.user.avatar = this.selectedAvatar;
+
+      this.socketService.sendUser(this.user);
+      console.log(this.user);
       this.storage.set(USER_STORAGE_TOKEN, this.user);
     };
   }

@@ -4,6 +4,7 @@ import {SharedService} from '../shared/servises/shared.service';
 import {ChatsInfo} from '../shared/model/chatsInfo';
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
 import {USER_STORAGE_TOKEN} from "../shared/model/userStorageToken";
+import {SocketService} from "../shared/servises/socket.service";
 
 @Component({
   selector: 'app-chat',
@@ -15,19 +16,24 @@ export class ChatComponent implements OnInit {
   public mainChatInfo: ChatsInfo;
 
   constructor(private sharedService: SharedService,
-              @Inject(SESSION_STORAGE) private storage: StorageService) {
-    this.sharedService.updateUser.subscribe(data => this.user = data);
+              @Inject(SESSION_STORAGE) private storage: StorageService,
+              private  socketService: SocketService) {
+
     this.mainChatInfo = new ChatsInfo('Main chat', 'src/app/images/chat/chat.png', 'Online chat');
+    console.log(this.user);
   }
 
   ngOnInit() {
-    this.sharedService.getUser().subscribe(user => this.user = user);
 
     if (!this.user) {
       this.user = this.storage.get(USER_STORAGE_TOKEN);
     }
+
+    this.socketService.onUser().subscribe((user: User) => {
+      this.user = user;
+      this.sharedService.setUser(user);
+    });
+
     this.storage.set(USER_STORAGE_TOKEN, this.user);
-    console.log(this.user);
-    console.log(this.user.id);
   }
 }

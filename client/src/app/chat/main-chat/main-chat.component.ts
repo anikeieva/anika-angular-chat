@@ -102,7 +102,10 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   onEditUser(param): void {
     console.log('user: ' ,this.user);
     this.timeNow = new Date();
-    this.user = param.paramAfter;
+    // this.user = param.paramAfter;
+    for (let key in this.user) {
+       this.user[key] = param.paramAfter[key];
+    }
     this.user.action.edit = true;
 
     if (this.user.action.joined === true &&
@@ -113,9 +116,8 @@ export class MainChatComponent implements OnInit, AfterViewInit {
       this.message = new Message(this.user, messageContent, this.timeNow, 'edit');
       this.sendNotification(this.message);
       console.log('edit messages: ',this.messages);//
-      this.subscription.unsubscribe();
-
     }
+    this.subscription.unsubscribe();
   }
 
   sendNotification(message): void {

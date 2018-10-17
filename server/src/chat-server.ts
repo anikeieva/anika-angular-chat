@@ -76,10 +76,19 @@ export class ChatServer {
             console.log('Connected client on port %s.', this.port);
 
             socket.on('user', (user: User) => {
-                this.users.push(user);
-                user.id = this.users.length - 1;
 
-                console.log('USERS: ', this.users);
+               if (this.users.some(item => item.id === user.id )) {
+                   this.users.forEach((item, i, users) => {
+                      if (item.id === user.id) {
+                          users.splice(i, 1, user);
+                      }
+                   });
+               } else {
+                   this.users.push(user);
+                   user.id = this.users.length - 1;
+               }
+
+               console.log('USERS: ', this.users);
 
                 fs.writeFile('data/users.json', JSON.stringify(this.users), (err) => {
                     if (err) throw err;
