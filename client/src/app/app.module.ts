@@ -12,7 +12,6 @@ import {MainChatComponent} from './chat/main-chat/main-chat.component';
 import {EditUserParamComponent} from './chat/edit-user-param/edit-user-param.component';
 import {WelcomePageComponent} from './welcome-page/welcome-page.component';
 import {HttpClientModule} from "@angular/common/http";
-import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
 import {ChooseAvatarComponent} from "./choose-avatar/choose-avatar.component";
 import {StorageServiceModule} from  "angular-webstorage-service";
 
@@ -34,7 +33,6 @@ import {StorageServiceModule} from  "angular-webstorage-service";
     FormsModule,
     AppRoutingModule,
     HttpClientModule,
-    FontAwesomeModule,
     StorageServiceModule
   ],
   entryComponents: [
