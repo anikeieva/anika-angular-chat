@@ -14,6 +14,7 @@ import {SocketService} from "../../shared/servises/socket.service";
 import {MatList, MatListItem} from "@angular/material";
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
 import {USER_STORAGE_TOKEN} from "../../shared/model/userStorageToken";
+import {take} from "rxjs/operators";
 
 @Component({
   selector: 'app-main-chat',
@@ -68,7 +69,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
   private getUser() {
     this.sharedService.getUser().subscribe(user => this.user = user);
-    this.subscription = this.sharedService.listenUser().subscribe(paramBefore => this.onEditUser(paramBefore));
+    this.subscription = this.sharedService.listenUser().pipe(take(1)).subscribe(paramBefore => this.onEditUser(paramBefore));
     if (!this.user) {
       this.user = this.storage.get(USER_STORAGE_TOKEN);
     }
@@ -100,24 +101,33 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   }
 
   onEditUser(param): void {
-    console.log('user: ' ,this.user);
-    this.timeNow = new Date();
-    // this.user = param.paramAfter;
-    for (let key in this.user) {
-       this.user[key] = param.paramAfter[key];
-    }
-    this.user.action.edit = true;
 
-    if (this.user.action.joined === true &&
-      param.paramBefore.firstName !== this.user.firstName ||
-      param.paramBefore.lastName !== this.user.lastName) {
+    if (param) {
+      console.log('before: ', param);
+      console.log('user: ' ,this.user);
 
-      const messageContent = `${param.paramBefore.firstName} ${param.paramBefore.lastName} already is ${this.user.firstName} ${this.user.lastName}`;
-      this.message = new Message(this.user, messageContent, this.timeNow, 'edit');
-      this.sendNotification(this.message);
-      console.log('edit messages: ',this.messages);//
+      this.timeNow = new Date();
+
+      for (let key in this.user) {
+        this.user[key] = param.paramAfter[key];
+      }
+      this.user.action.edit = true;
+
+
+      if (this.user.action.joined === true &&
+        param.paramBefore.firstName !== this.user.firstName ||
+        param.paramBefore.lastName !== this.user.lastName) {
+
+        const messageContent = `${param.paramBefore.firstName} ${param.paramBefore.lastName} already is ${this.user.firstName} ${this.user.lastName}`;
+        this.message = new Message(this.user, messageContent, this.timeNow, 'edit');
+        console.log(this.message);
+        this.sendNotification(this.message);
+        console.log('edit messages: ',this.messages);
+      }
+
+      // this.subscription.unsubscribe();
+      this.sharedService.editUserClear();
     }
-    this.subscription.unsubscribe();
   }
 
   sendNotification(message): void {

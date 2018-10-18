@@ -23,11 +23,17 @@ export class ChooseAvatarComponent implements OnInit {
               private  socketService: SocketService) {}
 
   ngOnInit() {
-    this.sharedService.getUser().subscribe(user => this.user = user);
+    // this.sharedService.getUser().subscribe(user => this.user = user);
 
     if (!this.user) {
       this.user = this.storage.get(USER_STORAGE_TOKEN);
     }
+
+    this.socketService.onUser().subscribe((user: User) => {
+      this.user = user;
+      this.sharedService.setUser(user);
+    });
+
     this.storage.set(USER_STORAGE_TOKEN, this.user);
 
     for (let n = 0; n <= this.maxAvatarsNumbers; n++) {
@@ -39,6 +45,7 @@ export class ChooseAvatarComponent implements OnInit {
     if (this.user.avatar !== avatar) {
       this.user.avatar = avatar;
 
+      console.log('user, def avatar: ', this.user);
       this.socketService.sendUser(this.user);
       this.storage.set(USER_STORAGE_TOKEN, this.user);
     }

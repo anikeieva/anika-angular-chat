@@ -105,9 +105,9 @@ export class UserParamComponent implements OnInit {
     this.user.action = this.currentAction;
     this.user.action.edit = true;
 
+    this.socketService.sendUser(this.user);
     console.log(this.user);
 
-    this.socketService.sendUser(this.user);
 
     const param: object = {
       paramBefore: this.userParametersBeforeEdit,
@@ -140,8 +140,8 @@ export class UserParamComponent implements OnInit {
 
       this.user.avatar = this.selectedAvatar;
 
+      console.log('user, own avatar:', this.user);
       this.socketService.sendUser(this.user);
-      console.log(this.user);
       this.storage.set(USER_STORAGE_TOKEN, this.user);
     };
   }
