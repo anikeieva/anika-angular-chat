@@ -1,7 +1,6 @@
 import {EventEmitter, Injectable, Output} from '@angular/core';
 import {User} from '../model/user';
 import {Observable, of, Subject} from 'rxjs';
-import {take} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'

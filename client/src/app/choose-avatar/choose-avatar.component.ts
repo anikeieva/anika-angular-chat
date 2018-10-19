@@ -48,6 +48,7 @@ export class ChooseAvatarComponent implements OnInit {
       console.log('user, def avatar: ', this.user);
       this.socketService.sendUser(this.user);
       this.storage.set(USER_STORAGE_TOKEN, this.user);
+      this.sharedService.editUser(null);
     }
    }
 

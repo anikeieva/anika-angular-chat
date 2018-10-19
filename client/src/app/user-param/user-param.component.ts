@@ -143,6 +143,7 @@ export class UserParamComponent implements OnInit {
       console.log('user, own avatar:', this.user);
       this.socketService.sendUser(this.user);
       this.storage.set(USER_STORAGE_TOKEN, this.user);
+      this.sharedService.editUser(null);
     };
   }
 
