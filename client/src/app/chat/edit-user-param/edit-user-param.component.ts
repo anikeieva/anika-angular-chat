@@ -21,12 +21,12 @@ export class EditUserParamComponent implements OnInit {
   ngOnInit() {
     if (!this.user) {
       this.user = this.storage.get(USER_STORAGE_TOKEN);
-    } else {
-      this.socketService.onUser().subscribe((user: User) => {
-        this.user = user;
-        this.sharedService.setUser(user);
-      });
     }
+
+    this.socketService.onUser().subscribe((user: User) => {
+      this.user = user;
+      this.sharedService.setUser(user);
+    });
 
     this.storage.set(USER_STORAGE_TOKEN, this.user);
   }

@@ -97,6 +97,7 @@ export class UserParamComponent implements OnInit {
         this.user[key] = this.userParameters.value[key];
       }
     }
+    console.log('bef: ', this.user);
 
     if (this.userParametersBeforeEdit.gender !== this.user.gender) {
       this.user.avatar = `src/app/images/avatars/${this.user.gender}/${this.getRandomInt(3)}.png`;
@@ -105,7 +106,10 @@ export class UserParamComponent implements OnInit {
     this.user.action = this.currentAction;
     this.user.action.edit = true;
 
+    console.log('bef2: ', this.user);
+
     this.socketService.sendUser(this.user);
+
     console.log(this.user);
 
 

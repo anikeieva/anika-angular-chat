@@ -77,6 +77,9 @@ export class ChatServer {
 
             socket.on('user', (user: User) => {
 
+                console.log('user.id', user.id);
+                console.log('change id: ', this.users.some(item => item.id === user.id ));
+
                if (this.users.some(item => item.id === user.id )) {
                    this.users.forEach((item, i, users) => {
                       if (item.id === user.id) {

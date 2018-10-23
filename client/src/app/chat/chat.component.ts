@@ -21,25 +21,29 @@ export class ChatComponent implements OnInit {
               private  socketService: SocketService) {
 
     this.mainChatInfo = new ChatsInfo('Main chat', 'src/app/images/chat/chat.png', 'Online chat');
+    this.sharedService.listenUser().pipe(take(1)).subscribe(paramBefore => {
+      this.socketService.onUser().subscribe((user: User) => {
+        this.user = user;
+        this.sharedService.setUser(user);
+      });
+    });
 
     console.log(this.user);
   }
 
   ngOnInit() {
 
-    this.sharedService.listenUser().pipe(take(1)).subscribe(paramBefore => {
-      this.socketService.onUser().subscribe((user: User) => {
-        this.user = user;
-      });
+    this.socketService.onUser().subscribe((user: User) => {
+      console.log(this.user);
+      this.user = user;
+      console.log(user);
+      this.storage.set(USER_STORAGE_TOKEN, this.user);
+      this.sharedService.setUser(user);
     });
 
     if (!this.user) {
       this.user = this.storage.get(USER_STORAGE_TOKEN);
     }
-
-    this.socketService.onUser().subscribe((user: User) => {
-      this.user = user;
-    });
 
     this.storage.set(USER_STORAGE_TOKEN, this.user);
 
