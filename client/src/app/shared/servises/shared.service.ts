@@ -1,6 +1,6 @@
-import {EventEmitter, Injectable, Output} from '@angular/core';
+import {EventEmitter, Inject, Injectable, Output} from '@angular/core';
 import {User} from '../model/user';
-import {Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, of} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,9 +8,10 @@ import {Observable, of, Subject} from 'rxjs';
 export class SharedService {
   public user: User;
   @Output() public updateUser: EventEmitter<any> = new EventEmitter();
-  private listenerUser = new Subject<any>();
+  private listenerUser: BehaviorSubject<any> = new BehaviorSubject<any>([]);
 
-  constructor() { }
+  constructor() {
+  }
 
   listenUser(): Observable<any> {
     return this.listenerUser.asObservable();
@@ -21,7 +22,7 @@ export class SharedService {
   }
 
   editUserClear(): void {
-    this.listenerUser.next();
+    this.listenerUser.next(null);
   }
 
   setUser(data: any) {

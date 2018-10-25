@@ -113,6 +113,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
       for (let key in this.user) {
         this.user[key] = param.paramAfter[key];
       }
+      console.log('user: ' , this.user);
       this.user.action.edit = true;
 
 
