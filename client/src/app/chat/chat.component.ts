@@ -5,7 +5,6 @@ import {ChatsInfo} from '../shared/model/chatsInfo';
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
 import {USER_STORAGE_TOKEN} from "../shared/model/userStorageToken";
 import {SocketService} from "../shared/servises/socket.service";
-import {take} from "rxjs/operators";
 
 @Component({
   selector: 'app-chat',
@@ -21,32 +20,29 @@ export class ChatComponent implements OnInit {
               private  socketService: SocketService) {
 
     this.mainChatInfo = new ChatsInfo('Main chat', 'src/app/images/chat/chat.png', 'Online chat');
-    this.sharedService.listenUser().pipe(take(1)).subscribe(paramBefore => {
-      this.socketService.onUser().subscribe((user: User) => {
-        this.user = user;
-        this.sharedService.setUser(user);
-      });
-    });
 
     console.log(this.user);
   }
 
   ngOnInit() {
 
-    this.socketService.onUser().subscribe((user: User) => {
-      console.log(this.user);
-      this.user = user;
-      console.log(user);
-      this.storage.set(USER_STORAGE_TOKEN, this.user);
-      this.sharedService.setUser(user);
+    this.sharedService.listenUser().subscribe(paramBefore => {
+      this.getUser();
     });
 
-    if (!this.user) {
-      this.user = this.storage.get(USER_STORAGE_TOKEN);
-    }
+    this.getUser();
 
-    this.storage.set(USER_STORAGE_TOKEN, this.user);
+  }
 
-    console.log(this.user);
+  getUser() {
+    this.socketService.onUser().subscribe((user: User) => {
+      this.user = user;
+      this.storage.set(USER_STORAGE_TOKEN, this.user);
+      this.sharedService.setUser(user);
+    }, (err) => {
+      if (err) {
+        this.user = this.storage.get(USER_STORAGE_TOKEN);
+      }
+    });
   }
 }

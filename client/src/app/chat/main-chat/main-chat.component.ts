@@ -102,6 +102,8 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
   onEditUser(param): void {
 
+    console.log(param);
+
     if (param) {
       console.log('before: ', param);
       console.log('user: ' ,this.user);

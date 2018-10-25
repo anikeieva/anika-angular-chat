@@ -78,8 +78,6 @@ export class UserParamComponent implements OnInit {
     this.socketService.sendUser(this.user);
     this.sharedService.setUser(this.user);
     this.sharedService.updateUser.emit(this.user);
-
-    this.storage.set(USER_STORAGE_TOKEN, this.user);
   }
 
   private getRandomInt(max: number) {
@@ -87,6 +85,7 @@ export class UserParamComponent implements OnInit {
   }
 
   onSave() {
+
     console.log(this.userBeforeEdit);
     console.log(this.userParametersBeforeEdit);
     this.currentAction = this.userBeforeEdit.action;
@@ -106,20 +105,20 @@ export class UserParamComponent implements OnInit {
     this.user.action = this.currentAction;
     this.user.action.edit = true;
 
-    console.log('bef2: ', this.user);
-
-    this.socketService.sendUser(this.user);
-
     console.log(this.user);
-
 
     const param: object = {
       paramBefore: this.userParametersBeforeEdit,
       paramAfter: this.user
-    }
-    this.sharedService.editUser(param);
+    };
 
+    console.log('param', param);
+
+    this.socketService.initSocket();
+    this.socketService.sendUser(this.user);
+    this.sharedService.editUser(param);
     this.storage.set(USER_STORAGE_TOKEN, this.user);
+
   }
 
   isChecked(gender: string) {

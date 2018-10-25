@@ -19,18 +19,25 @@ export class EditUserParamComponent implements OnInit {
               private socketService: SocketService) { }
 
   ngOnInit() {
+
     if (!this.user) {
       this.user = this.storage.get(USER_STORAGE_TOKEN);
     }
 
-    this.socketService.onUser().subscribe((user: User) => {
-      this.user = user;
-      this.sharedService.setUser(user);
-    });
+    this.getUser();
 
-    this.storage.set(USER_STORAGE_TOKEN, this.user);
   }
 
-
+  getUser() {
+    this.socketService.onUser().subscribe((user: User) => {
+      this.user = user;
+      this.storage.set(USER_STORAGE_TOKEN, this.user);
+      this.sharedService.setUser(user);
+    }, (err) => {
+      if (err) {
+        this.user = this.storage.get(USER_STORAGE_TOKEN);
+      }
+    });
+  }
 
 }
