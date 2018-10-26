@@ -14,6 +14,7 @@ import {WelcomePageComponent} from './welcome-page/welcome-page.component';
 import {HttpClientModule} from "@angular/common/http";
 import {ChooseAvatarComponent} from "./choose-avatar/choose-avatar.component";
 import {StorageServiceModule} from  "angular-webstorage-service";
+import {UserLogInComponent} from './user-log-in/user-log-in.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import {StorageServiceModule} from  "angular-webstorage-service";
     MainChatComponent,
     EditUserParamComponent,
     WelcomePageComponent,
-    ChooseAvatarComponent
+    ChooseAvatarComponent,
+    UserLogInComponent
   ],
   imports: [
     BrowserModule,

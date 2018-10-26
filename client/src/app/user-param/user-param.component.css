@@ -1,7 +1,8 @@
 .welcome-component {
   max-width: 400px;
-  width: 100%;
-  margin: 50px auto;
+  /*width: 100%;*/
+  float: left;
+  /*margin: 50px auto;*/
   display: grid;
   align-content: center;
 }

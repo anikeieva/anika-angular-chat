@@ -4,6 +4,7 @@ import * as socketIo from 'socket.io-client'
 import {Message} from "../model/message";
 import {Observable} from "rxjs";
 import {User} from "../model/user";
+import {UserLogInParam} from "../model/userLogInParam";
 
 const SERVER_URL = 'http://localhost:8080';
 
@@ -45,6 +46,22 @@ export class SocketService {
   public onUser(): Observable<User> {
     return new Observable<User>(observer => {
       this.socket.on('user', (user: User) => observer.next(user));
+    })
+  }
+
+  public sendUserLogInParam (userLogInParam: UserLogInParam): void {
+    this.socket.emit('userLogInParam', userLogInParam);
+  }
+
+  public onUserLogIn(): Observable<User> {
+    return new Observable<User>(observer => {
+      this.socket.on('userLogIn', (user: User) => observer.next(user));
+    })
+  }
+
+  public onUserNotLogIn(): Observable<string> {
+    return new Observable<string>(observer => {
+      this.socket.on('userNotLogIn', (userNotLogIn: string) => observer.next(userNotLogIn));
     })
   }
 }
