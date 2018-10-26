@@ -8,7 +8,7 @@ import {BehaviorSubject, Observable, of} from 'rxjs';
 export class SharedService {
   public user: User;
   @Output() public updateUser: EventEmitter<any> = new EventEmitter();
-  private listenerUser: BehaviorSubject<any> = new BehaviorSubject<any>([]);
+  private listenerUser: BehaviorSubject<any> = new BehaviorSubject<any>({});
 
   constructor() {
   }

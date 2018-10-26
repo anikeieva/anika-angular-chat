@@ -104,7 +104,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
     console.log(param);
 
-    if (param) {
+    if (param !== null && param.paramBefore && param.paramAfter) {
       console.log('before: ', param);
       console.log('user: ' ,this.user);
 
@@ -120,6 +120,8 @@ export class MainChatComponent implements OnInit, AfterViewInit {
       if (this.user.action.joined === true &&
         param.paramBefore.firstName !== this.user.firstName ||
         param.paramBefore.lastName !== this.user.lastName) {
+
+        console.log(this.user);
 
         const messageContent = `${param.paramBefore.firstName} ${param.paramBefore.lastName} already is ${this.user.firstName} ${this.user.lastName}`;
         this.message = new Message(this.user, messageContent, this.timeNow, 'edit');
