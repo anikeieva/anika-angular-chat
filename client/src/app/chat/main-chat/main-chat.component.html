@@ -32,7 +32,8 @@
     <mat-icon>create</mat-icon>
     <mat-form-field class="message-input">
       <mat-label>Type a message</mat-label>
-      <textarea matInput (keyup.enter)="sendMessage(messageContent)" [(ngModel)]="messageContent" autofocus autocomplete="off"></textarea>
+      <textarea matInput mat-autosize (keyup.enter)="sendMessage(messageContent)" [(ngModel)]="messageContent"
+                autofocus autocomplete="off"></textarea>
     </mat-form-field>
   </mat-card-footer>
 </mat-card>
