@@ -3,8 +3,9 @@ import * as express from 'express';
 import * as socketIo from 'socket.io';
 import * as fs from 'fs';
 
-import { Message } from './model';
-import {User} from "../../client/src/app/shared/model/user";
+import {Message} from './model';
+import {User} from "./model/user";
+import {UserLogInParam} from "./model/userLogInParam";
 
 export class ChatServer {
     public static readonly PORT:number = 8080;
@@ -74,6 +75,29 @@ export class ChatServer {
 
         this.io.on('connect', (socket: any) => {
             console.log('Connected client on port %s.', this.port);
+
+            socket.on('userLogInParam', (userLogInParam: UserLogInParam) => {
+
+                let user: User;
+
+                if (this.users.some(item => item.login === userLogInParam.login && item.password === userLogInParam.password )) {
+
+                    this.users.forEach((item) => {
+                        if (item.login === userLogInParam.login && item.password === userLogInParam.password) {
+                            user = item;
+                        }
+                    });
+                }
+
+                if (user) {
+                    console.log('User log in: ', user);
+                    this.io.emit('userLogIn', user);
+                    this.io.emit('user', user);
+                } else {
+                    console.log('User not log in!');
+                    this.io.emit('userNotLogIn', 'userNotLogIn');
+                }
+            });
 
             socket.on('user', (user: User) => {
 

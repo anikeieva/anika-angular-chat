@@ -40,6 +40,7 @@
   margin-bottom: 15px;
   margin-right: 15px;
   margin-left: 60px;
+  word-break: break-word;
 }
 
 .message-item-user-name {
@@ -50,7 +51,7 @@
 .message-item-time {
   position: absolute;
   right: 25px;
-  bottom: 20px;
+  top: 20px;
   color: gray;
 }
 

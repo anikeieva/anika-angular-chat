@@ -15,6 +15,7 @@ import {HttpClientModule} from "@angular/common/http";
 import {ChooseAvatarComponent} from "./choose-avatar/choose-avatar.component";
 import {StorageServiceModule} from  "angular-webstorage-service";
 import {UserLogInComponent} from './user-log-in/user-log-in.component';
+import {TextareaAutosizeModule} from "ngx-textarea-autosize";
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import {UserLogInComponent} from './user-log-in/user-log-in.component';
     FormsModule,
     AppRoutingModule,
     HttpClientModule,
-    StorageServiceModule
+    StorageServiceModule,
+    TextareaAutosizeModule
   ],
   entryComponents: [
     ChooseAvatarComponent
