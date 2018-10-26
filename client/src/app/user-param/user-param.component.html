@@ -6,7 +6,7 @@
 
     <mat-form-field appearance="legacy">
       <mat-label>First name</mat-label>
-      <input matInput formControlName="firstName" required autofocus [value]="(isEdit) ? userBeforeEdit.firstName : ''">
+      <input matInput formControlName="firstName" required [value]="(isEdit) ? userBeforeEdit.firstName : ''">
     </mat-form-field>
 
     <mat-form-field appearance="legacy">

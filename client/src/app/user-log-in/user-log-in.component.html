@@ -1,6 +1,6 @@
 <mat-card class="mat-card welcome-log-in">
   <mat-card-header>
-    <mat-card-title>Do you already have own account? Log in</mat-card-title>
+    <mat-card-title>Do you already have you own account? Log in</mat-card-title>
   </mat-card-header>
 
   <mat-card-content>
@@ -12,6 +12,8 @@
       <mat-form-field>
         <input matInput type="password" placeholder="password" name="password" formControlName="password" required>
       </mat-form-field>
+
+      <mat-error *ngIf="userIsAuthorized === false">Pair login password not right, try again</mat-error>
 
       <button mat-raised-button color="primary" class="welcome-log-in-button" [disabled]="!isEnabledLogIn()" (click)="logIn()">Log in</button>
     </form>
