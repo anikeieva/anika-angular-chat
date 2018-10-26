@@ -32,6 +32,10 @@ export class UserLogInComponent implements OnInit {
 
     this.socketService.onUserNotLogIn().subscribe((userNotLogIn) => {
       this.userIsAuthorized = false;
+      this.userLogInFormParam.setValue({
+        login: null,
+        password: null
+      });
       console.log('user is not authorized');
     });
 
@@ -46,10 +50,5 @@ export class UserLogInComponent implements OnInit {
 
     this.userLogInParam = this.userLogInFormParam.value;
     this.socketService.sendUserLogInParam(this.userLogInParam);
-
-    this.userLogInFormParam.setValue({
-      login: null,
-      password: null
-    });
   }
 }

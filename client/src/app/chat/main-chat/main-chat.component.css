@@ -1,15 +1,13 @@
-.mat-card {
+.chat-container {
   position: relative;
   width: 100%;
-}
-.chat-container {
   height: 100%;
 }
 .message-input {
   width: 100%;
   max-width: 800px;
 }
-.mat-card-footer {
+.chat-container-footer {
   position: fixed;
   width: 100%;
   bottom: 60px;
@@ -22,6 +20,8 @@
 }
 .action-line {
   text-align: center;
+  font-size: 15.5px;
+  color: #373d46;
 }
 
 .message-list {
@@ -34,9 +34,12 @@
 }
 
 .message-item {
+  position: relative;
   background-color: #4c62691a;
   border-radius: 10px;
   margin-bottom: 15px;
+  margin-right: 15px;
+  margin-left: 60px;
 }
 
 .message-item-user-name {
@@ -45,9 +48,10 @@
   margin-bottom: 10px!important;
 }
 .message-item-time {
-  position: relative;
-  right: 0;
-  top: 0;
+  position: absolute;
+  right: 25px;
+  bottom: 20px;
+  color: gray;
 }
 
 .chat-container-join {
@@ -64,4 +68,21 @@
   font-size: 30px;
   color: white;
   background-color: blueviolet;
+}
+
+.message-list-item {
+  padding: 20px;
+}
+
+.message-list-item-avatar {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  bottom: 0;
+  left: -60px;
+}
+
+.message-list-item-title {
+  margin: 0;
+  color: #905151;
 }

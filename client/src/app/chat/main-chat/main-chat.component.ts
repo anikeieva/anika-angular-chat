@@ -30,8 +30,8 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   public timeNow: Date;
   public subscription;
 
-  @ViewChild(MatList, { read: ElementRef }) matList: ElementRef;
-  @ViewChildren(MatListItem, { read: ElementRef }) matListItems: QueryList<MatListItem>;
+  @ViewChild('messageList') messageList: ElementRef;
+  @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;
 
   constructor(private sharedService: SharedService,
               private socketService: SocketService,
@@ -46,14 +46,14 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.matListItems.changes.subscribe(elements => {
+    this.messageListItem.changes.subscribe(elements => {
       this.scrollToBottom();
     });
   }
 
   private scrollToBottom(): void {
     try {
-      this.matList.nativeElement.scrollTop = this.matList.nativeElement.scrollHeight;
+      this.messageList.nativeElement.scrollTop = this.messageList.nativeElement.scrollHeight;
     } catch (err) {
     }
   }
