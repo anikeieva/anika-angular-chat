@@ -3,14 +3,28 @@
 
 * {
   box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
   padding: 0;
 }
+
+html {
+  height: 100%;
+}
+
+html, body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 body {
-    margin: 0;
-    padding: 0;
+  min-width: 320px;
+  height: fit-content;
 }
 
-.mat-dialog-container {
-  padding: 0!important;
+body::after {
+  display: block;
+  content: '';
+  clear: both;
 }
-

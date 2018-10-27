@@ -1,0 +1,15 @@
+mat-sidenav-container {
+  background-color: #8d63ad;
+  padding: 32px 30px;
+  height: 103px;
+}
+.mat-sidenav-title {
+  font-size: 23px;
+  color: white;
+  vertical-align: middle;
+}
+
+.mat-icon {
+  font-size: 30px;
+  margin-right: 15px;
+}
