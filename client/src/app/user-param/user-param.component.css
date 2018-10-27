@@ -5,6 +5,7 @@
   /*margin: 50px auto;*/
   display: grid;
   align-content: center;
+  background-color: #9300ff05;
 }
 
 .edit-user-component {
@@ -30,6 +31,10 @@
 
 .mat-radio-button:first-child {
   margin-right: 20px;
+}
+
+.welcome-component .mat-radio-button {
+  color: #8d63ac;
 }
 
 .submit-button {

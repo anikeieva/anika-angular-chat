@@ -1,4 +1,14 @@
 <div class="welcome-component-container">
-  <app-user-param [title]="'Sign up'" [submitTitle]="'Sign up'" [isEdit]="false"></app-user-param>
-  <app-user-log-in></app-user-log-in>
+  <div class="welcome-component__sign-container">
+    <div class="sign-container__switch-block">
+      <a class="switch-block__button" (click)="signUp()" [style.color]="signUpButtonColor"
+      [style.background]="signUpButtonBackground">Sign up</a>
+      <a class="switch-block__button" (click)="signIn()" [style.color]="signInButtonColor"
+      [style.background]="signInButtonBackground">Sign in</a>
+    </div>
+    <div class="sign-container__main-block">
+      <app-user-param [title]="'Sign up'" [submitTitle]="'Sign up'" [isEdit]="false" *ngIf="isSignUp"></app-user-param>
+      <app-user-log-in *ngIf="!isSignUp"></app-user-log-in>
+    </div>
+  </div>
 </div>

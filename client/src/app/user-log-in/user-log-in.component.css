@@ -1,8 +1,9 @@
 .welcome-log-in {
   max-width: 400px;
-  float: right;
+  /*float: right;*/
   display: grid;
   align-content: center;
+  background-color: #9300ff05;
 }
 
 .mat-form-field {
