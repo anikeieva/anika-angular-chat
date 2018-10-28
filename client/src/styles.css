@@ -23,7 +23,7 @@ body {
   height: fit-content;
 }
 
-body::after {
+body::after, div::after {
   display: block;
   content: '';
   clear: both;

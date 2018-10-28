@@ -1,6 +1,6 @@
 <mat-card [class]="(isEdit) ? 'mat-card edit-user-component' : 'mat-card welcome-component'">
   <mat-card-header>
-    <mat-card-title>{{title}}</mat-card-title>
+    <mat-card-title [class]="(isEdit) ? 'mat-card-title edit-user-component__title' : 'mat-card-title welcome-component_title'">{{title}}</mat-card-title>
   </mat-card-header>
   <form [formGroup]="userParameters">
 
@@ -34,7 +34,7 @@
     <button mat-raised-button *ngIf="isEdit" color="primary" class="submit-button" (click)="onSave()">{{submitTitle}}</button>
   </form>
   <div class="change-avatar" *ngIf="isEdit">
-    <h2>Change Avatar</h2>
+    <h2 class="change-avatar__title">Change Avatar</h2>
     <div class="change-avatar-item">
       <p class="choose-avatar-text">Choose your own</p>
       <label for="choose-avatar" class="circle-choose-avatar">

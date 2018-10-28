@@ -1,8 +1,6 @@
 .welcome-component {
   max-width: 400px;
-  /*width: 100%;*/
   float: left;
-  /*margin: 50px auto;*/
   display: grid;
   align-content: center;
   background-color: #9300ff05;
@@ -10,7 +8,7 @@
 
 .edit-user-component {
   min-height: calc(100vh - 66px - 100px);
-  overflow-y: scroll;
+  overflow-y: auto;
   padding: 50px;
   position: absolute;
   top: 0;
@@ -18,15 +16,17 @@
 }
 
 .mat-card-title {
-  font-size: 28px!important;
+  font-size: 20px!important;
   color: blueviolet;
+  margin-bottom: 10px;
 }
+
 .mat-form-field {
   width: 100%;
 }
 
 .mat-radio-button {
-  margin: 10px 0 20px 0;
+  margin: 10px 0;
 }
 
 .mat-radio-button:first-child {
@@ -42,7 +42,8 @@
   margin: 10px auto 0 auto;
 }
 
-h2 {
+.change-avatar__title {
+  font-size: 18px;
   margin: 10px 0;
 }
 
@@ -90,6 +91,21 @@ h2 {
   display: none;
 }
 
-input, mat-radio-button {
-  font-size: 14px;
+.mat-radio-button, .mat-form-field {
+  font-size: 14px!important;
+}
+
+.mat-form-field-wrapper {
+  padding-bottom: 5px!important;
+}
+
+.edit-user-component__title {
+  display: block;
+  text-align: center;
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+
+::ng-deep .edit-user-component .mat-card-header-text {
+  margin: 0 auto;
 }
