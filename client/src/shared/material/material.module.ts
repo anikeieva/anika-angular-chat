@@ -19,7 +19,7 @@ import {
     MatCardModule,
     MatButtonToggleModule,
     MatIconModule,
-    MatMenuModule, MatSidenavModule, MatToolbarModule, MatListModule, MatDialogModule
+    MatMenuModule, MatSidenavModule, MatToolbarModule, MatListModule, MatDialogModule, MatButtonToggleModule
   ],
   exports: [
     MatInputModule,
@@ -28,7 +28,7 @@ import {
     MatCardModule,
     MatButtonToggleModule,
     MatIconModule,
-    MatMenuModule, MatSidenavModule, MatToolbarModule, MatListModule, MatDialogModule
+    MatMenuModule, MatSidenavModule, MatToolbarModule, MatListModule, MatDialogModule, MatButtonToggleModule
   ],
   declarations: []
 })

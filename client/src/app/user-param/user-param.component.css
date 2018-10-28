@@ -3,7 +3,6 @@
   float: left;
   display: grid;
   align-content: center;
-  background-color: #9300ff05;
 }
 
 .edit-user-component {
@@ -13,12 +12,6 @@
   position: absolute;
   top: 0;
   bottom: 66px;
-}
-
-.mat-card-title {
-  font-size: 20px!important;
-  color: blueviolet;
-  margin-bottom: 10px;
 }
 
 .mat-form-field {
@@ -108,4 +101,9 @@
 
 ::ng-deep .edit-user-component .mat-card-header-text {
   margin: 0 auto;
+}
+
+.welcome-component__title {
+  color: dimgrey;
+  font-size: 16px;
 }

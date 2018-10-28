@@ -3,7 +3,6 @@
   /*float: right;*/
   display: grid;
   align-content: center;
-  background-color: #9300ff05;
 }
 
 .mat-form-field {
@@ -18,9 +17,4 @@
 .mat-card-title {
   color: dimgrey;
   font-size: 16px;
-}
-
-.mat-card-title-span {
-  color: blueviolet;
-  font-size: 17px;
 }

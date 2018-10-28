@@ -12,12 +12,8 @@ export class WelcomePageComponent implements OnInit {
   public isSignUp: boolean = true;
   public activeButtonColor: string = '#8a2ae2';
   public passiveButtonColor: string = '#767676';
-  public activeButtonBackground: string = '#9300ff05';
-  public passiveButtonBackground: string = 'white';
   public signUpButtonColor: string = this.activeButtonColor;
   public signInButtonColor: string = this.passiveButtonColor;
-  public signUpButtonBackground: string = this.activeButtonBackground;
-  public signInButtonBackground: string = this.passiveButtonBackground;
 
   constructor(private socketService: SocketService,
               @Inject(SESSION_STORAGE) private storage: StorageService) { }
@@ -32,9 +28,6 @@ export class WelcomePageComponent implements OnInit {
 
     this.signUpButtonColor = this.activeButtonColor;
     this.signInButtonColor = this.passiveButtonColor;
-
-    this.signUpButtonBackground = this.activeButtonBackground;
-    this.signInButtonBackground = this.passiveButtonBackground;
   }
 
   signIn() {
@@ -42,9 +35,6 @@ export class WelcomePageComponent implements OnInit {
 
     this.signInButtonColor = this.activeButtonColor;
     this.signUpButtonColor = this.passiveButtonColor;
-
-    this.signInButtonBackground = this.activeButtonBackground;
-    this.signUpButtonBackground = this.passiveButtonBackground;
   }
 
 }
