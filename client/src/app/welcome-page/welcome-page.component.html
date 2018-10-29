@@ -1,15 +1,21 @@
 <div class="welcome-component-container">
-  <div class="welcome-component__sign-container">
-    <mat-button-toggle-group class="sign-container__switch-block">
-      <mat-button-toggle class="switch-block__button" (click)="signUp()" [style.color]="signUpButtonColor"
-                         value="sign up">Sign up</mat-button-toggle>
-      <mat-button-toggle class="switch-block__button" (click)="signIn()" [style.color]="signInButtonColor"
-                         value="sign in">Sign in</mat-button-toggle>
-    </mat-button-toggle-group>
+  <div class="welcome-component-container-block">
+    <div class="welcome-component__sign-container">
 
-    <div class="sign-container__main-block">
-      <app-user-param [title]="'Is this your first time here? Sign up and join to chat'" [submitTitle]="'Sign up'" [isEdit]="false" *ngIf="isSignUp"></app-user-param>
-      <app-user-log-in *ngIf="!isSignUp"></app-user-log-in>
+      <mat-button-toggle-group class="sign-container__switch-block" value="sign-up">
+
+        <mat-button-toggle class="switch-block__button" (click)="signUp()" [style.color]="signUpButtonColor"
+                           value="sign-up">Sign up</mat-button-toggle>
+
+        <mat-button-toggle class="switch-block__button" (click)="signIn()" [style.color]="signInButtonColor"
+                           value="sign-in">Sign in</mat-button-toggle>
+
+      </mat-button-toggle-group>
+
+      <div class="sign-container__main-block">
+        <app-user-param [title]="'Is this your first time here? Sign up and join to chat'" [submitTitle]="'Sign up'" [isEdit]="false" *ngIf="isSignUp"></app-user-param>
+        <app-user-log-in *ngIf="!isSignUp"></app-user-log-in>
+      </div>
     </div>
   </div>
 </div>

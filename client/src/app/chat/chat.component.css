@@ -1,10 +1,12 @@
 .menu-button {
   margin-right: 35px;
 }
+
 .menu-button-icon {
   font-size: 36px;
   color: white;
 }
+
 .chat-container {
   width: calc(100% - 350px);
   position: fixed;

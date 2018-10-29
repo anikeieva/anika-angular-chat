@@ -2,6 +2,7 @@ mat-sidenav-container {
   background-color: #8d63ad;
   padding: 20px 30px;
   height: 79px;
+  z-index: 3;
 }
 .mat-sidenav-title {
   font-size: 23px;
