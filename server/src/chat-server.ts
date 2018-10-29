@@ -85,6 +85,7 @@ export class ChatServer {
                     this.users.forEach((item) => {
                         if (item.login === userLogInParam.login && item.password === userLogInParam.password) {
                             user = item;
+                            user.online = true;
                         }
                     });
                 }

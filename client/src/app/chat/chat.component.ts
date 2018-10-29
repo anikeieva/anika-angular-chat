@@ -45,4 +45,9 @@ export class ChatComponent implements OnInit {
       }
     });
   }
+
+  exit() {
+    this.user.online = false;
+    this.socketService.sendUser(this.user);
+  }
 }

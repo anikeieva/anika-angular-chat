@@ -98,13 +98,33 @@
   padding: 17px;
 }
 
-.message-list-item-avatar {
+.message-list-item__avatar {
   position: absolute;
-  width: 50px;
-  height: 50px;
   bottom: 0;
   left: -60px;
+  width: 50px;
+  height: 50px;
 }
+
+/*.avatar-block {*/
+  /*position: absolute;*/
+  /*bottom: 0;*/
+  /*left: -60px;*/
+/*}*/
+
+/*.avatar-block__avatar {*/
+  /*width: 50px;*/
+  /*height: 50px;*/
+/*}*/
+
+/*.avatar-block__online {*/
+  /*display: block;*/
+  /*float: none;*/
+  /*clear: both;*/
+  /*text-align: center;*/
+  /*color: #6e6675;*/
+  /*font-size: 13px;*/
+/*}*/
 
 .message-list-item-title {
   margin: 0 0 10px;

@@ -3,7 +3,7 @@
     <img mat-card-avatar class="user-avatar" [src]="user?.avatar || ''">
     <mat-card-title class="side-bar-title">{{user?.firstName}} {{user?.lastName}} {{user?.id}}</mat-card-title>
     <mat-card-subtitle class="side-bar-item" routerLink="edit-profile">Edit Profile</mat-card-subtitle>
-    <mat-card-subtitle class="side-bar-item" routerLink="/">Exit</mat-card-subtitle>
+    <mat-card-subtitle class="side-bar-item" routerLink="/" (click)="exit()">Exit</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
     <mat-card class="chat-item" routerLink="main-chat">

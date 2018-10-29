@@ -74,6 +74,7 @@ export class UserParamComponent implements OnInit {
       joined: false,
       sentMessage: false
     };
+    this.user.online = true;
 
     this.socketService.sendUser(this.user);
     this.sharedService.setUser(this.user);

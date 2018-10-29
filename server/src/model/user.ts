@@ -9,4 +9,5 @@ export interface User {
     avatar: string;
     action: UserAction;
     id: number;
+    online: boolean;
 }

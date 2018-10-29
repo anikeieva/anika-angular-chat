@@ -69,10 +69,23 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
   private getUser() {
     this.sharedService.getUser().subscribe(user => this.user = user);
+
     this.subscription = this.sharedService.listenUser().pipe(take(1)).subscribe(paramBefore => this.onEditUser(paramBefore));
+
     if (!this.user) {
       this.user = this.storage.get(USER_STORAGE_TOKEN);
     }
+
+    this.socketService.onUser().subscribe((user: User) => {
+      this.user = user;
+      this.storage.set(USER_STORAGE_TOKEN, this.user);
+      this.sharedService.setUser(user);
+    }, (err) => {
+      if (err) {
+        this.user = this.storage.get(USER_STORAGE_TOKEN);
+      }
+    });
+
     this.storage.set(USER_STORAGE_TOKEN, this.user);
   }
 
