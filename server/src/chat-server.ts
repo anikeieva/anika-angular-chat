@@ -6,7 +6,7 @@ import * as fs from 'fs';
 import {Message} from './model';
 import {User} from "./model/user";
 import {UserLogInParam} from "./model/userLogInParam";
-import {ChatRoom} from "./model/chat-room";
+import {ChatRoom, IChatRoomOptions} from "./model/chat-room";
 import {TypeChatRooms} from "./model/type-chat-rooms";
 
 export class ChatServer {
@@ -45,8 +45,17 @@ export class ChatServer {
     }
 
     private createChatRoom() {
-        this.mainChatRoom = new ChatRoom('main-chat', 'Main chat', 'src/app/images/chat/chat.png',
-            TypeChatRooms.chat, 'online chat', [], [], []);
+        const opt: IChatRoomOptions = {
+            id: 'main-chat',
+            name: 'Main chat',
+            avatar: 'src/app/images/chat/chat.png',
+            type: TypeChatRooms.chat,
+            lastMessage: 'online chat',
+            users: [],
+            activeUsers: [],
+            messages: []
+        };
+        this.mainChatRoom = new ChatRoom(opt);
     }
 
     private listen(): void {
