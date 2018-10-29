@@ -5,6 +5,7 @@ import {Message} from "../model/message";
 import {Observable} from "rxjs";
 import {User} from "../model/user";
 import {UserLogInParam} from "../model/userLogInParam";
+import {ChatRoom} from "../model/chat-room";
 
 const SERVER_URL = 'http://localhost:8080';
 
@@ -13,7 +14,7 @@ const SERVER_URL = 'http://localhost:8080';
 })
 export class SocketService {
 
-  private socket;
+  public socket;
 
   constructor() { }
 
@@ -62,6 +63,16 @@ export class SocketService {
   public onUserNotLogIn(): Observable<string> {
     return new Observable<string>(observer => {
       this.socket.on('userNotLogIn', (userNotLogIn: string) => observer.next(userNotLogIn));
+    })
+  }
+
+  public sendRequestForMainChatRoom(): void {
+    this.socket.emit('requestForMainChatRoom');
+  }
+
+  public onMainChatRoom(): Observable<ChatRoom> {
+    return new Observable<ChatRoom>(observer => {
+      this.socket.on('mainChatRoom', (mainChatRoom: ChatRoom) => observer.next(mainChatRoom));
     })
   }
 }

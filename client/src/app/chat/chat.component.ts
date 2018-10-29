@@ -1,10 +1,11 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {User} from '../shared/model/user';
 import {SharedService} from '../shared/servises/shared.service';
-import {ChatsInfo} from '../shared/model/chatsInfo';
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
 import {USER_STORAGE_TOKEN} from "../shared/model/userStorageToken";
 import {SocketService} from "../shared/servises/socket.service";
+import {ChatRoom} from "../shared/model/chat-room";
+import {MAIN_CHAT_STORAGE_TOKEN} from "../shared/model/mainChatStorageToken";
 
 @Component({
   selector: 'app-chat',
@@ -13,25 +14,41 @@ import {SocketService} from "../shared/servises/socket.service";
 })
 export class ChatComponent implements OnInit {
   public user: User;
-  public mainChatInfo: ChatsInfo;
+  public mainChatRoom: ChatRoom;
 
   constructor(private sharedService: SharedService,
               @Inject(SESSION_STORAGE) private storage: StorageService,
-              private  socketService: SocketService) {
-
-    this.mainChatInfo = new ChatsInfo('Main chat', 'src/app/images/chat/chat.png', 'Online chat');
-
-    console.log(this.user);
-  }
+              private  socketService: SocketService) {}
 
   ngOnInit() {
+    this.getChatRoom();
+    this.getUserAll();
+  }
 
+  getChatRoom() {
+    if (this.socketService.socket) {
+      this.socketService.sendRequestForMainChatRoom();
+    }
+
+    this.socketService.onMainChatRoom().subscribe(mainChatRoom => {
+      this.mainChatRoom = mainChatRoom;
+      this.storage.set(MAIN_CHAT_STORAGE_TOKEN, this.mainChatRoom);
+      console.log(this.mainChatRoom);
+    }, (err) => {
+      if (err) {
+        this.mainChatRoom = this.storage.get(MAIN_CHAT_STORAGE_TOKEN);
+      }
+    });
+
+    console.log(this.mainChatRoom);
+  }
+
+  getUserAll() {
     this.sharedService.listenUser().subscribe(paramBefore => {
       this.getUser();
     });
 
     this.getUser();
-
   }
 
   getUser() {
@@ -48,6 +65,7 @@ export class ChatComponent implements OnInit {
 
   exit() {
     this.user.online = false;
+    this.socketService.initSocket();
     this.socketService.sendUser(this.user);
   }
 }

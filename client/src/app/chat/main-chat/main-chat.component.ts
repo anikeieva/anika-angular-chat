@@ -11,10 +11,12 @@ import {User} from '../../shared/model/user';
 import {SharedService} from '../../shared/servises/shared.service';
 import {Message} from '../../shared/model/message';
 import {SocketService} from "../../shared/servises/socket.service";
-import {MatList, MatListItem} from "@angular/material";
+import {MatListItem} from "@angular/material";
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
 import {USER_STORAGE_TOKEN} from "../../shared/model/userStorageToken";
 import {take} from "rxjs/operators";
+import {ChatRoom} from "../../shared/model/chat-room";
+import {MAIN_CHAT_STORAGE_TOKEN} from "../../shared/model/mainChatStorageToken";
 
 @Component({
   selector: 'app-main-chat',
@@ -29,6 +31,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   public user: User;
   public timeNow: Date;
   public subscription;
+  public mainChatRoom: ChatRoom;
 
   @ViewChild('messageList') messageList: ElementRef;
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;
@@ -40,6 +43,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.getUser();
+    this.getChatRoom();
     this.initIoConnection();
     this.socketService.onMessages().subscribe((messages) => this.messages = messages);
     console.log('init messages: ',this.messages);
@@ -65,6 +69,24 @@ export class MainChatComponent implements OnInit, AfterViewInit {
       .subscribe((message: Message) => {
         this.messages.push(message);
       });
+  }
+
+  getChatRoom() {
+    if (this.socketService.socket) {
+      this.socketService.sendRequestForMainChatRoom();
+    }
+
+    this.socketService.onMainChatRoom().subscribe(mainChatRoom => {
+      this.mainChatRoom = mainChatRoom;
+      this.storage.set(MAIN_CHAT_STORAGE_TOKEN, this.mainChatRoom);
+      console.log(this.mainChatRoom);
+    }, (err) => {
+      if (err) {
+        this.mainChatRoom = this.storage.get(MAIN_CHAT_STORAGE_TOKEN);
+      }
+    });
+
+    console.log(this.mainChatRoom);
   }
 
   private getUser() {

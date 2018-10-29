@@ -1,4 +1,4 @@
-import { createServer, Server } from 'http';
+import {createServer, Server} from 'http';
 import * as express from 'express';
 import * as socketIo from 'socket.io';
 import * as fs from 'fs';
@@ -6,6 +6,8 @@ import * as fs from 'fs';
 import {Message} from './model';
 import {User} from "./model/user";
 import {UserLogInParam} from "./model/userLogInParam";
+import {ChatRoom} from "./model/chat-room";
+import {TypeChatRooms} from "./model/type-chat-rooms";
 
 export class ChatServer {
     public static readonly PORT:number = 8080;
@@ -15,6 +17,7 @@ export class ChatServer {
     private port: string | number;
     public messages: Array<Message>;
     public users: Array<User>;
+    public mainChatRoom: ChatRoom;
 
     constructor() {
         this.createApp();
@@ -22,6 +25,7 @@ export class ChatServer {
         this.createServer();
         this.sockets();
         this.listen();
+        this.createChatRoom();
     }
 
     private createApp(): void {
@@ -38,6 +42,11 @@ export class ChatServer {
 
     private sockets(): void {
         this.io = socketIo(this.server);
+    }
+
+    private createChatRoom() {
+        this.mainChatRoom = new ChatRoom('main-chat', 'Main chat', 'src/app/images/chat/chat.png',
+            TypeChatRooms.chat, 'online chat', [], [], []);
     }
 
     private listen(): void {
@@ -75,6 +84,10 @@ export class ChatServer {
 
         this.io.on('connect', (socket: any) => {
             console.log('Connected client on port %s.', this.port);
+
+            socket.on('requestForMainChatRoom', ( () => {
+                this.io.emit('mainChatRoom', this.mainChatRoom);
+            }));
 
             socket.on('userLogInParam', (userLogInParam: UserLogInParam) => {
 
