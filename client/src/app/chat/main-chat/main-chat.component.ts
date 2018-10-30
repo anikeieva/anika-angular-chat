@@ -128,6 +128,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   onJoin(): void {
     this.user.action.joined = true;
     this.storage.set(USER_STORAGE_TOKEN, this.user);
+    this.socketService.initSocket();
     this.socketService.sendUser(this.user);
     this.socketService.sendMainChatUser(this.user);
 
@@ -135,6 +136,9 @@ export class MainChatComponent implements OnInit, AfterViewInit {
     this.message = new Message(this.user, `${this.user.firstName} ${this.user.lastName} joined to conversation`, this.timeNow, 'joined');
     this.sendNotification(this.message);
     console.log('join messages: ',this.messages);
+
+    this.getChatRoom();
+    console.log(this.mainChatRoom);
   }
 
   onEditUser(param): void {
