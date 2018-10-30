@@ -45,7 +45,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
     this.getUser();
     this.getChatRoom();
     this.initIoConnection();
-    this.socketService.onMessages().subscribe((messages) => this.messages = messages);
+    this.socketService.onMainChatMessages().subscribe((messages) => this.messages = messages);
     console.log('init messages: ',this.messages);
   }
 
@@ -65,7 +65,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   private initIoConnection(): void {
     this.socketService.initSocket();
 
-    this.socketService.onMessage()
+    this.socketService.onMainChatMessage()
       .subscribe((message: Message) => {
         this.messages.push(message);
       });
@@ -119,7 +119,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
     this.timeNow = new Date();
     this.user.action.sentMessage = true;
     this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage');
-    this.socketService.send(this.message);
+    this.socketService.sendMainChatMessage(this.message);
 
     this.messageContent = null;
     console.log('sentMessage messages: ',this.messages);
@@ -129,6 +129,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
     this.user.action.joined = true;
     this.storage.set(USER_STORAGE_TOKEN, this.user);
     this.socketService.sendUser(this.user);
+    this.socketService.sendMainChatUser(this.user);
 
     this.timeNow = new Date();
     this.message = new Message(this.user, `${this.user.firstName} ${this.user.lastName} joined to conversation`, this.timeNow, 'joined');
@@ -166,12 +167,11 @@ export class MainChatComponent implements OnInit, AfterViewInit {
         console.log('edit messages: ',this.messages);
       }
 
-      // this.subscription.unsubscribe();
       this.sharedService.editUserClear();
     }
   }
 
   sendNotification(message): void {
-    this.socketService.send(message);
+    this.socketService.sendMainChatMessage(message);
   }
 }

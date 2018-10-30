@@ -23,8 +23,6 @@ export class ChooseAvatarComponent implements OnInit {
               private  socketService: SocketService) {}
 
   ngOnInit() {
-    // this.sharedService.getUser().subscribe(user => this.user = user);
-
     if (!this.user) {
       this.user = this.storage.get(USER_STORAGE_TOKEN);
     }
@@ -32,6 +30,10 @@ export class ChooseAvatarComponent implements OnInit {
     this.socketService.onUser().subscribe((user: User) => {
       this.user = user;
       this.sharedService.setUser(user);
+    }, (err) => {
+      if (err) {
+        this.user = this.storage.get(USER_STORAGE_TOKEN);
+      }
     });
 
     this.storage.set(USER_STORAGE_TOKEN, this.user);
@@ -46,7 +48,11 @@ export class ChooseAvatarComponent implements OnInit {
       this.user.avatar = avatar;
 
       console.log('user, def avatar: ', this.user);
+      this.socketService.initSocket();
       this.socketService.sendUser(this.user);
+      if (this.user.action.joined) {
+        this.socketService.sendMainChatUser(this.user);
+      }
       this.storage.set(USER_STORAGE_TOKEN, this.user);
       this.sharedService.editUser(null);
     }

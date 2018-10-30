@@ -4,3 +4,7 @@
   height: 60px;
   cursor: pointer;
 }
+
+::ng-deep .mat-dialog-container {
+  padding: 0;
+}

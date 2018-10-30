@@ -22,19 +22,19 @@ export class SocketService {
     this.socket = socketIo(SERVER_URL);
   }
 
-  public send(message: Message): void {
-    this.socket.emit('message', message);
+  public sendMainChatMessage(message: Message): void {
+    this.socket.emit('mainChatMessage', message);
   }
 
-  public onMessage(): Observable<Message> {
+  public onMainChatMessage(): Observable<Message> {
     return new Observable<Message>(observer => {
-      this.socket.on('message', (data: Message) => observer.next(data));
+      this.socket.on('mainChatMessage', (data: Message) => observer.next(data));
     });
   }
 
-  public onMessages(): Observable<Message[]> {
+  public onMainChatMessages(): Observable<Message[]> {
     return new Observable<Message[]>( observer => {
-      this.socket.on('messages', (messages: Array<Message>) => {
+      this.socket.on('mainChatMessages', (messages: Array<Message>) => {
         observer.next(messages);
       });
     });
@@ -47,6 +47,16 @@ export class SocketService {
   public onUser(): Observable<User> {
     return new Observable<User>(observer => {
       this.socket.on('user', (user: User) => observer.next(user));
+    })
+  }
+
+  public sendMainChatUser(user: User): void {
+    this.socket.emit('mainChatUser', user);
+  }
+
+  public onMainChatUser(): Observable<User> {
+    return new Observable<User>(observer => {
+      this.socket.on('mainChatUser', (user: User) => observer.next(user));
     })
   }
 

@@ -117,6 +117,9 @@ export class UserParamComponent implements OnInit {
 
     this.socketService.initSocket();
     this.socketService.sendUser(this.user);
+    if (this.user.action.joined) {
+      this.socketService.sendMainChatUser(this.user);
+    }
     this.sharedService.editUser(param);
     this.storage.set(USER_STORAGE_TOKEN, this.user);
 
@@ -146,6 +149,9 @@ export class UserParamComponent implements OnInit {
 
       console.log('user, own avatar:', this.user);
       this.socketService.sendUser(this.user);
+      if (this.user.action.joined) {
+        this.socketService.sendMainChatUser(this.user);
+      }
       this.storage.set(USER_STORAGE_TOKEN, this.user);
       this.sharedService.editUser(null);
     };
