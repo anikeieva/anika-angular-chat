@@ -76,6 +76,7 @@ export class UserParamComponent implements OnInit {
     };
     this.user.online = true;
 
+    this.socketService.initSocket();
     this.socketService.sendUser(this.user);
     this.sharedService.setUser(this.user);
     this.sharedService.updateUser.emit(this.user);

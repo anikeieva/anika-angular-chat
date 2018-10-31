@@ -20,7 +20,6 @@ export class WelcomePageComponent implements OnInit {
 
   ngOnInit() {
     this.storage.remove(USER_STORAGE_TOKEN);
-    this.socketService.initSocket();
   }
 
   signUp() {

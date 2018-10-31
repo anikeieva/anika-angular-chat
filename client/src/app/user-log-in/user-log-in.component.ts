@@ -24,21 +24,22 @@ export class UserLogInComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.socketService.onUserLogIn().subscribe((user) => {
-      this.userIsAuthorized = true;
-      this.router.navigate(['/chat'], { relativeTo: this.route });
-      console.log('user is authorized');
-    });
-
-    this.socketService.onUserNotLogIn().subscribe((userNotLogIn) => {
-      this.userIsAuthorized = false;
-      this.userLogInFormParam.setValue({
-        login: null,
-        password: null
+    if (this.socketService.socket) {
+      this.socketService.onUserLogIn().subscribe((user) => {
+        this.userIsAuthorized = true;
+        this.router.navigate(['/chat'], { relativeTo: this.route });
+        console.log('user is authorized');
       });
-      console.log('user is not authorized');
-    });
 
+      this.socketService.onUserNotLogIn().subscribe((userNotLogIn) => {
+        this.userIsAuthorized = false;
+        this.userLogInFormParam.setValue({
+          login: null,
+          password: null
+        });
+        console.log('user is not authorized');
+      });
+    }
   }
 
   isEnabledLogIn() {
@@ -49,6 +50,7 @@ export class UserLogInComponent implements OnInit {
     console.log(this.userLogInFormParam);
 
     this.userLogInParam = this.userLogInFormParam.value;
+    this.socketService.initSocket();
     this.socketService.sendUserLogInParam(this.userLogInParam);
   }
 }

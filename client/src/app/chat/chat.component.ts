@@ -23,6 +23,7 @@ export class ChatComponent implements OnInit {
   ngOnInit() {
     this.getChatRoom();
     this.getUserAll();
+    console.log(this.socketService);
   }
 
   getChatRoom() {
