@@ -85,4 +85,8 @@ export class SocketService {
       this.socket.on('mainChatRoom', (mainChatRoom: ChatRoom) => observer.next(mainChatRoom));
     })
   }
+
+  public sendUserLogOut(user: User): void {
+    this.socket.emit('userLogOut', user);
+  }
 }

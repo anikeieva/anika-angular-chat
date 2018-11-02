@@ -2,12 +2,17 @@ import {createServer, Server} from 'http';
 import * as express from 'express';
 import * as socketIo from 'socket.io';
 import * as fs from 'fs';
+import * as session from "express-session";
+import * as sharedSession from "express-socket.io-session";
+import * as cookie from "cookie";
+import * as mongoose from "mongoose";
 
 import {Message} from './model';
 import {User} from "./model/user";
 import {UserLogInParam} from "./model/userLogInParam";
 import {ChatRoom, IChatRoomOptions} from "./model/chat-room";
 import {TypeChatRooms} from "./model/type-chat-rooms";
+import {UserAction} from "./model/userAction";
 
 export class ChatServer {
     public static readonly PORT:number = 8080;
@@ -17,14 +22,19 @@ export class ChatServer {
     private port: string | number;
     public users: Array<User>;
     public mainChatRoom: ChatRoom;
+    public sessionMiddleware: session;
+    public userSchema;
+    public User;
 
     constructor() {
         this.createApp();
         this.config();
         this.createServer();
         this.sockets();
+        this.getSession();
         this.listen();
         this.createChatRoom();
+        this.getMongodb();
     }
 
     private createApp(): void {
@@ -55,6 +65,38 @@ export class ChatServer {
             messages: []
         };
         this.mainChatRoom = new ChatRoom(opt);
+    }
+
+    private getSession() {
+        this.sessionMiddleware = session({
+            secret: "secret",
+            resave: true,
+            saveUninitialized: true
+        });
+        this.app.use(this.sessionMiddleware);
+        this.io.use(sharedSession(this.sessionMiddleware));
+    }
+
+    private getMongodb() {
+        mongoose.connect('mongodb://localhost/anika-angular-chat', {useNewUrlParser: true }).then(() => {
+            console.log("Connected to Database");
+        }).catch((err) => {
+            console.log("Not Connected to Database ERROR! ", err);
+        });
+
+        this.userSchema = mongoose.Schema({
+            firstName: String,
+            lastName: String,
+            gender: String,
+            login: String,
+            password: String,
+            avatar: String,
+            action: {UserAction: Boolean},
+            id: String,
+            online: Boolean
+        });
+
+        this.User = mongoose.model('User', this.userSchema);
     }
 
     private listen(): void {
@@ -93,6 +135,9 @@ export class ChatServer {
         this.io.on('connect', (socket: any) => {
             console.log('Connected client on port %s.', this.port);
 
+            socket.cookie = socket.handshake.headers.cookie || socket.request.headers.cookie;
+            console.log('socket.cookie', cookie.parse(socket.cookie));
+
             socket.on('requestForMainChatRoom', ( () => {
                 this.io.emit('mainChatRoom', this.mainChatRoom);
             }));
@@ -115,6 +160,8 @@ export class ChatServer {
                     console.log('User log in: ', user);
                     this.io.emit('userLogIn', user);
                     this.io.emit('user', user);
+                    socket.handshake.session.user = user;
+                    socket.handshake.session.save();
                 } else {
                     console.log('User not log in!');
                     this.io.emit('userNotLogIn', 'userNotLogIn');
@@ -131,7 +178,9 @@ export class ChatServer {
                    });
                } else {
                    this.users.push(user);
-                   user.id = this.users.length;
+                   // user.id = this.users.length;
+                   user.id = socket.id;
+                   console.log('socketId', socket.id);
                }
 
                console.log('USERS: ', this.users);
@@ -141,7 +190,17 @@ export class ChatServer {
                     console.log('User written to users.json');
                 });
 
-                this.io.emit('user', user);
+                const newUser = new this.User(user);
+                newUser.save((err) => {
+                    if (err) throw err;
+                    this.io.emit('user', user);
+                })
+                // socket.broadcast.emit('user', user);
+                // socket.handshake.session.user = user;
+                // socket.handshake.session.save();
+                // console.log('socket.handshake.session.user ', socket.handshake.session.user);
+                // console.log('socket.id ', socket.id);
+                // console.log('socket.cookie', cookie.parse(socket.cookie));
             });
 
             socket.on('mainChatUser', (user: User) => {
@@ -189,6 +248,13 @@ export class ChatServer {
             });
 
             this.io.emit('mainChatMessages', this.mainChatRoom.messages);
+
+            socket.on('userLogOut', (user: User) => {
+                if (socket.handshake.session.user) {
+                    delete socket.handshake.session.user;
+                    socket.handshake.session.save();
+                }
+            });
 
             socket.on('disconnect', () => {
                 console.log('Client disconnected');
