@@ -5,6 +5,14 @@
   ],
   "compilerOptions": {
     "target": "es5",
-    "lib": ["es5", "es6", "dom", "es2015.promise"]
-  }
+    "lib": ["es5", "es6", "dom", "es2015.promise"],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
+  },
+  "compileOnSave":false,
+  "include": [
+    "src/*.ts",
+    "src/model/*.ts"
+  ],
+  "exclude": [ "node_modules" ]
 }

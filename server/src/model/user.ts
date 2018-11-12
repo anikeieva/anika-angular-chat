@@ -1,5 +1,3 @@
-import {UserAction} from "./userAction";
-
 export interface User {
     firstName: string;
     lastName: string;
@@ -7,7 +5,7 @@ export interface User {
     login: string;
     password: string;
     avatar: string;
-    action: UserAction;
-    id: number;
+    action: object;
+    id: string;
     online: boolean;
 }

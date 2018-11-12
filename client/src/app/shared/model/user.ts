@@ -8,6 +8,6 @@ export interface User {
   password: string;
   avatar: string | ArrayBuffer;
   action: UserAction;
-  id: number;
+  id: string;
   online: boolean;
 }

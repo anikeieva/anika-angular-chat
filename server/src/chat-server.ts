@@ -1,7 +1,6 @@
 import {createServer, Server} from 'http';
 import * as express from 'express';
 import * as socketIo from 'socket.io';
-import * as fs from 'fs';
 import * as session from "express-session";
 import * as sharedSession from "express-socket.io-session";
 import * as cookie from "cookie";
@@ -10,9 +9,7 @@ import * as mongoose from "mongoose";
 import {Message} from './model';
 import {User} from "./model/user";
 import {UserLogInParam} from "./model/userLogInParam";
-import {ChatRoom, IChatRoomOptions} from "./model/chat-room";
 import {TypeChatRooms} from "./model/type-chat-rooms";
-import {UserAction} from "./model/userAction";
 
 export class ChatServer {
     public static readonly PORT:number = 8080;
@@ -20,11 +17,14 @@ export class ChatServer {
     private server: Server;
     private io: SocketIO.Server;
     private port: string | number;
-    public users: Array<User>;
-    public mainChatRoom: ChatRoom;
+    public mainChatRoom: any;
     public sessionMiddleware: session;
-    public userSchema;
-    public User;
+    public userSchema: any;
+    public User: any;
+    private chatRoomSchema: any;
+    public messagesSchema: any;
+    public ChatRoom: any;
+    public Messages: any;
 
     constructor() {
         this.createApp();
@@ -54,17 +54,17 @@ export class ChatServer {
     }
 
     private createChatRoom() {
-        const opt: IChatRoomOptions = {
-            id: 'main-chat',
-            name: 'Main chat',
-            avatar: 'src/app/images/chat/chat.png',
-            type: TypeChatRooms.chat,
-            lastMessage: 'online chat',
-            users: [],
-            activeUsers: [],
-            messages: []
-        };
-        this.mainChatRoom = new ChatRoom(opt);
+        // const opt: IChatRoomOptions = {
+        //     id: 'main-chat',
+        //     name: 'Main chat',
+        //     avatar: 'src/app/images/chat/chat.png',
+        //     type: TypeChatRooms.chat,
+        //     lastMessage: 'online chat',
+        //     users: [],
+        //     activeUsers: [],
+        //     messages: []
+        // };
+        // this.mainChatRoom = new ChatRoom(opt);
     }
 
     private getSession() {
@@ -78,7 +78,7 @@ export class ChatServer {
     }
 
     private getMongodb() {
-        mongoose.connect('mongodb://localhost/anika-angular-chat', {useNewUrlParser: true }).then(() => {
+        mongoose.connect('mongodb://localhost/anika-angular-chat', {useNewUrlParser: true}).then(() => {
             console.log("Connected to Database");
         }).catch((err) => {
             console.log("Not Connected to Database ERROR! ", err);
@@ -91,12 +91,54 @@ export class ChatServer {
             login: String,
             password: String,
             avatar: String,
-            action: {UserAction: Boolean},
+            action: Object,
             id: String,
             online: Boolean
         });
 
+        this.messagesSchema = mongoose.Schema({
+            user: this.userSchema,
+            messageContent: String,
+            sendingTime: Date,
+            action: String
+        });
+
+        this.chatRoomSchema = mongoose.Schema({
+            id: String,
+            name: String,
+            avatar: String,
+            type: String,
+            lastMessage: String,
+            users: [this.userSchema],
+            activeUsers: [this.userSchema],
+            messages: [this.messagesSchema]
+        });
+
         this.User = mongoose.model('User', this.userSchema);
+        this.ChatRoom = mongoose.model('ChatRoomSchema', this.chatRoomSchema);
+        this.Messages = mongoose.model('Messages', this.messagesSchema);
+
+        this.mainChatRoom = new this.ChatRoom({
+            id: 'main-chat',
+            name: 'Main chat',
+            avatar: 'src/app/images/chat/chat.png',
+            type: TypeChatRooms.chat,
+            lastMessage: 'online chat'
+        });
+
+        this.ChatRoom.find({id: 'main-chat'},(err, room) => {
+            if (err) throw  err;
+
+            console.log('room if', room);
+
+            if (!room) {
+                this.mainChatRoom.save((err) => {
+                    if (err) throw err;
+                });
+            }
+
+            console.log(room);
+        });
     }
 
     private listen(): void {
@@ -105,38 +147,21 @@ export class ChatServer {
             console.log('Running server on port %s', this.port);
         });
 
-        fs.readFile('data/main-chat-room.json', (err, data) => {
-            if (err) {
-                if (err.code === 'ENOENT') {
-                    this.createChatRoom();
-                } else {
-                    throw err;
-                }
-
-            } else {
-                this.mainChatRoom = JSON.parse(data.toString());
-            }
-        });
-
-        fs.readFile('data/users.json', (err, data) => {
-            if (err) {
-                if (err.code === 'ENOENT') {
-                    this.users = [];
-                } else {
-                    throw err;
-                }
-
-            } else {
-                this.users = JSON.parse(data.toString());
-            }
-        });
-
-
         this.io.on('connect', (socket: any) => {
             console.log('Connected client on port %s.', this.port);
 
+            // this.User.remove({online: true}, (err) => console.log(err));
+            // this.User.remove({online: false}, (err) => console.log(err));
+            //
+            // this.ChatRoom.remove({name: 'Main chat'}, (err) => console.log(err));
+
             socket.cookie = socket.handshake.headers.cookie || socket.request.headers.cookie;
-            console.log('socket.cookie', cookie.parse(socket.cookie));
+
+            this.ChatRoom.find((err, room) => {
+                if (err) throw err;
+
+                console.log('man chat room int', room);
+            });
 
             socket.on('requestForMainChatRoom', ( () => {
                 this.io.emit('mainChatRoom', this.mainChatRoom);
@@ -146,71 +171,97 @@ export class ChatServer {
 
                 let user: User;
 
-                if (this.users.some(item => item.login === userLogInParam.login && item.password === userLogInParam.password )) {
+                this.User.find((err, users) => {
+                    if (err) throw err;
 
-                    this.users.forEach((item) => {
-                        if (item.login === userLogInParam.login && item.password === userLogInParam.password) {
-                            user = item;
-                            user.online = true;
-                        }
-                    });
-                }
+                    if (users.some(item => item.login === userLogInParam.login && item.password === userLogInParam.password )) {
 
-                if (user) {
-                    console.log('User log in: ', user);
-                    this.io.emit('userLogIn', user);
-                    this.io.emit('user', user);
-                    socket.handshake.session.user = user;
-                    socket.handshake.session.save();
-                } else {
-                    console.log('User not log in!');
-                    this.io.emit('userNotLogIn', 'userNotLogIn');
-                }
+                        users.forEach((item) => {
+                            if (item.login === userLogInParam.login && item.password === userLogInParam.password) {
+                                user = item;
+                                this.User.findOneAndUpdate({login: userLogInParam.login, password: userLogInParam.password}, {online: true}, (err) => {
+                                    if (err) throw  err;
+                                });
+
+                                this.User.find((err, users) => {
+                                    if (err) console.log('err ', err);
+                                    console.log('mongodb users update: ', users);
+                                });
+                            }
+                        });
+                    }
+
+                    if (user) {
+                        console.log('User log in: ', user);
+                        this.io.emit('userLogIn', user);
+                        this.io.emit('user', user);
+                        socket.handshake.session.user = user;
+                        socket.handshake.session.save();
+                    } else {
+                        console.log('User not log in!');
+                        this.io.emit('userNotLogIn', 'userNotLogIn');
+                    }
+
+                });
             });
 
             socket.on('user', (user: User) => {
 
-               if (this.users.some(item => item.id === user.id )) {
-                   this.users.forEach((item, i, users) => {
-                      if (item.id === user.id) {
-                          users.splice(i, 1, user);
-                      }
-                   });
-               } else {
-                   this.users.push(user);
-                   // user.id = this.users.length;
-                   user.id = socket.id;
-                   console.log('socketId', socket.id);
-               }
-
-               console.log('USERS: ', this.users);
-
-                fs.writeFile('data/users.json', JSON.stringify(this.users), (err) => {
+                this.User.find((err, users) => {
                     if (err) throw err;
-                    console.log('User written to users.json');
-                });
 
-                const newUser = new this.User(user);
-                newUser.save((err) => {
-                    if (err) throw err;
+                    if (users.some(item => item.id === user.id )) {
+
+                        users.forEach((item) => {
+                            if (item.id === user.id) {
+
+                                this.User.findOneAndUpdate({id: user.id}, user, (err) => {
+                                    if (err) throw  err;
+                                });
+
+                                this.User.find((err, users) => {
+                                    if (err) console.log('err ', err);
+                                    console.log('mongodb users update: ', users);
+                                });
+
+                            }
+                        });
+
+                    } else {
+
+                        user.id = socket.id;
+                        console.log('socketId', socket.id);
+                        const newUser = new this.User(user);
+                        newUser.save((err) => {
+                            if (err) throw err;
+                        });
+
+                        this.User.find((err, users) => {
+                            if (err) console.log('err ', err);
+                            console.log('mongodb users new: ', users);
+                        });
+                    }
+
                     this.io.emit('user', user);
-                })
-                // socket.broadcast.emit('user', user);
-                // socket.handshake.session.user = user;
-                // socket.handshake.session.save();
-                // console.log('socket.handshake.session.user ', socket.handshake.session.user);
-                // console.log('socket.id ', socket.id);
-                // console.log('socket.cookie', cookie.parse(socket.cookie));
+                });
             });
 
-            socket.on('mainChatUser', (user: User) => {
+            socket.on('mainChatUser', (user) => {
 
-                if (this.mainChatRoom.users.some(item => item.id === user.id )) {
-                    this.mainChatRoom.users.forEach((item, i, users) => {
+                if (this.mainChatRoom.users.some(item => item.id === user.id)) {
+
+                    this.mainChatRoom.users.forEach((item, i) => {
                         if (item.id === user.id) {
-                            users.splice(i, 1, user);
+                            this.mainChatRoom.users[i] = user;
                         }
                     });
+
+                    this.mainChatRoom.activeUsers.forEach((item, i) => {
+                        if (item.id === user.id) {
+                            this.mainChatRoom.activeUsers[i] = user;
+                        }
+                    });
+
                 } else {
                     this.mainChatRoom.users.push(user);
 
@@ -219,31 +270,30 @@ export class ChatServer {
                     }
                 }
 
-
-                if (this.mainChatRoom.users.some(item => !item.online )) {
-                    this.mainChatRoom.activeUsers = this.mainChatRoom.users.filter(item => item.online);
-                }
-
-                console.log('USERS: ', this.mainChatRoom.users);
-                console.log('num of users in main chat', this.mainChatRoom.users.length);
-                console.log('num of active users in main chat', this.mainChatRoom.activeUsers.length);
-
-                fs.writeFile('data/main-chat-room.json', JSON.stringify(this.mainChatRoom), (err) => {
-                    if (err) throw err;
-                    console.log('User written to main-chat-room.json');
+                this.mainChatRoom.activeUsers.forEach((item) => {
+                    if (!item.online) {
+                        this.mainChatRoom.activeUsers.pull({_id: item._id});
+                    }
                 });
 
+                this.mainChatRoom.save((err) => {
+                    if (err) throw err;
+                });
+
+                console.log('main chat room ', this.mainChatRoom);
             });
 
+
             socket.on('mainChatMessage', (m: Message) => {
+
                 this.mainChatRoom.messages.push(m);
 
-                fs.writeFile('data/main-chat-room.json', JSON.stringify(this.mainChatRoom), (err) => {
-                    if (err) throw err;
-                    console.log('Messages written to main-chat-room.json');
+                this.mainChatRoom.save((err) => {
+                   if (err) throw err;
                 });
 
-                console.log('[server](message): %s', JSON.stringify(m));
+                console.log('main chat room messages', this.mainChatRoom);
+
                 this.io.emit('mainChatMessage', m);
             });
 
