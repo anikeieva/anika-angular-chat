@@ -13,7 +13,7 @@
         <input matInput type="password" placeholder="Password" name="password" formControlName="password" required>
       </mat-form-field>
 
-      <mat-error *ngIf="userIsAuthorized === false">Pair login password not right, try again</mat-error>
+      <mat-error *ngIf="!userIsAuthorized">Pair login password not right, try again</mat-error>
 
       <button mat-raised-button color="primary" class="welcome-log-in-button" [disabled]="!isEnabledLogIn()" (click)="logIn()">Log in</button>
     </form>

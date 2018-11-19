@@ -10,6 +10,7 @@ import {Message} from './model';
 import {User} from "./model/user";
 import {UserLogInParam} from "./model/userLogInParam";
 import {TypeChatRooms} from "./model/type-chat-rooms";
+import {isString} from "typegoose/lib/utils";
 
 export class ChatServer {
     public static readonly PORT:number = 8080;
@@ -33,7 +34,6 @@ export class ChatServer {
         this.sockets();
         this.getSession();
         this.listen();
-        this.createChatRoom();
         this.getMongodb();
     }
 
@@ -53,20 +53,6 @@ export class ChatServer {
         this.io = socketIo(this.server);
     }
 
-    private createChatRoom() {
-        // const opt: IChatRoomOptions = {
-        //     id: 'main-chat',
-        //     name: 'Main chat',
-        //     avatar: 'src/app/images/chat/chat.png',
-        //     type: TypeChatRooms.chat,
-        //     lastMessage: 'online chat',
-        //     users: [],
-        //     activeUsers: [],
-        //     messages: []
-        // };
-        // this.mainChatRoom = new ChatRoom(opt);
-    }
-
     private getSession() {
         this.sessionMiddleware = session({
             secret: "secret",
@@ -77,7 +63,7 @@ export class ChatServer {
         this.io.use(sharedSession(this.sessionMiddleware));
     }
 
-    private getMongodb() {
+    private async getMongodb() {
         mongoose.connect('mongodb://localhost/anika-angular-chat', {useNewUrlParser: true}).then(() => {
             console.log("Connected to Database");
         }).catch((err) => {
@@ -126,7 +112,7 @@ export class ChatServer {
             lastMessage: 'online chat'
         });
 
-        this.ChatRoom.find({id: 'main-chat'},(err, room) => {
+        await this.ChatRoom.find({id: 'main-chat'}, (err, room) => {
             if (err) throw  err;
 
             console.log('room if', room);
@@ -169,24 +155,25 @@ export class ChatServer {
 
             socket.on('userLogInParam', (userLogInParam: UserLogInParam) => {
 
-                let user: User;
+                let user: User = null;
 
                 this.User.find((err, users) => {
                     if (err) throw err;
 
                     if (users.some(item => item.login === userLogInParam.login && item.password === userLogInParam.password )) {
 
-                        users.forEach((item) => {
+                        users.forEach(async (item) => {
                             if (item.login === userLogInParam.login && item.password === userLogInParam.password) {
+
                                 user = item;
-                                this.User.findOneAndUpdate({login: userLogInParam.login, password: userLogInParam.password}, {online: true}, (err) => {
+                                await this.User.findOneAndUpdate({
+                                    login: userLogInParam.login,
+                                    password: userLogInParam.password
+                                }, {online: true}, (err) => {
                                     if (err) throw  err;
                                 });
 
-                                this.User.find((err, users) => {
-                                    if (err) console.log('err ', err);
-                                    console.log('mongodb users update: ', users);
-                                });
+                                console.log('mongodb users update: ', users);
                             }
                         });
                     }
@@ -207,46 +194,51 @@ export class ChatServer {
 
             socket.on('user', (user: User) => {
 
-                this.User.find((err, users) => {
+                this.User.find(async (err, users) => {
                     if (err) throw err;
 
-                    if (users.some(item => item.id === user.id )) {
 
-                        users.forEach((item) => {
+                    console.log('user from client: ', user);
+                    console.log('user id', user.id, ' is string: ', typeof user.id);
+                    console.log('is match to id: ', users.some(item => item.id === user.id));
+
+                    if (users.some(item => item.id === user.id)) {
+
+                        users.forEach(async (item) => {
                             if (item.id === user.id) {
 
-                                this.User.findOneAndUpdate({id: user.id}, user, (err) => {
+                                await this.User.findOneAndUpdate({id: user.id}, user, (err) => {
                                     if (err) throw  err;
                                 });
 
-                                this.User.find((err, users) => {
-                                    if (err) console.log('err ', err);
-                                    console.log('mongodb users update: ', users);
-                                });
-
+                                console.log('mongodb users update: ', users);
                             }
                         });
 
                     } else {
 
-                        user.id = socket.id;
-                        console.log('socketId', socket.id);
+                        user.id = users.length + 1 + '';
+
+                        console.log('users length: ', users.length);
                         const newUser = new this.User(user);
-                        newUser.save((err) => {
+
+                        await newUser.save((err) => {
                             if (err) throw err;
                         });
 
-                        this.User.find((err, users) => {
-                            if (err) console.log('err ', err);
-                            console.log('mongodb users new: ', users);
-                        });
+                        socket.join(user.id);
+
+                        console.log('mongodb users new: ', newUser);
+
                     }
 
-                    this.io.emit('user', user);
+                    this.io.to(user.id).emit('user', user);
+                    // socket.broadcast.emit('user', user);
+                    console.log('users: ', users);
                 });
             });
 
-            socket.on('mainChatUser', (user) => {
+            socket.on('mainChatUser', async (user) => {
 
                 if (this.mainChatRoom.users.some(item => item.id === user.id)) {
 
@@ -276,7 +268,7 @@ export class ChatServer {
                     }
                 });
 
-                this.mainChatRoom.save((err) => {
+                await this.mainChatRoom.save((err) => {
                     if (err) throw err;
                 });
 
@@ -284,17 +276,18 @@ export class ChatServer {
             });
 
 
-            socket.on('mainChatMessage', (m: Message) => {
+            socket.on('mainChatMessage', async (m: Message) => {
 
                 this.mainChatRoom.messages.push(m);
 
-                this.mainChatRoom.save((err) => {
-                   if (err) throw err;
+                await this.mainChatRoom.save((err) => {
+                    if (err) throw err;
                 });
 
                 console.log('main chat room messages', this.mainChatRoom);
 
                 this.io.emit('mainChatMessage', m);
+                // socket.broadcast.emit('mainChatMessage', m);
             });
 
             this.io.emit('mainChatMessages', this.mainChatRoom.messages);

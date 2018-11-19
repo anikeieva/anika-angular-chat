@@ -57,9 +57,11 @@ export class ChatComponent implements OnInit {
       this.user = user;
       this.storage.set(USER_STORAGE_TOKEN, this.user);
       this.sharedService.setUser(user);
+      console.log('get user from server');
     }, (err) => {
       if (err) {
         this.user = this.storage.get(USER_STORAGE_TOKEN);
+        console.log('get user from storage');
       }
     });
   }
