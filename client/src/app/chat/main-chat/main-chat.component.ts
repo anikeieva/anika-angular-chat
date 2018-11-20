@@ -123,6 +123,8 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
     this.messageContent = null;
     console.log('sentMessage messages: ',this.messages);
+
+    console.log('mainChatRoom: ', this.mainChatRoom);
   }
 
   onJoin(): void {
