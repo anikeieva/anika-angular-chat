@@ -142,17 +142,15 @@ export class ChatServer {
 
             // this.clearMongooseData();
 
-            // socket.cookie = socket.handshake.headers.cookie || socket.request.headers.cookie;
-
             this.ChatRoom.find((err, room) => {
                 if (err) throw err;
 
                 console.log('man chat room int', room);
             }); // for only reading in terminal!
 
-            socket.on('requestForMainChatRoom', ( () => {
+            socket.on('requestForMainChatRoom', ( async () => {
 
-                this.ChatRoom.findOne({id: 'main-chat'}, (err, room) => {
+                await this.ChatRoom.findOne({id: 'main-chat'}, (err, room) => {
                     if (err) throw  err;
 
                     this.io.emit('mainChatRoom', room);
@@ -160,42 +158,61 @@ export class ChatServer {
                 });
             }));
 
-            socket.on('userLogInParam', (userLogInParam: UserLogInParam) => {
+            socket.on('userLogInParam', async (userLogInParam: UserLogInParam) => {
 
-                this.User.find(async (err, users) => {
 
-                    if (err) throw err;
+                await this.User.findOne({
+                    login: userLogInParam.login,
+                    password: userLogInParam.password
+                }, async (err, user) => {
+                    if (err) throw  err;
 
-                    if (users.some(item => item.login === userLogInParam.login && item.password === userLogInParam.password)) {
+                    if (user) {
 
-                        await this.User.findOneAndUpdate({
-                            login: userLogInParam.login,
-                            password: userLogInParam.password
+                        user.online = true;
+                        user.save((err) => {
+                            if (err) throw  err;
+                        });
+                        console.log('user update log in: ', user);
+
+                        await this.ChatRoom.findOneAndUpdate({
+                                id: 'main-chat',
+                                users: {$elemMatch: {id: user.id}}
                             },
-                            {online: true}, (err, user) => {
+                            {$set: {'users.$': user}}, (err) => {
                                 if (err) throw  err;
+                            });
 
-                                if (user) {
-                                    console.log('User log in: ', user);
-                                    this.io.emit('userLogIn', user);
-                                    this.io.emit('user', user);
-                                    // socket.handshake.session.user = user;
-                                    // socket.handshake.session.save();
-                                } else {
-                                    console.log('User not log in!');
-                                    this.io.emit('userNotLogIn', 'userNotLogIn');
+                        await this.ChatRoom.findOne({id: 'main-chat'}, async (err, room) => {
+
+                            if (err) throw err;
+
+                            room.activeUsers = await room.users.filter((item) => item.online);
+
+                            await room.save((err) => {
+                                    if (err) throw err
                                 }
+                            );
+
+                            console.log('man chat room after log in', room);
                         });
 
-                        // console.log('mongodb users update: ', users);
-                    }
 
+                        socket.join(user.id);
+                        console.log('User log in: ', user);
+                        this.io.emit('userLogIn', user);
+                        this.io.to(user.id).emit('user', user);
+                    } else {
+                        console.log('User not log in!');
+                        this.io.emit('userNotLogIn', 'userNotLogIn');
+                    }
                 });
+
             });
 
-            socket.on('user', (user: User) => {
+            socket.on('user', async (user: User) => {
 
-                this.User.find(async (err, users) => {
+                await this.User.find(async (err, users) => {
 
                     if (err) throw err;
 
@@ -204,7 +221,6 @@ export class ChatServer {
                         await this.User.findOneAndUpdate({id: user.id}, user, (err) => {
                             if (err) throw  err;
                         });
-                        // console.log('mongodb users update: ', users);
 
                     } else {
 
@@ -216,60 +232,53 @@ export class ChatServer {
                         });
 
                         socket.join(user.id);
-                        // console.log('mongodb users new: ', newUser);
                     }
 
                     this.io.to(user.id).emit('user', user);
                 });
             });
 
-            socket.on('mainChatUser', (user) => {
+            socket.on('mainChatUser', async (user) => {
 
-                this.ChatRoom.findOne({id: 'main-chat'}, async (err, room) => {
+                await this.ChatRoom.findOne({id: 'main-chat'}, async (err, room) => {
                     if (err) throw  err;
 
                     console.log('user: ', user);
 
                     if (room.users.some(item => item.id === user.id)) {
 
-                        this.ChatRoom.findOneAndUpdate({'id': 'main-chat', users: {$elemMatch: {id: user.id}}},
+                        await this.ChatRoom.findOneAndUpdate({'id': 'main-chat', users: {$elemMatch: {id: user.id}}},
                             {$set: {'users.$': user}}, (err) => {
-                                if (err) throw  err;
-                            });
-
-                        this.ChatRoom.findOneAndUpdate({'id': 'main-chat', activeUsers: {$elemMatch: {id: user.id}}},
-                            {$set: {'activeUsers.$': user}}, (err) => {
                                 if (err) throw  err;
                             });
 
                     } else {
                         room.users.push(user);
-                        room.activeUsers.push(user);
                     }
 
-                    if (!user.online) {
-                        this.ChatRoom.findOneAndUpdate({'id': 'main-chat', activeUsers: {$elemMatch: {id: user.id}}},
-                            {$pull: {activeUsers: user}}, (err) => {
-                            if (err) throw  err;
-                        });
-                    }
+                    console.log('main chat room before activU:', room);
+                    room.activeUsers = await room.users.filter((item) => item.online);
 
                     await room.save((err) => {
                         if (err) throw err;
                     });
 
+
+                    this.io.emit('mainChatRoom', room);
                     console.log('main chat room ', room);
                 });
             });
 
 
-            socket.on('mainChatMessage', (m: Message) => {
+            socket.on('mainChatMessage', async (m: Message) => {
 
-                this.ChatRoom.findOne({id: 'main-chat'}, async (err, room) => {
+                await this.ChatRoom.findOne({id: 'main-chat'}, async (err, room) => {
 
                     if (err) throw  err;
 
                     room.messages.push(m);
+
+                    // room.activeUsers = await room.users.filter((item) => item.online);
 
                     await room.save((err) => {
                         if (err) throw err;
@@ -291,16 +300,13 @@ export class ChatServer {
             });
 
             socket.on('userLogOut', (user: User) => {
-                // if (socket.handshake.session.user) {
-                //     delete socket.handshake.session.user;
-                //     socket.handshake.session.save();
-                // }
+                socket.leave(user.id);
 
-                this.ChatRoom.find((err, room) => {
+                this.ChatRoom.find({}, async (err, room) => {
                     if (err) throw err;
 
                     console.log('man chat room client log out', room);
-                }); // for only reading in terminal!
+                });
             });
 
             socket.on('disconnect', () => {

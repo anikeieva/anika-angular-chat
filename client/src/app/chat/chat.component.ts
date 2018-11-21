@@ -71,6 +71,7 @@ export class ChatComponent implements OnInit {
     this.socketService.initSocket();
     this.socketService.sendUser(this.user);
     if (this.user.action.joined) {
+      this.socketService.sendRequestForMainChatRoom();
       this.socketService.sendMainChatUser(this.user);
     }
     this.socketService.sendUserLogOut(this.user);
