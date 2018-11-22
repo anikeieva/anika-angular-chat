@@ -140,7 +140,7 @@ export class ChatServer {
         this.io.on('connect', (socket: any) => {
             console.log('Connected client on port %s.', this.port);
 
-            // this.clearMongooseData();
+            this.clearMongooseData();
 
             this.ChatRoom.find((err, room) => {
                 if (err) throw err;
@@ -179,7 +179,15 @@ export class ChatServer {
                                 id: 'main-chat',
                                 users: {$elemMatch: {id: user.id}}
                             },
-                            {$set: {'users.$': user}}, (err) => {
+                            {$set: {
+                                    'users.$.firstName': user.firstName,
+                                    'users.$.lastName': user.lastName,
+                                    'users.$.gender': user.gender,
+                                    'users.$.avatar': user.avatar,
+                                    'users.$.action': user.action,
+                                    'users.$.online': user.online
+                                }
+                            }, (err) => {
                                 if (err) throw  err;
                             });
 
@@ -187,7 +195,9 @@ export class ChatServer {
 
                             if (err) throw err;
 
-                            room.activeUsers = await room.users.filter((item) => item.online);
+                            let users = room.users;
+
+                            room.activeUsers = await users.filter((item) => item.online);
 
                             await room.save((err) => {
                                     if (err) throw err
@@ -218,7 +228,14 @@ export class ChatServer {
 
                     if (users.some(item => item.id === user.id)) {
 
-                        await this.User.findOneAndUpdate({id: user.id}, user, (err) => {
+                        await this.User.findOneAndUpdate({id: user.id}, {
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            gender: user.gender,
+                            avatar: user.avatar,
+                            action: user.action,
+                            online: user.online
+                        }, (err) => {
                             if (err) throw  err;
                         });
 
@@ -248,7 +265,27 @@ export class ChatServer {
                     if (room.users.some(item => item.id === user.id)) {
 
                         await this.ChatRoom.findOneAndUpdate({'id': 'main-chat', users: {$elemMatch: {id: user.id}}},
-                            {$set: {'users.$': user}}, (err) => {
+                            {$set: {
+                                    'users.$.firstName': user.firstName,
+                                    'users.$.lastName': user.lastName,
+                                    'users.$.gender': user.gender,
+                                    'users.$.avatar': user.avatar,
+                                    'users.$.action': user.action,
+                                    'users.$.online': user.online
+                                }}, (err) => {
+                                if (err) throw  err;
+                            });
+
+                        await this.ChatRoom.findOneAndUpdate({'id': 'main-chat', activeUsers: {$elemMatch: {id: user.id}}},
+                            {$set: {
+                                    'activeUsers.$.firstName': user.firstName,
+                                    'activeUsers.$.lastName': user.lastName,
+                                    'activeUsers.$.gender': user.gender,
+                                    'activeUsers.$.avatar': user.avatar,
+                                    'activeUsers.$.action': user.action,
+                                    'activeUsers.$.online': user.online
+                            }
+                            }, (err) => {
                                 if (err) throw  err;
                             });
 
@@ -257,15 +294,16 @@ export class ChatServer {
                     }
 
                     console.log('main chat room before activU:', room);
-                    room.activeUsers = await room.users.filter((item) => item.online);
+                    let users = room.users;
+
+                    room.activeUsers = await users.filter((item) => item.online);
 
                     await room.save((err) => {
                         if (err) throw err;
                     });
 
-
                     this.io.emit('mainChatRoom', room);
-                    console.log('main chat room ', room);
+                    console.log('main chat room added or updated user', room);
                 });
             });
 
@@ -277,8 +315,6 @@ export class ChatServer {
                     if (err) throw  err;
 
                     room.messages.push(m);
-
-                    // room.activeUsers = await room.users.filter((item) => item.online);
 
                     await room.save((err) => {
                         if (err) throw err;
@@ -299,14 +335,49 @@ export class ChatServer {
                 }
             });
 
-            socket.on('userLogOut', (user: User) => {
-                socket.leave(user.id);
+            socket.on('userLogOut', async (user: User) => {
 
-                this.ChatRoom.find({}, async (err, room) => {
+                await this.User.find(async (err, users) => {
+
                     if (err) throw err;
 
-                    console.log('man chat room client log out', room);
+                    if (users) {
+                        await this.User.findOneAndUpdate({id: user.id}, {online: false}, (err) => {
+                            if (err) throw  err;
+                        });
+
+                        console.log('users after log out: ', users);
+                    }
+
                 });
+
+
+                await this.ChatRoom.findOne({id: 'main-chat'}, async (err, room) => {
+                    if (err) throw err;
+
+                    if (room.users) {
+                        await this.ChatRoom.findOneAndUpdate({'id': 'main-chat', users: {$elemMatch: {id: user.id}}},
+                            {
+                                $set: {'users.$.online': false}
+                            }, (err) => {
+                                if (err) throw  err;
+                            });
+
+                        let users = room.users;
+
+                        room.activeUsers = await users.filter((item) => item.online);
+
+                        await room.save((err) => {
+                            if (err) throw err;
+                        });
+
+                        this.io.emit('mainChatRoom', room);
+                        console.log('man chat room client log out', room);
+                    }
+                });
+
+                socket.leave(user.id);
+
             });
 
             socket.on('disconnect', () => {
