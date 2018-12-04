@@ -65,19 +65,13 @@
 }
 
 .message-item {
-  width: fit-content;
-  min-width: 50px;
   position: relative;
   background-color: #4c62691a;
-  border-radius: 5px;
-  margin-bottom: 25px;
-  margin-right: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  margin-right: 25px;
   margin-left: 60px;
   word-break: break-word;
-}
-
-.message-list-item__current-user {
-  float: right;
 }
 
 .message-item-user-name {
@@ -87,10 +81,9 @@
 }
 .message-item-time {
   position: absolute;
-  right: 7px;
-  bottom: 5px;
+  right: 25px;
+  top: 20px;
   color: gray;
-  font-size: 9px;
 }
 
 .main-chat-container-join {
@@ -110,8 +103,7 @@
 }
 
 .message-list-item {
-  padding: 7px 10px 20px 10px;
-  clear: both;
+  padding: 17px;
 }
 
 .message-list-item__avatar {

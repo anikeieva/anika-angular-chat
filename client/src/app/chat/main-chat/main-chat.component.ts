@@ -32,6 +32,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   public timeNow: Date;
   public subscription;
   public mainChatRoom: ChatRoom;
+  public currentId: string;
 
   @ViewChild('messageList') messageList: ElementRef;
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;
@@ -122,6 +123,8 @@ export class MainChatComponent implements OnInit, AfterViewInit {
     this.socketService.sendMainChatMessage(this.message);
 
     this.messageContent = null;
+    // this.currentId = this.socketService.socket;
+    // console.log('socket after sent msg: ' ,this.currentId);
     console.log('sentMessage messages: ',this.messages);
 
     console.log('mainChatRoom: ', this.mainChatRoom);
@@ -179,5 +182,15 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
   sendNotification(message): void {
     this.socketService.sendMainChatMessage(message);
+  }
+
+  getClassOfMessageList(message, user) {
+    if (message.action === 'sentMessage') {
+      if (message.user.id === user.id) {
+        return 'message-item message-list-item__current-user';
+      }
+      return 'message-item';
+    }
+    return 'action-item';
   }
 }

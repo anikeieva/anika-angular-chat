@@ -7,7 +7,8 @@
 
       <div class="message-list-content">
 
-        <div #messageListItem class="message-list-item" *ngFor="let message of messages" [ngClass]="[(message.action === 'sentMessage') ? 'message-item' : 'action-item']">
+        <div #messageListItem class="message-list-item" *ngFor="let message of messages"
+             [ngClass]="getClassOfMessageList(message, user)">
 
           <p mat-line class="action-line" *ngIf="message.action === 'joined'">
             {{message.messageContent}}
@@ -22,10 +23,12 @@
             <!--<span *ngIf="user.online" class="avatar-block__online">online</span>-->
           <!--</div>-->
 
-          <img mat-card-avatar [src]="message.user.avatar" *ngIf="message.action === 'sentMessage'" class="message-list-item__avatar">
+          <img mat-card-avatar [src]="message.user.avatar"
+               *ngIf="message.action === 'sentMessage' && message.user.id !== user.id" class="message-list-item__avatar">
 
 
-          <h3 mat-line class="message-item-user-name" *ngIf="message.action === 'sentMessage'" class="message-list-item-title">
+          <h3 mat-line class="message-item-user-name"
+              *ngIf="message.action === 'sentMessage' && message.user.id !== user.id" class="message-list-item-title">
             {{message.user.firstName}} {{message.user.lastName}}
           </h3>
 
@@ -33,7 +36,7 @@
             {{message.messageContent}}
           </p>
 
-          <span class="message-item-time" *ngIf="message.action === 'sentMessage'">{{message.sendingTime | date: 'h:mma'}}</span>
+          <span class="message-item-time" *ngIf="message.action === 'sentMessage'">{{message.sendingTime | date: 'h:mma' | lowercase}}</span>
 
         </div>
 
