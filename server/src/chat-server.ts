@@ -106,6 +106,17 @@ export class ChatServer {
             if (this.users.length > 0) {
                 this.activeUsers = this.users.filter(item => item.online);
             }
+
+            // optimize code later:
+
+            // room.populate({
+            //     path: 'activeUsers',
+            //     match: {online: true}
+            // }, (e, activeUsers) => {
+            //     if (e) console.log('populate error chat user: ', e);
+            //
+            //     console.log('populated activeUsers: ', activeUsers);
+            // });
         };
 
         this.User = mongoose.model('User', this.userSchema);
@@ -282,6 +293,17 @@ export class ChatServer {
                                 if (err) console.log('main chat user update error ', err)
                             });
 
+                        await this.ChatRoom.findOneAndUpdate({'id': 'main-chat', activeUsers: {$elemMatch: {id: user.id}}},
+                            {$set: {
+                                    'activeUsers.$.firstName': user.firstName,
+                                    'activeUsers.$.lastName': user.lastName,
+                                    'activeUsers.$.gender': user.gender,
+                                    'activeUsers.$.avatar': user.avatar,
+                                    'activeUsers.$.action': user.action
+                                }}, (err) => {
+                                if (err) console.log('main chat activeUsers update error ', err)
+                            });
+
                     } else {
 
                         await this.User.findOne({id: user.id}, async (err, item) => {
@@ -289,16 +311,6 @@ export class ChatServer {
 
                             room.users.push(item);
                         });
-
-                        // room.populate({
-                        //     path: 'activeUsers',
-                        //     match: {online: true}
-                        // }, (e, activeUsers) => {
-                        //     if (e) console.log('populate error chat user: ', e);
-                        //
-                        //     console.log('populated activeUsers: ', activeUsers);
-                        // });
-
 
                         room.getActiveUsers();
 
