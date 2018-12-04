@@ -6,11 +6,11 @@ import {ActivatedRoute} from "@angular/router";
 import {User} from "../../shared/model/user";
 
 @Component({
-  selector: 'app-user-profile',
-  templateUrl: './user-profile.component.html',
-  styleUrls: ['./user-profile.component.css']
+  selector: 'app-direct-messages-room',
+  templateUrl: './direct-messages-room.component.html',
+  styleUrls: ['./direct-messages-room.component.css']
 })
-export class UserProfileComponent implements OnInit {
+export class DirectMessagesRoomComponent implements OnInit {
 
   public user: User;
 
@@ -23,9 +23,4 @@ export class UserProfileComponent implements OnInit {
 
     console.log('user: ',this.user);
   }
-
-  currentUserOfProfile(user) {
-    return {currentUser: JSON.stringify(user)};
-  }
-
 }

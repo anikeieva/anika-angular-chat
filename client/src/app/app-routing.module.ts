@@ -6,6 +6,7 @@ import {MainChatComponent} from './chat/main-chat/main-chat.component';
 import {EditUserParamComponent} from './chat/edit-user-param/edit-user-param.component';
 import {WelcomePageComponent} from './welcome-page/welcome-page.component';
 import {UserProfileComponent} from "./chat/user-profile/user-profile.component";
+import {DirectMessagesRoomComponent} from "./chat/direct-messages-room/direct-messages-room.component";
 
 const routes: Routes = [
   {path: '', component: WelcomePageComponent},
@@ -15,7 +16,8 @@ const routes: Routes = [
     children: [
       {path: 'main-chat', component: MainChatComponent},
       {path: 'edit-profile', component: EditUserParamComponent},
-      {path: 'user-profile', component: UserProfileComponent}
+      {path: 'user-profile', component: UserProfileComponent},
+      {path: 'direct-messages-room', component: DirectMessagesRoomComponent}
     ]
   }
 ];
