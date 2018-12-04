@@ -175,3 +175,7 @@
 .mat-card-content {
   height: 100%;
 }
+
+.mat-card-avatar {
+  cursor: pointer;
+}
