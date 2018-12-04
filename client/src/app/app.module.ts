@@ -16,6 +16,7 @@ import {ChooseAvatarComponent} from "./choose-avatar/choose-avatar.component";
 import {StorageServiceModule} from  "angular-webstorage-service";
 import {UserLogInComponent} from './user-log-in/user-log-in.component';
 import {UserProfileComponent} from "./chat/user-profile/user-profile.component";
+import {DirectMessagesRoomComponent} from "./chat/direct-messages-room/direct-messages-room.component";
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import {UserProfileComponent} from "./chat/user-profile/user-profile.component";
     WelcomePageComponent,
     ChooseAvatarComponent,
     UserLogInComponent,
-    UserProfileComponent
+    UserProfileComponent,
+    DirectMessagesRoomComponent
   ],
   imports: [
     BrowserModule,

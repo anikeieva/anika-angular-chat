@@ -2,6 +2,8 @@ import {
   Component,
   OnInit,
 } from '@angular/core';
+import {ActivatedRoute} from "@angular/router";
+import {User} from "../../shared/model/user";
 
 @Component({
   selector: 'app-user-profile',
@@ -10,9 +12,16 @@ import {
 })
 export class UserProfileComponent implements OnInit {
 
-  constructor() {}
+  public user: User;
+
+  constructor( private route: ActivatedRoute) {}
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe(param => {
+      this.user = JSON.parse(param.currentUser);
+    });
+
+    console.log('user: ',this.user);
   }
 
 }

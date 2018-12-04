@@ -25,7 +25,8 @@
 
           <img mat-card-avatar [src]="message.user.avatar"
                *ngIf="message.action === 'sentMessage' && message.user.id !== user.id"
-               class="message-list-item__avatar" routerLink="../user-profile">
+               class="message-list-item__avatar" routerLink="../user-profile"
+               [queryParams]="currentUserOfAvatar(message.user)" [skipLocationChange]="true">
 
 
           <h3 mat-line class="message-item-user-name"
