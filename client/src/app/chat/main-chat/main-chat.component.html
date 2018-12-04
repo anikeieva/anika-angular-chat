@@ -18,11 +18,6 @@
             {{message.messageContent}}
           </p>
 
-          <!--<div *ngIf="message.action === 'sentMessage'" class="avatar-block">-->
-            <!--<img mat-card-avatar [src]="message.user.avatar" class="avatar-block__avatar">-->
-            <!--<span *ngIf="user.online" class="avatar-block__online">online</span>-->
-          <!--</div>-->
-
           <img mat-card-avatar [src]="message.user.avatar"
                *ngIf="message.action === 'sentMessage' && message.user.id !== user.id"
                class="message-list-item__avatar" routerLink="../user-profile"
