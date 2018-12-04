@@ -1,7 +1,8 @@
 {
   "files": [
     "src/*.ts",
-    "src/model/*.ts"
+    "src/model/*.ts",
+    "src/data-base/*.ts"
   ],
   "compilerOptions": {
     "target": "es5",
@@ -12,7 +13,8 @@
   "compileOnSave":false,
   "include": [
     "src/*.ts",
-    "src/model/*.ts"
+    "src/model/*.ts",
+    "src/data-base/*.ts"
   ],
   "exclude": [ "node_modules" ]
 }

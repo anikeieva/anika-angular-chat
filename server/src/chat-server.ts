@@ -4,12 +4,15 @@ import * as socketIo from 'socket.io';
 import * as session from "express-session";
 import * as sharedSession from "express-socket.io-session";
 // import * as cookie from "cookie";
-import * as mongoose from "mongoose";
 
 import {Message} from './model';
 import {User} from "./model/user";
 import {UserLogInParam} from "./model/userLogInParam";
-import {TypeChatRooms} from "./model/type-chat-rooms";
+import * as mongoose from "mongoose";
+import getMongodb from "./data-base/mongoose";
+import {UserModel} from "./data-base/user";
+import {ChatRoomModel} from "./data-base/chatRoom";
+
 
 export class ChatServer {
     public static readonly PORT:number = 8080;
@@ -17,14 +20,7 @@ export class ChatServer {
     private server: Server;
     private io: SocketIO.Server;
     private port: string | number;
-    public mainChatRoomDefault: any;
     public sessionMiddleware: session;
-    public userSchema: any;
-    public User: any;
-    private chatRoomSchema: any;
-    public messagesSchema: any;
-    public ChatRoom: any;
-    public Messages: any;
 
     constructor() {
 
@@ -34,7 +30,7 @@ export class ChatServer {
         this.sockets();
         this.getSession();
         this.listen();
-        this.getMongodb();
+        getMongodb();
 
     }
 
@@ -64,89 +60,11 @@ export class ChatServer {
         this.io.use(sharedSession(this.sessionMiddleware));
     }
 
-    private async getMongodb() {
-        mongoose.connect('mongodb://localhost/anika-angular-chat', {useNewUrlParser: true}).then(() => {
-            console.log("Connected to Database");
-        }).catch((err) => {
-            console.log("Not Connected to Database ERROR! ", err);
-        });
-
-        this.userSchema = mongoose.Schema({
-            _id: mongoose.Schema.Types.ObjectId,
-            firstName: String,
-            lastName: String,
-            gender: String,
-            login: String,
-            password: String,
-            avatar: String,
-            action: Object,
-            id: String,
-            online: Boolean
-        });
-
-        this.messagesSchema = mongoose.Schema({
-            user: this.userSchema,
-            messageContent: String,
-            sendingTime: Date,
-            action: String
-        });
-
-        this.chatRoomSchema = mongoose.Schema({
-            id: String,
-            name: String,
-            avatar: String,
-            type: String,
-            lastMessage: String,
-            users: [this.userSchema],
-            activeUsers: [this.userSchema],
-            messages: [this.messagesSchema]
-        });
-
-        this.chatRoomSchema.methods.getActiveUsers = function() {
-            if (this.users.length > 0) {
-                this.activeUsers = this.users.filter(item => item.online);
-            }
-
-            // optimize code later:
-
-            // room.populate({
-            //     path: 'activeUsers',
-            //     match: {online: true}
-            // }, (e, activeUsers) => {
-            //     if (e) console.log('populate error chat user: ', e);
-            //
-            //     console.log('populated activeUsers: ', activeUsers);
-            // });
-        };
-
-        this.User = mongoose.model('User', this.userSchema);
-        this.ChatRoom = mongoose.model('ChatRoomSchema', this.chatRoomSchema);
-        this.Messages = mongoose.model('Messages', this.messagesSchema);
-
-        const mainChatOptions = {
-            new: true,
-            upsert: true,
-            setDefaultsOnInsert: true
-        };
-
-        this.mainChatRoomDefault = {
-            id: 'main-chat',
-            name: 'Main chat',
-            avatar: 'src/app/images/chat/chat.png',
-            type: TypeChatRooms.chat,
-            lastMessage: 'online chat'
-        }; // later add to separate file
-
-        this.ChatRoom.findOneAndUpdate({id: 'main-chat'}, this.mainChatRoomDefault, mainChatOptions, (err) => {
-            if (err) throw  err;
-        });
-    }
-
     private clearMongooseData() {
-        this.User.remove({online: true}, (err) => console.log(err));
-        this.User.remove({online: false}, (err) => console.log(err));
+        UserModel.remove({online: true}, (err) => console.log(err));
+        UserModel.remove({online: false}, (err) => console.log(err));
 
-        this.ChatRoom.remove({name: 'Main chat'}, (err) => console.log(err));
+        ChatRoomModel.remove({name: 'Main chat'}, (err) => console.log(err));
     }
 
     private listen(): void {
@@ -162,7 +80,7 @@ export class ChatServer {
             // this.clearMongooseData();
 
 
-            this.ChatRoom.find((err, room) => {
+            ChatRoomModel.find((err, room) => {
                 if (err) throw err;
 
                 console.log('man chat room int', room);
@@ -170,7 +88,7 @@ export class ChatServer {
 
             socket.on('requestForMainChatRoom', ( async () => {
 
-                await this.ChatRoom.findOne({id: 'main-chat'}, (err, room) => {
+                await ChatRoomModel.findOne({id: 'main-chat'}, (err, room) => {
                     if (err) throw  err;
 
                     this.io.emit('mainChatRoom', room);
@@ -181,7 +99,7 @@ export class ChatServer {
             socket.on('userLogInParam', async (userLogInParam: UserLogInParam) => {
 
 
-                await this.User.findOne({
+                await UserModel.findOne({
                     login: userLogInParam.login,
                     password: userLogInParam.password
                 }, async (err, user) => {
@@ -199,7 +117,7 @@ export class ChatServer {
                         this.io.emit('userLogIn', user);
                         this.io.to(user.id).emit('user', user);
 
-                        await this.ChatRoom.findOneAndUpdate({
+                        await ChatRoomModel.findOneAndUpdate({
                                 id: 'main-chat',
                                 users: {$elemMatch: {id: user.id}}
                             },
@@ -208,7 +126,7 @@ export class ChatServer {
                                 if (err) throw  err;
                             });
 
-                        await this.ChatRoom.findOne({id: 'main-chat'}, async (err, room) => {
+                        await ChatRoomModel.findOne({id: 'main-chat'}, async (err, room) => {
                             if (err) throw  err;
 
                             room.getActiveUsers();
@@ -228,13 +146,13 @@ export class ChatServer {
 
             socket.on('user', async (user: User) => {
 
-                await this.User.find(async (err, users) => {
+                await UserModel.find(async (err, users) => {
 
                     if (err) throw err;
 
                     if (users.some(item => item.id === user.id)) {
 
-                        await this.User.findOneAndUpdate({id: user.id}, {
+                        await UserModel.findOneAndUpdate({id: user.id}, {
                             firstName: user.firstName,
                             lastName: user.lastName,
                             gender: user.gender,
@@ -249,7 +167,7 @@ export class ChatServer {
 
                         user.id = users.length + 1 + '';
 
-                        const newUser = new this.User({
+                        const newUser = new UserModel({
                             _id: new mongoose.Types.ObjectId(),
                             firstName: user.firstName,
                             lastName: user.lastName,
@@ -275,14 +193,14 @@ export class ChatServer {
 
             socket.on('mainChatUser', async (user) => {
 
-                await this.ChatRoom.findOne({id: 'main-chat'}, async (err, room) => {
+                await ChatRoomModel.findOne({id: 'main-chat'}, async (err, room) => {
                     if (err) throw  err;
 
                     console.log('user: ', user);
 
                     if (room.users.some(item => item.id === user.id)) {
 
-                        await this.ChatRoom.findOneAndUpdate({'id': 'main-chat', users: {$elemMatch: {id: user.id}}},
+                        await ChatRoomModel.findOneAndUpdate({'id': 'main-chat', users: {$elemMatch: {id: user.id}}},
                             {$set: {
                                     'users.$.firstName': user.firstName,
                                     'users.$.lastName': user.lastName,
@@ -293,7 +211,7 @@ export class ChatServer {
                                 if (err) console.log('main chat user update error ', err)
                             });
 
-                        await this.ChatRoom.findOneAndUpdate({'id': 'main-chat', activeUsers: {$elemMatch: {id: user.id}}},
+                        await ChatRoomModel.findOneAndUpdate({'id': 'main-chat', activeUsers: {$elemMatch: {id: user.id}}},
                             {$set: {
                                     'activeUsers.$.firstName': user.firstName,
                                     'activeUsers.$.lastName': user.lastName,
@@ -306,7 +224,7 @@ export class ChatServer {
 
                     } else {
 
-                        await this.User.findOne({id: user.id}, async (err, item) => {
+                        await UserModel.findOne({id: user.id}, async (err, item) => {
                             if (err) throw  err;
 
                             room.users.push(item);
@@ -327,7 +245,7 @@ export class ChatServer {
 
             socket.on('mainChatMessage', async (m: Message) => {
 
-                await this.ChatRoom.findOne({id: 'main-chat'}, async (err, room) => {
+                await ChatRoomModel.findOne({id: 'main-chat'}, async (err, room) => {
 
                     if (err) console.log('main chat message err: ',err);
 
@@ -344,7 +262,7 @@ export class ChatServer {
                 });
             });
 
-            this.ChatRoom.findOne({id: 'main-chat'}, (err, room) => {
+            ChatRoomModel.findOne({id: 'main-chat'}, (err, room) => {
                 if (err) throw  err;
 
                 if (room) {
@@ -354,12 +272,12 @@ export class ChatServer {
 
             socket.on('userLogOut', async (user: User) => {
 
-                await this.User.find(async (err, users) => {
+                await UserModel.find(async (err, users) => {
 
                     if (err) throw err;
 
                     if (users) {
-                        await this.User.findOneAndUpdate({id: user.id}, {online: false}, (err, user) => {
+                        await UserModel.findOneAndUpdate({id: user.id}, {online: false}, (err, user) => {
                             if (err) throw  err;
                             console.log('user after log out update online: false: ', user);
                         });
@@ -370,11 +288,11 @@ export class ChatServer {
                 });
 
 
-                await this.ChatRoom.findOne({id: 'main-chat'}, async (err, room) => {
+                await ChatRoomModel.findOne({id: 'main-chat'}, async (err, room) => {
                     if (err) throw err;
 
                     if (room.users) {
-                        await this.ChatRoom.findOneAndUpdate({'id': 'main-chat', users: {$elemMatch: {id: user.id}}},
+                        await ChatRoomModel.findOneAndUpdate({'id': 'main-chat', users: {$elemMatch: {id: user.id}}},
                             {
                                 $set: {'users.$.online': false}
                             }, (err, user) => {
@@ -383,7 +301,7 @@ export class ChatServer {
                                 console.log('user main chat after log out update online: false: ', user);
                             });
 
-                        await this.ChatRoom.findOne({id: 'main-chat'}, async (err, room) => {
+                        await ChatRoomModel.findOne({id: 'main-chat'}, async (err, room) => {
                             if (err) throw  err;
 
                             room.getActiveUsers();
@@ -395,33 +313,6 @@ export class ChatServer {
                             this.io.emit('mainChatRoom', room);
                             console.log('man chat room client log out', room);
                         });
-
-                        // await this.ChatRoom.findOneAndUpdate({'id': 'main-chat', activeUsers: {$elemMatch: {id: user.id}}},
-                        //     {
-                        //         $set: {'activeUsers.$.online': false}
-                        //     }, (err, activeUser) => {
-                        //         if (err) throw  console.log('main chat active user log out update error ', err);
-                        //
-                        //         console.log('active user after log out update online: false: ', user);
-                        //     });
-
-                        // await this.ChatRoom.findOne({id: 'main-chat', 'activeUsers.online': true}, async (err, activeUser) => {
-                        //     if (err) console.log('no one active users');
-                        //     else {
-                        //         await this.ChatRoom.populate(room, {
-                        //             path: 'activeUsers',
-                        //             match: {online: true}
-                        //         }, (e, activeUsers) => {
-                        //             if (e) throw  console.log('populate error chat user log out: ', e);
-                        //             ;
-                        //
-                        //             console.log('populated activeUsers: ', activeUsers);
-                        //         });
-                        //     }
-                        // });
-
-                        // this.io.emit('mainChatRoom', room);
-                        // console.log('man chat room client log out', room);
                     }
                 });
 
