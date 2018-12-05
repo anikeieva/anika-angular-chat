@@ -89,4 +89,14 @@ export class SocketService {
   public sendUserLogOut(user: User): void {
     this.socket.emit('userLogOut', user);
   }
+
+  public sendRequestForUserById(id): void {
+    this.socket.emit('requestForUserById', id);
+  }
+
+  public onUserById(): Observable<User> {
+    return new Observable<User>(observer => {
+      this.socket.on('userById', (user: User) => observer.next(user));
+    })
+  }
 }

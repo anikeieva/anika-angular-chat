@@ -1,0 +1,1 @@
+export const USER_BY_ID_STORAGE_TOKEN: string = 'USER_BY_ID_STORAGE_TOKEN';

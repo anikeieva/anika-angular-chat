@@ -96,6 +96,15 @@ export class ChatServer {
                 });
             }));
 
+            socket.on('requestForUserById', ( async (id) => {
+
+                await UserModel.findOne({id: id}, (err, user) => {
+                    if (err) throw  err;
+
+                    this.io.emit('userById', user);
+                });
+            }));
+
             socket.on('userLogInParam', async (userLogInParam: UserLogInParam) => {
 
 

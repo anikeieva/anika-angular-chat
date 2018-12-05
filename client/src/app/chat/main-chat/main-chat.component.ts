@@ -191,8 +191,4 @@ export class MainChatComponent implements OnInit, AfterViewInit {
     }
     return 'action-item';
   }
-
-  currentUserOfAvatar(user) {
-    return {currentUser: JSON.stringify(user)};
-  }
 }
