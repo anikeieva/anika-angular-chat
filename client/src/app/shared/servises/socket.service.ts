@@ -99,4 +99,32 @@ export class SocketService {
       this.socket.on('userById', (user: User) => observer.next(user));
     })
   }
+
+  public sendRequestForDirectMessagesRoom(user: User): void {
+    this.socket.emit('requestForDirectMessagesRoom', user);
+  }
+
+  public onDirectMessagesRoom(): Observable<ChatRoom> {
+    return new Observable<ChatRoom>(observer => {
+      this.socket.on('directMessagesRoom', (DirectMessagesRoom: ChatRoom) => observer.next(DirectMessagesRoom));
+    })
+  }
+
+  // public sendDirectMessagesRoomMessage(message: Message): void {
+  //   this.socket.emit('directMessagesRoomMessage', message);
+  // }
+  //
+  // public onDirectMessagesRoomMessage(): Observable<Message> {
+  //   return new Observable<Message>(observer => {
+  //     this.socket.on('directMessagesRoomMessage', (data: Message) => observer.next(data));
+  //   });
+  // }
+  //
+  // public onDirectMessagesRoomMessages(): Observable<Message[]> {
+  //   return new Observable<Message[]>( observer => {
+  //     this.socket.on('directMessagesRoomMessages', (messages: Array<Message>) => {
+  //       observer.next(messages);
+  //     });
+  //   });
+  // }
 }

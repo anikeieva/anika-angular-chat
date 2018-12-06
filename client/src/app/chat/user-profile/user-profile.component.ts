@@ -6,6 +6,7 @@ import {ActivatedRoute} from "@angular/router";
 import {User} from "../../shared/model/user";
 import {SocketService} from "../../shared/servises/socket.service";
 import {SESSION_STORAGE, StorageService} from "angular-webstorage-service";
+import {getUserStorageToken} from "../../shared/model/getStorageToken";
 
 @Component({
   selector: 'app-user-profile',
@@ -15,6 +16,7 @@ import {SESSION_STORAGE, StorageService} from "angular-webstorage-service";
 export class UserProfileComponent implements OnInit {
 
   public user: User;
+  public userToken: string;
 
   constructor(private route: ActivatedRoute,
               private socketService: SocketService,
@@ -23,7 +25,7 @@ export class UserProfileComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe(param => {
       const id = param.id;
-      const token = `USER_BY_ID=${id}_STORAGE_TOKEN`;
+      this.userToken = getUserStorageToken(id);
 
       if (this.socketService.socket) {
         this.socketService.sendRequestForUserById(id);
@@ -32,11 +34,11 @@ export class UserProfileComponent implements OnInit {
       this.socketService.onUserById().subscribe((user: User) => {
         if (user) {
           this.user = user;
-          this.storage.set(token, this.user);
+          this.storage.set(this.userToken, this.user);
         }
       }, (err) => {
         if (err) {
-          this.user = this.storage.get(token);
+          this.user = this.storage.get(this.userToken);
         }
       });
     });

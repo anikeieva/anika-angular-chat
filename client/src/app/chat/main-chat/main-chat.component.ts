@@ -13,10 +13,9 @@ import {Message} from '../../shared/model/message';
 import {SocketService} from "../../shared/servises/socket.service";
 import {MatListItem} from "@angular/material";
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
-import {USER_STORAGE_TOKEN} from "../../shared/model/userStorageToken";
 import {take} from "rxjs/operators";
 import {ChatRoom} from "../../shared/model/chat-room";
-import {MAIN_CHAT_STORAGE_TOKEN} from "../../shared/model/mainChatStorageToken";
+import {getChatRoomStorageToken, getUserStorageToken} from "../../shared/model/getStorageToken";
 
 @Component({
   selector: 'app-main-chat',
@@ -32,6 +31,8 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   public timeNow: Date;
   public subscription;
   public mainChatRoom: ChatRoom;
+  public mainChatRoomToken: string;
+  public userToken: string;
 
   @ViewChild('messageList') messageList: ElementRef;
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;
@@ -72,17 +73,20 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   }
 
   getChatRoom() {
+    this.mainChatRoomToken = getChatRoomStorageToken('main-chat');
+
     if (this.socketService.socket) {
       this.socketService.sendRequestForMainChatRoom();
     }
 
     this.socketService.onMainChatRoom().subscribe(mainChatRoom => {
       this.mainChatRoom = mainChatRoom;
-      this.storage.set(MAIN_CHAT_STORAGE_TOKEN, this.mainChatRoom);
+
+      this.storage.set(this.mainChatRoomToken, this.mainChatRoom);
       console.log(this.mainChatRoom);
     }, (err) => {
       if (err) {
-        this.mainChatRoom = this.storage.get(MAIN_CHAT_STORAGE_TOKEN);
+        this.mainChatRoom = this.storage.get(this.mainChatRoomToken);
       }
     });
 
@@ -95,20 +99,21 @@ export class MainChatComponent implements OnInit, AfterViewInit {
     this.subscription = this.sharedService.listenUser().pipe(take(1)).subscribe(paramBefore => this.onEditUser(paramBefore));
 
     if (!this.user) {
-      this.user = this.storage.get(USER_STORAGE_TOKEN);
+      this.user = this.storage.get(this.userToken);
     }
 
     this.socketService.onUser().subscribe((user: User) => {
       this.user = user;
-      this.storage.set(USER_STORAGE_TOKEN, this.user);
+      this.userToken = getUserStorageToken(this.user.id);
+      this.storage.set(this.userToken, this.user);
       this.sharedService.setUser(user);
     }, (err) => {
       if (err) {
-        this.user = this.storage.get(USER_STORAGE_TOKEN);
+        this.user = this.storage.get(this.userToken);
       }
     });
 
-    this.storage.set(USER_STORAGE_TOKEN, this.user);
+    this.storage.set(this.userToken, this.user);
   }
 
   sendMessage(messageContent: string): void {
@@ -130,7 +135,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
   onJoin(): void {
     this.user.action.joined = true;
-    this.storage.set(USER_STORAGE_TOKEN, this.user);
+    this.storage.set(this.userToken, this.user);
     this.socketService.initSocket();
     this.socketService.sendUser(this.user);
     this.socketService.sendMainChatUser(this.user);

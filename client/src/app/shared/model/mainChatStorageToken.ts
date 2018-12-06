@@ -1,1 +1,0 @@
-export const MAIN_CHAT_STORAGE_TOKEN: string = 'MAIN_CHAT_STORAGE_TOKEN';

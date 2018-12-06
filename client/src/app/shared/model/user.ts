@@ -1,4 +1,5 @@
 import {UserAction} from './userAction';
+// import {ChatRoom} from "./chat-room";
 
 export interface User {
   firstName: string;
@@ -10,4 +11,5 @@ export interface User {
   action: UserAction;
   id: string;
   online: boolean;
+  // direct: ChatRoom
 }

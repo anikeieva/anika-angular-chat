@@ -6,8 +6,8 @@ import {UserAction} from '../shared/model/userAction';
 import {MatDialog} from "@angular/material";
 import {ChooseAvatarComponent} from "../choose-avatar/choose-avatar.component";
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
-import {USER_STORAGE_TOKEN} from "../shared/model/userStorageToken";
 import {SocketService} from "../shared/servises/socket.service";
+import {getUserStorageToken} from "../shared/model/getStorageToken";
 
 @Component({
   selector: 'app-user-param',
@@ -25,6 +25,7 @@ export class UserParamComponent implements OnInit {
   private currentAction: UserAction;
   public selectedAvatar: string | ArrayBuffer;
   private userParametersBeforeEdit: User;
+  public userToken: string;
 
   constructor(private sharedService: SharedService,
               private dialog: MatDialog,
@@ -78,6 +79,12 @@ export class UserParamComponent implements OnInit {
 
     this.socketService.initSocket();
     this.socketService.sendUser(this.user);
+    this.socketService.onUser().subscribe((user: User) => {
+      if (user) {
+        this.user = user;
+        this.userToken = getUserStorageToken(user.id);
+      }
+    });
     this.sharedService.setUser(this.user);
     this.sharedService.updateUser.emit(this.user);
   }
@@ -106,6 +113,7 @@ export class UserParamComponent implements OnInit {
 
     this.user.action = this.currentAction;
     this.user.action.edit = true;
+    this.userToken = getUserStorageToken(this.user.id);
 
     console.log(this.user);
 
@@ -122,7 +130,7 @@ export class UserParamComponent implements OnInit {
       this.socketService.sendMainChatUser(this.user);
     }
     this.sharedService.editUser(param);
-    this.storage.set(USER_STORAGE_TOKEN, this.user);
+    this.storage.set(this.userToken, this.user);
 
   }
 
@@ -153,7 +161,7 @@ export class UserParamComponent implements OnInit {
       if (this.user.action.joined) {
         this.socketService.sendMainChatUser(this.user);
       }
-      this.storage.set(USER_STORAGE_TOKEN, this.user);
+      this.storage.set(this.userToken, this.user);
       this.sharedService.editUser(null);
     };
   }

@@ -2,9 +2,9 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {SharedService} from "../shared/servises/shared.service";
 import {User} from "../shared/model/user";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
-import {USER_STORAGE_TOKEN} from "../shared/model/userStorageToken";
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
 import {SocketService} from "../shared/servises/socket.service";
+import {getUserStorageToken} from "../shared/model/getStorageToken";
 
 @Component({
   selector: 'app-choose-avatar',
@@ -15,6 +15,7 @@ export class ChooseAvatarComponent implements OnInit {
   public user: User;
   public avatars: Array<string> = [];
   private maxAvatarsNumbers = 2;
+  public userToken: string;
 
   constructor(private sharedService: SharedService,
               private dialogRef: MatDialogRef<ChooseAvatarComponent>,
@@ -24,19 +25,20 @@ export class ChooseAvatarComponent implements OnInit {
 
   ngOnInit() {
     if (!this.user) {
-      this.user = this.storage.get(USER_STORAGE_TOKEN);
+      this.user = this.storage.get(this.userToken);
     }
 
     this.socketService.onUser().subscribe((user: User) => {
       this.user = user;
+      this.userToken = getUserStorageToken(this.user.id);
       this.sharedService.setUser(user);
     }, (err) => {
       if (err) {
-        this.user = this.storage.get(USER_STORAGE_TOKEN);
+        this.user = this.storage.get(this.userToken);
       }
     });
 
-    this.storage.set(USER_STORAGE_TOKEN, this.user);
+    this.storage.set(this.userToken, this.user);
 
     for (let n = 0; n <= this.maxAvatarsNumbers; n++) {
       this.avatars.push(`src/app/images/avatars/${this.user.gender}/${n}.png`);
@@ -53,7 +55,7 @@ export class ChooseAvatarComponent implements OnInit {
       if (this.user.action.joined) {
         this.socketService.sendMainChatUser(this.user);
       }
-      this.storage.set(USER_STORAGE_TOKEN, this.user);
+      this.storage.set(this.userToken, this.user);
       this.sharedService.editUser(null);
     }
    }

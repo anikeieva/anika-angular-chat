@@ -1,4 +1,4 @@
-.main-chat-container {
+.chat-room-container {
   position: relative;
   width: 100%;
   height: 100%;
@@ -6,7 +6,7 @@
   background-size: cover;
 }
 
-.main-chat__header {
+.chat-room__header {
   width: 100%;
   position: absolute;
   top: 0;
@@ -38,7 +38,7 @@
   padding: 4px 0 !important;
 }
 
-.main-chat-container-footer {
+.chat-room-container-footer {
   position: fixed;
   bottom: 50px;
   left: 410px;
@@ -80,7 +80,7 @@
   word-break: break-word;
 }
 
-.message-list-item__current-user {
+.message-list-item__currentUser {
   float: right;
 }
 
@@ -125,26 +125,6 @@
   width: 50px;
   height: 50px;
 }
-
-/*.avatar-block {*/
-/*position: absolute;*/
-/*bottom: 0;*/
-/*left: -60px;*/
-/*}*/
-
-/*.avatar-block__avatar {*/
-/*width: 50px;*/
-/*height: 50px;*/
-/*}*/
-
-/*.avatar-block__online {*/
-/*display: block;*/
-/*float: none;*/
-/*clear: both;*/
-/*text-align: center;*/
-/*color: #6e6675;*/
-/*font-size: 13px;*/
-/*}*/
 
 .message-list-item-title {
   margin: 0 0 10px;

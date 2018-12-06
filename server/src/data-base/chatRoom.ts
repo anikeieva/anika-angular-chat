@@ -22,7 +22,7 @@ chatRoomSchema.methods.getActiveUsers = function() {
 
 export const ChatRoomModel = mongoose.model('ChatRoomSchema', chatRoomSchema);
 
-const mainChatOptions = {
+const chatOptions = {
     new: true,
     upsert: true,
     setDefaultsOnInsert: true
@@ -36,6 +36,6 @@ const mainChatRoomDefault = {
     lastMessage: 'online chat'
 };
 
-ChatRoomModel.findOneAndUpdate({id: 'main-chat'}, mainChatRoomDefault, mainChatOptions, (err) => {
+ChatRoomModel.findOneAndUpdate({id: 'main-chat'}, mainChatRoomDefault, chatOptions, (err) => {
     if (err) throw  err;
 });

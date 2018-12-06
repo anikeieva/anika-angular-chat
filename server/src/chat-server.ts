@@ -12,6 +12,7 @@ import * as mongoose from "mongoose";
 import getMongodb from "./data-base/mongoose";
 import {UserModel} from "./data-base/user";
 import {ChatRoomModel} from "./data-base/chatRoom";
+import {TypeChatRooms} from "./model/type-chat-rooms";
 
 
 export class ChatServer {
@@ -93,6 +94,35 @@ export class ChatServer {
 
                     this.io.emit('mainChatRoom', room);
 
+                });
+            }));
+
+            socket.on('requestForDirectMessagesRoom', ( async (user: User) => {
+
+                await ChatRoomModel.findOne({id: user.id}, ( async (err, room) => {
+                    if (err) throw  err;
+
+                    if (!room) {
+                        const directMessagesRoom = new ChatRoomModel({
+                            _id: new mongoose.Types.ObjectId(),
+                            id: user.id,
+                            name: `${user.firstName} ${user.lastName}`,
+                            avatar: user.avatar,
+                            type: TypeChatRooms.direct,
+                            lastMessage: 'direct'
+                        });
+
+                        await directMessagesRoom.save((err) => {
+                            if (err) throw  err;
+                        });
+                    }
+                }));
+
+                await ChatRoomModel.findOne({id: user.id}, (err, room) => {
+                    if (err) throw  err;
+
+                    console.log('directMessagesRoom', room);
+                    this.io.emit('directMessagesRoom', room);
                 });
             }));
 
