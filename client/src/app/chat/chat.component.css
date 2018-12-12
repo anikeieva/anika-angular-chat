@@ -71,4 +71,34 @@
   margin-right: 20px;
 }
 
+.rooms-container {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: calc(100vh - 249px);
+  visibility: hidden;
+}
 
+.rooms-container-content, .rooms-container:hover {
+  visibility: visible;
+}
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 7px;
+}
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey;
+  background: #c1a9d64f;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #705e7d9c;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #a391b0;
+}

@@ -2,9 +2,12 @@ import * as mongoose from "mongoose";
 import {userSchema} from "./user";
 
 
-export const messagesSchema = mongoose.Schema({
+const messagesSchema = new mongoose.Schema();
+messagesSchema.add({
     user: userSchema,
     messageContent: String,
     sendingTime: Date,
     action: String
 });
+
+export default messagesSchema;

@@ -95,7 +95,7 @@ export class DirectMessagesRoomComponent implements OnInit {
     this.chatRoomToken = getChatRoomStorageToken(this.id);
 
     if (this.socketService.socket) {
-      this.socketService.sendRequestForDirectMessagesRoom(this.user);
+      this.socketService.sendRequestForDirectMessagesRoom(this.id);
     }
 
     this.socketService.onDirectMessagesRoom().subscribe(room => {

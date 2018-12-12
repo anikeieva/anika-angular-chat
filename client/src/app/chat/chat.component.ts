@@ -13,9 +13,9 @@ import {getChatRoomStorageToken, getUserStorageToken} from "../shared/model/getS
 })
 export class ChatComponent implements OnInit {
   public user: User;
-  public mainChatRoom: ChatRoom;
-  public mainChatRoomToken: string;
   public userToken: string;
+  public rooms: ChatRoom[];
+  public allChatRoomsToken: string;
 
   constructor(private sharedService: SharedService,
               @Inject(SESSION_STORAGE) private storage: StorageService,
@@ -28,23 +28,18 @@ export class ChatComponent implements OnInit {
   }
 
   getChatRoom() {
-    this.mainChatRoomToken = getChatRoomStorageToken('main-chat');
+    this.allChatRoomsToken = getChatRoomStorageToken('allRooms');
 
-    if (this.socketService.socket) {
-      this.socketService.sendRequestForMainChatRoom();
-    }
-
-    this.socketService.onMainChatRoom().subscribe(mainChatRoom => {
-      this.mainChatRoom = mainChatRoom;
-      this.storage.set(this.mainChatRoomToken, this.mainChatRoom);
-      console.log(this.mainChatRoom);
+    this.socketService.onGetAllChatRooms().subscribe((rooms: ChatRoom[]) => {
+        console.log('rooms: ', rooms);
+        this.rooms = rooms;
+        this.storage.set(this.allChatRoomsToken, this.rooms);
     }, (err) => {
       if (err) {
-        this.mainChatRoom = this.storage.get(this.mainChatRoomToken);
+        this.rooms = this.storage.get(this.allChatRoomsToken);
+        console.log('rooms: ', this.rooms);
       }
     });
-
-    console.log(this.mainChatRoom);
   }
 
   getUserAll() {
@@ -74,5 +69,11 @@ export class ChatComponent implements OnInit {
     this.user.online = false;
     this.socketService.initSocket();
     this.socketService.sendUserLogOut(this.user);
+  }
+
+  getQueryParams(room) {
+    if (room.type === 'direct') {
+      return {id: room.id}
+    }
   }
 }

@@ -100,14 +100,24 @@ export class SocketService {
     })
   }
 
-  public sendRequestForDirectMessagesRoom(user: User): void {
-    this.socket.emit('requestForDirectMessagesRoom', user);
+  public sendRequestForDirectMessagesRoom(id): void {
+    this.socket.emit('requestForDirectMessagesRoom', id);
   }
 
   public onDirectMessagesRoom(): Observable<ChatRoom> {
     return new Observable<ChatRoom>(observer => {
-      this.socket.on('directMessagesRoom', (DirectMessagesRoom: ChatRoom) => observer.next(DirectMessagesRoom));
+      this.socket.on('directMessagesRoom', (directMessagesRoom: ChatRoom) => observer.next(directMessagesRoom));
     })
+  }
+
+  public onGetAllChatRooms(): Observable<ChatRoom[]> {
+    return new Observable<ChatRoom[]>(observer => {
+      this.socket.on('getAllChatRooms', (directMessagesRoom: ChatRoom[]) => observer.next(directMessagesRoom));
+    })
+  }
+
+  public sendRequestForAllChatRooms(): void {
+    this.socket.emit('requestForAllChatRooms');
   }
 
   // public sendDirectMessagesRoomMessage(message: Message): void {

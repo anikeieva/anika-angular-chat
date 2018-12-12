@@ -1,9 +1,11 @@
 import * as mongoose from "mongoose";
-import {TypeChatRooms} from "../model/type-chat-rooms";
-import {messagesSchema} from "./messages";
 import {userSchema} from "./user";
+import messagesSchema from "./messages";
+import {TypeChatRooms} from "../model/type-chat-rooms";
 
-const chatRoomSchema = mongoose.Schema({
+
+export const chatRoomSchema = new mongoose.Schema();
+chatRoomSchema.add({
     id: String,
     name: String,
     avatar: String,

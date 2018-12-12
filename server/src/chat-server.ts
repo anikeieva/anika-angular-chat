@@ -13,6 +13,7 @@ import getMongodb from "./data-base/mongoose";
 import {UserModel} from "./data-base/user";
 import {ChatRoomModel} from "./data-base/chatRoom";
 import {TypeChatRooms} from "./model/type-chat-rooms";
+import {ChatRoom} from "../../client/src/app/shared/model/chat-room";
 
 
 export class ChatServer {
@@ -66,6 +67,7 @@ export class ChatServer {
         UserModel.remove({online: false}, (err) => console.log(err));
 
         ChatRoomModel.remove({name: 'Main chat'}, (err) => console.log(err));
+        ChatRoomModel.remove({type: 'direct'}, (err) => console.log(err));
     }
 
     private listen(): void {
@@ -97,33 +99,16 @@ export class ChatServer {
                 });
             }));
 
-            socket.on('requestForDirectMessagesRoom', ( async (user: User) => {
+            socket.on('requestForDirectMessagesRoom', ( async (id) => {
 
-                await ChatRoomModel.findOne({id: user.id}, ( async (err, room) => {
-                    if (err) throw  err;
+                if (id) {
+                    await ChatRoomModel.findOne({id: id}, (err, room) => {
+                        if (err) throw  err;
 
-                    if (!room) {
-                        const directMessagesRoom = new ChatRoomModel({
-                            _id: new mongoose.Types.ObjectId(),
-                            id: user.id,
-                            name: `${user.firstName} ${user.lastName}`,
-                            avatar: user.avatar,
-                            type: TypeChatRooms.direct,
-                            lastMessage: 'direct'
-                        });
-
-                        await directMessagesRoom.save((err) => {
-                            if (err) throw  err;
-                        });
-                    }
-                }));
-
-                await ChatRoomModel.findOne({id: user.id}, (err, room) => {
-                    if (err) throw  err;
-
-                    console.log('directMessagesRoom', room);
-                    this.io.emit('directMessagesRoom', room);
-                });
+                        console.log('directMessagesRoom', room);
+                        this.io.emit('directMessagesRoom', room);
+                    });
+                }
             }));
 
             socket.on('requestForUserById', ( async (id) => {
@@ -132,6 +117,15 @@ export class ChatServer {
                     if (err) throw  err;
 
                     this.io.emit('userById', user);
+                });
+            }));
+
+            socket.on('requestForAllChatRooms', ( async () => {
+                await ChatRoomModel.find({}, (err, rooms) => {
+                    if (err) throw  err;
+
+                    console.log('getAllChatRooms', rooms);
+                    this.io.emit('getAllChatRooms', rooms);
                 });
             }));
 
@@ -224,6 +218,32 @@ export class ChatServer {
                         });
 
                         socket.join(user.id);
+
+                        await ChatRoomModel.findOne({id: user.id}, ( async (err, room) => {
+                            if (err) throw  err;
+
+                            if (!room) {
+                                const directMessagesRoom = new ChatRoomModel({
+                                    _id: new mongoose.Types.ObjectId(),
+                                    id: user.id,
+                                    name: `${user.firstName} ${user.lastName}`,
+                                    avatar: user.avatar,
+                                    type: TypeChatRooms.direct,
+                                    lastMessage: 'direct'
+                                });
+
+                                await directMessagesRoom.save((err) => {
+                                    if (err) throw  err;
+                                });
+                            }
+                        }));
+
+                        await ChatRoomModel.find({}, (err, rooms) => {
+                            if (err) throw  err;
+
+                            console.log('getAllChatRooms', rooms);
+                            this.io.emit('getAllChatRooms', rooms);
+                        });
                     }
 
                     this.io.to(user.id).emit('user', user);

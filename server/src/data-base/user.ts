@@ -1,6 +1,8 @@
 import * as mongoose from "mongoose";
+// import {chatRoomSchema} from "./chatRoom";
 
-export const userSchema = mongoose.Schema({
+export const userSchema = new mongoose.Schema();
+userSchema.add({
     _id: mongoose.Schema.Types.ObjectId,
     firstName: String,
     lastName: String,
@@ -10,7 +12,8 @@ export const userSchema = mongoose.Schema({
     avatar: String,
     action: Object,
     id: String,
-    online: Boolean
+    online: Boolean,
+    // direct: [chatRoomSchema]
 });
 
 export const UserModel = mongoose.model('User', userSchema);
