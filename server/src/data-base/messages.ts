@@ -4,7 +4,7 @@ import {userSchema} from "./user";
 
 const messagesSchema = new mongoose.Schema();
 messagesSchema.add({
-    user: userSchema,
+    from: userSchema,
     messageContent: String,
     sendingTime: Date,
     action: String

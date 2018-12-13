@@ -190,7 +190,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
   getClassOfMessageList(message, user) {
     if (message.action === 'sentMessage') {
-      if (message.user.id === user.id) {
+      if (message.from.id === user.id) {
         return 'message-item message-list-item__current-user';
       }
       return 'message-item';

@@ -1,8 +1,11 @@
 <mat-card class="chat-room-container" layot="column">
   <mat-card-header class="chat-room__header">
-    <img mat-card-avatar class="direct-messages-room__user-avatar" [src]="user?.avatar || ''">
-    <mat-card-title class="direct-messages-room__user-name">{{user?.firstName}} {{user?.lastName}}</mat-card-title>
-    <mat-card-subtitle *ngIf="user?.online">online</mat-card-subtitle>
+    <img mat-card-avatar class="direct-messages-room__user-avatar" [src]="directRoomUser?.avatar || ''">
+    <mat-card-title class="direct-messages-room__user-name">{{directRoomUser?.firstName}} {{directRoomUser?.lastName}}</mat-card-title>
+    <mat-card-subtitle class="direct-messages-room__user-activity"
+                       *ngIf="directRoomUser?.online">online</mat-card-subtitle>
+    <mat-card-subtitle class="direct-messages-room__user-activity"
+                       *ngIf="!directRoomUser?.online">last seen at {{directRoomUser?.lastSeen | date: 'h:mma' | lowercase}}</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>
     <div #messageList class="message-list">
@@ -10,18 +13,7 @@
       <div class="message-list-content">
 
         <div #messageListItem class="message-list-item" *ngFor="let message of messages"
-             [ngClass]="[(message.user.id === user.id)? 'message-list-item__currentUser' : '']">
-
-          <img mat-card-avatar [src]="message.user.avatar"
-               *ngIf="message.user.id !== user.id"
-               class="message-list-item__avatar" routerLink="../user-profile"
-               [queryParams]="{id: message.user.id}">
-
-
-          <h3 mat-line class="message-item-user-name"
-              *ngIf="message.user.id !== user.id" class="message-list-item-title">
-            {{message.user.firstName}} {{message.user.lastName}}
-          </h3>
+             [ngClass]="[(message.from.id === user.id)? 'message-list-item__currentUser' : '']">
 
           <p class="mat-list-item-message">
             {{message.messageContent}}

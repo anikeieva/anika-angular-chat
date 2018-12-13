@@ -66,7 +66,7 @@ export class ChatComponent implements OnInit {
   }
 
   exit() {
-    this.user.online = false;
+    // this.user.online = false;
     this.socketService.initSocket();
     this.socketService.sendUserLogOut(this.user);
   }

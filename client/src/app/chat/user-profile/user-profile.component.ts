@@ -15,7 +15,7 @@ import {getUserStorageToken} from "../../shared/model/getStorageToken";
 })
 export class UserProfileComponent implements OnInit {
 
-  public user: User;
+  public directRoomUser: User;
   public userToken: string;
 
   constructor(private route: ActivatedRoute,
@@ -33,16 +33,16 @@ export class UserProfileComponent implements OnInit {
 
       this.socketService.onUserById().subscribe((user: User) => {
         if (user) {
-          this.user = user;
-          this.storage.set(this.userToken, this.user);
+          this.directRoomUser = user;
+          this.storage.set(this.userToken, this.directRoomUser);
         }
       }, (err) => {
         if (err) {
-          this.user = this.storage.get(this.userToken);
+          this.directRoomUser = this.storage.get(this.userToken);
         }
       });
     });
 
-    console.log('user: ',this.user);
+    console.log('user: ',this.directRoomUser);
   }
 }

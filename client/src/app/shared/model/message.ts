@@ -1,13 +1,13 @@
 import {User} from './user';
 
 export class Message {
-  user: User;
+  from: User;
   messageContent: string;
   sendingTime: Date;
   action: string;
 
-  constructor(user, messageContent, sendingTime, action) {
-    this.user = user;
+  constructor(from, messageContent, sendingTime, action) {
+    this.from = from;
     this.messageContent = messageContent;
     this.sendingTime = sendingTime;
     this.action = action;

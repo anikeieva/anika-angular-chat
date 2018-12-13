@@ -14,6 +14,7 @@ userSchema.add({
     id: String,
     online: Boolean,
     // direct: [chatRoomSchema]
+    lastSeen: Date
 });
 
 export const UserModel = mongoose.model('User', userSchema);

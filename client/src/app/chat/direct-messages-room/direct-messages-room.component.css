@@ -11,9 +11,15 @@
   position: absolute;
   top: 0;
   left: 0;
-  padding: 14px;
+  padding: 14px 14px 16px;
   background-color: #0d06138a;
   color: #fbf8f8;
+}
+
+.direct-messages-room__user-activity {
+  color: white;
+  font-size: 12px;
+  margin-bottom: 0;
 }
 
 .direct-messages-room__user-avatar {

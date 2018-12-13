@@ -18,15 +18,15 @@
             {{message.messageContent}}
           </p>
 
-          <img mat-card-avatar [src]="message.user.avatar"
-               *ngIf="message.action === 'sentMessage' && message.user.id !== user.id"
+          <img mat-card-avatar [src]="message.from.avatar"
+               *ngIf="message.action === 'sentMessage' && message.from.id !== user.id"
                class="message-list-item__avatar" routerLink="../user-profile"
-               [queryParams]="{id: message.user.id}">
+               [queryParams]="{id: message.from.id}">
 
 
           <h3 mat-line class="message-item-user-name"
-              *ngIf="message.action === 'sentMessage' && message.user.id !== user.id" class="message-list-item-title">
-            {{message.user.firstName}} {{message.user.lastName}}
+              *ngIf="message.action === 'sentMessage' && message.from.id !== user.id" class="message-list-item-title">
+            {{message.from.firstName}} {{message.from.lastName}}
           </h3>
 
           <p class="mat-list-item-message" *ngIf="message.action === 'sentMessage'">

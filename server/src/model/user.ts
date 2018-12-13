@@ -11,4 +11,5 @@ export interface User {
     id: string;
     online: boolean;
     // direct: ChatRoom;
+    lastSeen: Date;
 }

@@ -19,6 +19,7 @@ import {getChatRoomStorageToken, getUserStorageToken} from "../../shared/model/g
 })
 export class DirectMessagesRoomComponent implements OnInit {
 
+  public directRoomUser: User;
   public user: User;
   public id: string;
   public messageContent: string;
@@ -55,17 +56,19 @@ export class DirectMessagesRoomComponent implements OnInit {
 
       this.socketService.onUserById().subscribe((user: User) => {
         if (user) {
-          this.user = user;
-          this.storage.set(this.userToken, this.user);
+          this.directRoomUser = user;
+          this.storage.set(this.userToken, this.directRoomUser);
+          console.log('user: ',this.directRoomUser);
         }
       }, (err) => {
         if (err) {
-          this.user = this.storage.get(this.userToken);
+          this.directRoomUser = this.storage.get(this.userToken);
+          console.log('user: ',this.directRoomUser);
         }
       });
     });
 
-    console.log('user: ',this.user);
+    console.log('user: ',this.directRoomUser);
   }
 
   //

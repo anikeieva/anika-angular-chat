@@ -331,12 +331,14 @@ export class ChatServer {
 
             socket.on('userLogOut', async (user: User) => {
 
+                const dateNow = new Date();
+
                 await UserModel.find(async (err, users) => {
 
                     if (err) throw err;
 
                     if (users) {
-                        await UserModel.findOneAndUpdate({id: user.id}, {online: false}, (err, user) => {
+                        await UserModel.findOneAndUpdate({id: user.id}, {online: false, lastSeen: dateNow}, (err, user) => {
                             if (err) throw  err;
                             console.log('user after log out update online: false: ', user);
                         });
@@ -353,7 +355,7 @@ export class ChatServer {
                     if (room.users) {
                         await ChatRoomModel.findOneAndUpdate({'id': 'main-chat', users: {$elemMatch: {id: user.id}}},
                             {
-                                $set: {'users.$.online': false}
+                                $set: {'users.$.online': false, 'users.$.lastSeen': dateNow}
                             }, (err, user) => {
                                 if (err) console.log('main chat user log out update error ', err);
 
