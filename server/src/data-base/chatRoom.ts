@@ -4,8 +4,7 @@ import messagesSchema from "./messages";
 import {TypeChatRooms} from "../model/type-chat-rooms";
 
 
-export const chatRoomSchema = new mongoose.Schema();
-chatRoomSchema.add({
+export const chatRoomSchema = new mongoose.Schema({
     id: String,
     name: String,
     avatar: String,
@@ -22,7 +21,7 @@ chatRoomSchema.methods.getActiveUsers = function() {
     }
 };
 
-export const ChatRoomModel = mongoose.model('ChatRoomSchema', chatRoomSchema);
+export const ChatRoomModel = mongoose.model('ChatRoomModel', chatRoomSchema);
 
 const chatOptions = {
     new: true,

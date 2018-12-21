@@ -11,6 +11,7 @@ export interface User {
   action: UserAction;
   id: string;
   online: boolean;
-  // direct: ChatRoom;
+  direct: ChatRoom[];
+  chat: ChatRoom[];
   lastSeen: Date;
 }

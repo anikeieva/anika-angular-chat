@@ -82,7 +82,6 @@ export class ChatServer {
 
             // this.clearMongooseData();
 
-
             ChatRoomModel.find((err, room) => {
                 if (err) throw err;
 
@@ -99,16 +98,14 @@ export class ChatServer {
                 });
             }));
 
-            socket.on('requestForDirectMessagesRoom', ( async (id) => {
+            socket.on('requestForDirectMessagesRoom', ( async (from, to) => {
 
-                if (id) {
-                    await ChatRoomModel.findOne({id: id}, (err, room) => {
+                    await UserModel.findOne({id: to.id, direct: {$elemMatch: {id: from.id}}}, (err, room) => {
                         if (err) throw  err;
 
                         console.log('directMessagesRoom', room);
                         this.io.emit('directMessagesRoom', room);
                     });
-                }
             }));
 
             socket.on('requestForUserById', ( async (id) => {
@@ -120,12 +117,26 @@ export class ChatServer {
                 });
             }));
 
-            socket.on('requestForAllChatRooms', ( async () => {
-                await ChatRoomModel.find({}, (err, rooms) => {
+            socket.on('requestForAllChatRooms', ( async (user: User) => {
+                await ChatRoomModel.findOne({id: 'main-chat'}, (err, mainChatRoom) => {
                     if (err) throw  err;
 
-                    console.log('getAllChatRooms', rooms);
-                    this.io.emit('getAllChatRooms', rooms);
+                    let rooms = [];
+                    rooms.push(mainChatRoom);
+
+                    UserModel.findOne({id: user.id}, (err, item) => {
+                        if (err) throw  err;
+
+                        console.log('user.direct: ', item.direct);
+
+                        for (let i = 0; i < item.direct.length; i++) {
+                            rooms.push(item.direct[i]);
+                        }
+
+                        console.log('rooms: ', rooms);
+
+                        this.io.emit('getAllChatRooms', rooms);
+                    });
                 });
             }));
 
@@ -196,6 +207,54 @@ export class ChatServer {
                             if (err) throw  err;
                         });
 
+                        await UserModel.findOne({id: user.id}, async (user) => {
+                            await UserModel.find((err, items) => {
+                                if (err) throw  err;
+
+                                console.log('users items: ', items);
+
+                                if (items.length > 0) {
+                                    items.forEach(async (item) => {
+
+                                        await UserModel.findOne({
+                                            id: user.id,
+                                            direct: {$elemMatch: {id: item.id}}
+                                        }, async (err, userChat) => {
+                                            if (err) {
+                                                console.log(err);
+                                            }
+
+                                            if (!userChat) {
+                                                console.log('no userChat');
+
+                                                const itemRoom = new ChatRoomModel({
+                                                    _id: new mongoose.Types.ObjectId(),
+                                                    id: item.id,
+                                                    name: `${item.firstName} ${item.lastName}`,
+                                                    avatar: item.avatar,
+                                                    type: TypeChatRooms.direct,
+                                                    lastMessage: 'direct'
+                                                });
+                                                user.direct.push(itemRoom);
+                                                this.io.to(user.id).emit('user', user);
+
+                                                await user.save((err) => {
+                                                    if (err) throw err;
+                                                });
+
+                                                console.log('userChat after update: ', user);
+                                            } else {
+                                                console.log('userChat');
+                                            }
+                                        });
+                                    });
+                                }
+                            });
+                        });
+
+
+                        console.log('after update user 2: ', user);
+
                     } else {
 
                         user.id = users.length + 1 + '';
@@ -213,40 +272,51 @@ export class ChatServer {
                             online: user.online
                         });
 
-                        await newUser.save((err) => {
-                            if (err) throw err;
+                        const newUserRoom = new ChatRoomModel({
+                            _id: new mongoose.Types.ObjectId(),
+                            id: newUser.id,
+                            name: `${newUser.firstName} ${newUser.lastName}`,
+                            avatar: newUser.avatar,
+                            type: TypeChatRooms.direct,
+                            lastMessage: 'direct'
                         });
 
-                        socket.join(user.id);
-
-                        await ChatRoomModel.findOne({id: user.id}, ( async (err, room) => {
+                        await ChatRoomModel.findOne({id: 'main-chat'}, (err, room) => {
                             if (err) throw  err;
 
-                            if (!room) {
-                                const directMessagesRoom = new ChatRoomModel({
-                                    _id: new mongoose.Types.ObjectId(),
-                                    id: user.id,
-                                    name: `${user.firstName} ${user.lastName}`,
-                                    avatar: user.avatar,
-                                    type: TypeChatRooms.direct,
-                                    lastMessage: 'direct'
-                                });
+                            newUser.chat.push(room);
+                        });
 
-                                await directMessagesRoom.save((err) => {
-                                    if (err) throw  err;
+                        newUser.direct.push(newUserRoom);
+
+                        await UserModel.find(async (err, items) => {
+                            if (err) throw  err;
+
+                            console.log('users items: ', items);
+
+                            if (items.length > 0) {
+                                items.forEach(async (item) => {
+                                    const itemRoom = new ChatRoomModel({
+                                        _id: new mongoose.Types.ObjectId(),
+                                        id: item.id,
+                                        name: `${item.firstName} ${item.lastName}`,
+                                        avatar: item.avatar,
+                                        type: TypeChatRooms.direct,
+                                        lastMessage: 'direct'
+                                    });
+                                    newUser.direct.push(itemRoom);
+                                    console.log('newUser after: ', newUser);
                                 });
                             }
-                        }));
+                            console.log('after users items: ', items);
 
-                        await ChatRoomModel.find({}, (err, rooms) => {
-                            if (err) throw  err;
-
-                            console.log('getAllChatRooms', rooms);
-                            this.io.emit('getAllChatRooms', rooms);
+                            await newUser.save((err) => {
+                                if (err) throw err;
+                            });
+                            socket.join(newUser.id);
+                            this.io.to(newUser.id).emit('user', newUser);
                         });
                     }
-
-                    this.io.to(user.id).emit('user', user);
                 });
             });
 
@@ -296,6 +366,12 @@ export class ChatServer {
                         });
                     }
 
+                    UserModel.findOneAndUpdate({id: user.id, chat: {$elemMatch: {id: 'main-chat'}}},{
+                        $set: {'chat.$': room}
+                    }, (err) => {
+                        if (err) throw  err;
+                    });
+
                     this.io.emit('mainChatRoom', room);
                     console.log('main chat room added or updated user', room);
                 });
@@ -316,6 +392,21 @@ export class ChatServer {
 
                     console.log('main chat room messages', room);
 
+                    UserModel.find((err, users) => {
+                        if (err) console.log('main chat message err: ', err);
+
+                        users.forEach(async (user) => {
+                            await UserModel.findOneAndUpdate({id: user.id, chat: {$elemMatch: {id: 'main-chat'}}},{
+                                $set: {'chat.$': room}
+                            },(err) => {
+                                if (err) {
+                                    console.log(err);
+                                }
+                            });
+
+                        });
+                    });
+
                     this.io.emit('mainChatMessage', m);
 
                 });
@@ -328,6 +419,35 @@ export class ChatServer {
                     this.io.emit('mainChatMessages', room.messages);
                 }
             });
+
+            socket.on('directMessagesRoomMessage', async (message: Message, to: User) => {
+
+                // await ChatRoomModel.findOne({id: whom.id}, async (err, room) => {
+                //
+                //     if (err) console.log('direct message err: ',err);
+                //
+                //     room.messages.push(message);
+                //
+                //     await room.save((err) => {
+                //         if (err) throw err;
+                //     });
+                //
+                //     console.log('direct room messages', room);
+                // });
+
+                await UserModel.update({id: to.id, direct: {$elemMatch: {id: to.id}}},
+                {$push: {'direct.$.messages': message}});
+
+
+                // await ChatRoomModel.findOne({id: whom.id}, (err, room) => {
+                //     if (err) throw  err;
+                //
+                //     if (room) {
+                //         this.io.to(message.from.id).to(whom.id).emit('directMessagesRoomMessages', room.messages);
+                //     }
+                // });
+            });
+
 
             socket.on('userLogOut', async (user: User) => {
 
@@ -369,6 +489,21 @@ export class ChatServer {
 
                             await room.save((err) => {
                                 if (err) throw err;
+                            });
+
+                            UserModel.find((err, users) => {
+                                if (err) console.log('main chat message err: ', err);
+
+                                users.forEach(async (user) => {
+                                    await UserModel.findOneAndUpdate({id: user.id, chat: {$elemMatch: {id: 'main-chat'}}},{
+                                        $set: {'chat.$': room}
+                                    },(err) => {
+                                        if (err) {
+                                            console.log(err);
+                                        }
+                                    });
+
+                                });
                             });
 
                             this.io.emit('mainChatRoom', room);

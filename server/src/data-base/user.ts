@@ -1,8 +1,6 @@
 import * as mongoose from "mongoose";
-// import {chatRoomSchema} from "./chatRoom";
 
-export const userSchema = new mongoose.Schema();
-userSchema.add({
+export const userSchema = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
     firstName: String,
     lastName: String,
@@ -13,8 +11,9 @@ userSchema.add({
     action: Object,
     id: String,
     online: Boolean,
-    // direct: [chatRoomSchema]
-    lastSeen: Date
+    lastSeen: Date,
+    direct: [mongoose.Schema.Types.Mixed],
+    chat: [mongoose.Schema.Types.Mixed]
 });
 
 export const UserModel = mongoose.model('User', userSchema);

@@ -1,4 +1,4 @@
-// import {ChatRoom} from "./chat-room";
+import {ChatRoom} from "./chat-room";
 
 export interface User {
     firstName: string;
@@ -10,6 +10,7 @@ export interface User {
     action: object;
     id: string;
     online: boolean;
-    // direct: ChatRoom;
+    direct: [ChatRoom];
+    chat: [ChatRoom];
     lastSeen: Date;
 }
