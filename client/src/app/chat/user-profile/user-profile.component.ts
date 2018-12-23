@@ -1,5 +1,5 @@
 import {
-  Component, Inject,
+  Component, Inject, InjectionToken,
   OnInit,
 } from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
@@ -7,6 +7,7 @@ import {User} from "../../shared/model/user";
 import {SocketService} from "../../shared/servises/socket.service";
 import {SESSION_STORAGE, StorageService} from "angular-webstorage-service";
 import {getUserStorageToken} from "../../shared/model/getStorageToken";
+import {ChatRoom} from "../../shared/model/chat-room";
 
 @Component({
   selector: 'app-user-profile',

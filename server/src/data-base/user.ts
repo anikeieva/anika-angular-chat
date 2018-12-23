@@ -12,8 +12,7 @@ export const userSchema = new mongoose.Schema({
     id: String,
     online: Boolean,
     lastSeen: Date,
-    direct: [mongoose.Schema.Types.Mixed],
-    chat: [mongoose.Schema.Types.Mixed]
+    direct: [mongoose.Schema.Types.Mixed]
 });
 
 export const UserModel = mongoose.model('User', userSchema);

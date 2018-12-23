@@ -59,7 +59,7 @@ export class ChatServer {
             saveUninitialized: true
         });
         this.app.use(this.sessionMiddleware);
-        this.io.use(sharedSession(this.sessionMiddleware));
+        this.io.use(sharedSession(this.sessionMiddleware, {autoSave: true}));
     }
 
     private clearMongooseData() {
@@ -237,6 +237,7 @@ export class ChatServer {
                                                 });
                                                 user.direct.push(itemRoom);
                                                 this.io.to(user.id).emit('user', user);
+                                                socket.handshake.session.user = user;
 
                                                 await user.save((err) => {
                                                     if (err) throw err;
@@ -281,12 +282,6 @@ export class ChatServer {
                             lastMessage: 'direct'
                         });
 
-                        await ChatRoomModel.findOne({id: 'main-chat'}, (err, room) => {
-                            if (err) throw  err;
-
-                            newUser.chat.push(room);
-                        });
-
                         newUser.direct.push(newUserRoom);
 
                         await UserModel.find(async (err, items) => {
@@ -315,6 +310,7 @@ export class ChatServer {
                             });
                             socket.join(newUser.id);
                             this.io.to(newUser.id).emit('user', newUser);
+                            socket.handshake.session.user = newUser;
                         });
                     }
                 });
@@ -366,12 +362,6 @@ export class ChatServer {
                         });
                     }
 
-                    UserModel.findOneAndUpdate({id: user.id, chat: {$elemMatch: {id: 'main-chat'}}},{
-                        $set: {'chat.$': room}
-                    }, (err) => {
-                        if (err) throw  err;
-                    });
-
                     this.io.emit('mainChatRoom', room);
                     console.log('main chat room added or updated user', room);
                 });
@@ -391,24 +381,7 @@ export class ChatServer {
                     });
 
                     console.log('main chat room messages', room);
-
-                    UserModel.find((err, users) => {
-                        if (err) console.log('main chat message err: ', err);
-
-                        users.forEach(async (user) => {
-                            await UserModel.findOneAndUpdate({id: user.id, chat: {$elemMatch: {id: 'main-chat'}}},{
-                                $set: {'chat.$': room}
-                            },(err) => {
-                                if (err) {
-                                    console.log(err);
-                                }
-                            });
-
-                        });
-                    });
-
                     this.io.emit('mainChatMessage', m);
-
                 });
             });
 
@@ -422,30 +395,9 @@ export class ChatServer {
 
             socket.on('directMessagesRoomMessage', async (message: Message, to: User) => {
 
-                // await ChatRoomModel.findOne({id: whom.id}, async (err, room) => {
-                //
-                //     if (err) console.log('direct message err: ',err);
-                //
-                //     room.messages.push(message);
-                //
-                //     await room.save((err) => {
-                //         if (err) throw err;
-                //     });
-                //
-                //     console.log('direct room messages', room);
-                // });
-
                 await UserModel.update({id: to.id, direct: {$elemMatch: {id: to.id}}},
                 {$push: {'direct.$.messages': message}});
 
-
-                // await ChatRoomModel.findOne({id: whom.id}, (err, room) => {
-                //     if (err) throw  err;
-                //
-                //     if (room) {
-                //         this.io.to(message.from.id).to(whom.id).emit('directMessagesRoomMessages', room.messages);
-                //     }
-                // });
             });
 
 
@@ -518,7 +470,10 @@ export class ChatServer {
 
             socket.on('disconnect', () => {
                 console.log('Client disconnected');
-
+                console.log('socket: ',socket);
+                console.log('socket.id', socket.id);
+                console.log('socket.session', socket.handshake.session.user);
+                this.io.emit('user', socket.handshake.session.user);
             });
         });
     }

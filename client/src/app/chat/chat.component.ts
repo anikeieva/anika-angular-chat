@@ -1,10 +1,12 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, InjectionToken, OnInit} from '@angular/core';
 import {User} from '../shared/model/user';
 import {SharedService} from '../shared/servises/shared.service';
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
 import {SocketService} from "../shared/servises/socket.service";
 import {ChatRoom} from "../shared/model/chat-room";
 import {getChatRoomStorageToken, getUserStorageToken} from "../shared/model/getStorageToken";
+
+const currentUserToken = 'CURRENT_USER_id_TOKEN';
 
 @Component({
   selector: 'app-chat',
@@ -16,105 +18,100 @@ export class ChatComponent implements OnInit {
   public userToken: string;
   public rooms: ChatRoom[];
   public roomsToken: string;
-  // public allChatRoomsToken: string;
+  public currentUserId: string;
 
   constructor(private sharedService: SharedService,
               @Inject(SESSION_STORAGE) private storage: StorageService,
               private  socketService: SocketService) {}
 
   ngOnInit() {
-    // this.getChatRoom();
-    this.getUserAll();
+    this.getUser();
+    this.socketService.initSocket();
     console.log(this.socketService);
   }
 
-  // getChatRoom() {
-  //   this.allChatRoomsToken = getChatRoomStorageToken('allRooms');
-  //
-  //   this.socketService.onGetAllChatRooms().subscribe((rooms: ChatRoom[]) => {
-  //       console.log('rooms: ', rooms);
-  //       this.rooms = rooms;
-  //       this.storage.set(this.allChatRoomsToken, this.rooms);
-  //   }, (err) => {
-  //     if (err) {
-  //       this.rooms = this.storage.get(this.allChatRoomsToken);
-  //       console.log('rooms: ', this.rooms);
-  //     }
-  //   });
-  // }
-
-
-  // getChatRoom() {
-  //   this.mainChatRoomToken = getChatRoomStorageToken('main-chat');
-  //   this.rooms = [];
-  //
-  //   this.socketService.onMainChatRoom().subscribe(mainChatRoom => {
-  //     this.mainChatRoom = mainChatRoom;
-  //     if (!this.rooms.some((item) => item.id === this.mainChatRoom.id)) {
-  //       this.rooms.push(this.mainChatRoom);
-  //     }
-  //
-  //     this.storage.set(this.mainChatRoomToken, this.mainChatRoom);
-  //     console.log(this.mainChatRoom);
-  //   }, (err) => {
-  //     if (err) {
-  //       this.mainChatRoom = this.storage.get(this.mainChatRoomToken);
-  //     }
-  //   });
-  //
-  //   console.log(this.mainChatRoom);
-  // }
-
-  getUserAll() {
-    this.sharedService.listenUser().subscribe(paramBefore => {
-      this.getUser();
-    });
-
-    this.getUser();
-  }
-
   getUser() {
+    this.sharedService.getUser().subscribe(user => this.user = user);
+
+    if (!this.user) {
+      this.currentUserId = this.storage.get(currentUserToken);
+      this.userToken = getUserStorageToken(this.currentUserId);
+      console.log(this.userToken);
+      this.user = this.storage.get(this.userToken);
+      console.log(this.user);
+    }
     this.socketService.onUser().subscribe((user: User) => {
 
       this.user = user;
+      this.currentUserId = user.id;
+      console.log(this.currentUserId);
       console.log(user);
 
       this.userToken = getUserStorageToken(user.id);
-      this.roomsToken = getChatRoomStorageToken(  `all_user-id=${user.id}`);
-
+      this.storage.set(currentUserToken, this.currentUserId);
       console.log(this.userToken);
-      console.log(this.roomsToken);
       this.storage.set(this.userToken, this.user);
-      this.sharedService.setUser(user);
+      this.sharedService.setUser(this.user);
       console.log('get user from server');
 
+      this.getUserDirects();
 
-      this.socketService.sendRequestForAllChatRooms(this.user);
+    }, (err) => {
+      if (err) {
+
+        // if (this.userToken) {
+        this.sharedService.getUser().subscribe(user => this.user = user);
+        console.log(this.user);
+        console.log(this.userToken);
+        console.log(this.storage.get(this.userToken));
+          this.user = this.storage.get(this.userToken);
+        console.log(this.user);
+          this.getUserDirects();
+          console.log(this.userToken);
+        // }
+        console.log(this.user);
+        console.log('get user from storage');
+      }
+    });
+
+
+    console.log(this.user);
+    console.log(this.userToken);
+    this.storage.set(this.userToken, this.user);
+    console.log(this.user);
+  }
+
+  getUserDirects() {
+
+    if (!this.user) {
+      this.user = this.storage.get(this.userToken);
+      console.log(this.user);
+    }
+
+    if (this.user) {
+      console.log(this.userToken);
+      console.log(this.user);
+      this.roomsToken = getChatRoomStorageToken(  `all_user-id=${this.user.id}`);
+      console.log(this.roomsToken);
+
+      if (!this.rooms) this.rooms = this.storage.get(this.roomsToken);
+
+      console.log(this.rooms);
+
+      if (this.socketService.socket) this.socketService.sendRequestForAllChatRooms(this.user);
       this.socketService.onGetAllChatRooms().subscribe((rooms) => {
         this.rooms = rooms;
         console.log('rooms: ',rooms);
         this.storage.set(this.roomsToken, this.rooms);
+      }, (err) => {
+        if (err) {
+          this.rooms = this.storage.get(this.roomsToken);
+        }
       });
 
-    }, (err) => {
-      if (err) {
-        this.user = this.storage.get(this.userToken);
-        console.log(this.userToken);
-        console.log(this.user);
-        this.rooms = this.storage.get(this.roomsToken);
-        console.log('get user from storage');
-      }
-      console.log('no err');
-      console.log(this.userToken);
-    });
+      this.storage.set(this.roomsToken, this.rooms);
 
-    // if (this.socketService.socket) {
-    //   setTimeout(() => {
-    //     console.log('user: ',this.user);
-    //     this.userToken = getUserStorageToken(this.user.id);
-    //     this.roomsToken = getChatRoomStorageToken(  `all_user-id=${this.user.id}`);
-    //   }, 500);
-    // }
+    }
   }
 
   exit() {
@@ -124,8 +121,10 @@ export class ChatComponent implements OnInit {
   }
 
   getQueryParams(room) {
-    if (room.type === 'direct') {
-      return {id: room.id}
+    if (room) {
+      if (room.type === 'direct') {
+        return {id: room.id}
+      }
     }
   }
 }

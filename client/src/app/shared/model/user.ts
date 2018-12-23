@@ -12,6 +12,5 @@ export interface User {
   id: string;
   online: boolean;
   direct: ChatRoom[];
-  chat: ChatRoom[];
   lastSeen: Date;
 }

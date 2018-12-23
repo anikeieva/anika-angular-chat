@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  Component, ElementRef, Inject,
+  Component, ElementRef, Inject, InjectionToken,
   OnInit, QueryList, ViewChild, ViewChildren,
 } from '@angular/core';
 import {ActivatedRoute} from "@angular/router";

@@ -1,7 +1,7 @@
 import {
   AfterViewInit,
   Component,
-  ElementRef, Inject,
+  ElementRef, Inject, InjectionToken,
   OnInit,
   QueryList,
   ViewChild,

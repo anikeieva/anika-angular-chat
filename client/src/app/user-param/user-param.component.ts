@@ -1,4 +1,4 @@
-import {Component, Inject, Input, OnInit} from '@angular/core';
+import {Component, Inject, InjectionToken, Input, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {User} from '../shared/model/user';
 import {SharedService} from '../shared/servises/shared.service';
@@ -25,7 +25,7 @@ export class UserParamComponent implements OnInit {
   private currentAction: UserAction;
   public selectedAvatar: string | ArrayBuffer;
   private userParametersBeforeEdit: User;
-  public userToken: string;
+  public userToken: InjectionToken<StorageService>;
 
   constructor(private sharedService: SharedService,
               private dialog: MatDialog,
@@ -79,14 +79,17 @@ export class UserParamComponent implements OnInit {
 
     this.socketService.initSocket();
     this.socketService.sendUser(this.user);
+
     this.socketService.onUser().subscribe((user: User) => {
       if (user) {
+        console.log(user);
         this.user = user;
         this.userToken = getUserStorageToken(user.id);
+        this.storage.set(this.userToken, user);
+        this.sharedService.setUser(user);
+        this.sharedService.updateUser.emit(user);
       }
     });
-    this.sharedService.setUser(this.user);
-    this.sharedService.updateUser.emit(this.user);
   }
 
   private getRandomInt(max: number) {
