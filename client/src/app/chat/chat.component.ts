@@ -1,12 +1,11 @@
-import {Component, Inject, InjectionToken, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {User} from '../shared/model/user';
 import {SharedService} from '../shared/servises/shared.service';
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
 import {SocketService} from "../shared/servises/socket.service";
 import {ChatRoom} from "../shared/model/chat-room";
 import {getChatRoomStorageToken, getUserStorageToken} from "../shared/model/getStorageToken";
-
-const currentUserToken = 'CURRENT_USER_id_TOKEN';
+import {currentUserToken} from "../shared/model/getStorageToken";
 
 @Component({
   selector: 'app-chat',
@@ -69,6 +68,7 @@ export class ChatComponent implements OnInit {
       if (!this.rooms) this.rooms = this.storage.get(this.roomsToken);
 
       if (this.socketService.socket) this.socketService.sendRequestForAllChatRooms(this.user);
+
       this.socketService.onGetAllChatRooms().subscribe((rooms) => {
         this.rooms = rooms;
         console.log('rooms: ',rooms);

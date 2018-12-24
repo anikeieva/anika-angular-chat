@@ -5,3 +5,5 @@ export function getChatRoomStorageToken (id) {
 export function getUserStorageToken (id) {
   return `USER_ID=${id}_STORAGE_TOKEN`;
 }
+
+export const currentUserToken = 'CURRENT_USER_id_TOKEN';
