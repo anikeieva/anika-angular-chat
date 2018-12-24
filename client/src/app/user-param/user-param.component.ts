@@ -25,7 +25,7 @@ export class UserParamComponent implements OnInit {
   private currentAction: UserAction;
   public selectedAvatar: string | ArrayBuffer;
   private userParametersBeforeEdit: User;
-  public userToken: InjectionToken<StorageService>;
+  public userToken: string;
 
   constructor(private sharedService: SharedService,
               private dialog: MatDialog,

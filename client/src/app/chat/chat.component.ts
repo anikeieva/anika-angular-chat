@@ -26,59 +26,32 @@ export class ChatComponent implements OnInit {
 
   ngOnInit() {
     this.getUser();
-    this.socketService.initSocket();
     console.log(this.socketService);
   }
 
   getUser() {
-    this.sharedService.getUser().subscribe(user => this.user = user);
-
     if (!this.user) {
       this.currentUserId = this.storage.get(currentUserToken);
       this.userToken = getUserStorageToken(this.currentUserId);
-      console.log(this.userToken);
       this.user = this.storage.get(this.userToken);
-      console.log(this.user);
+      console.log('user: ', this.user);
     }
     this.socketService.onUser().subscribe((user: User) => {
 
       this.user = user;
       this.currentUserId = user.id;
-      console.log(this.currentUserId);
-      console.log(user);
-
       this.userToken = getUserStorageToken(user.id);
       this.storage.set(currentUserToken, this.currentUserId);
-      console.log(this.userToken);
       this.storage.set(this.userToken, this.user);
-      this.sharedService.setUser(this.user);
-      console.log('get user from server');
 
       this.getUserDirects();
-
     }, (err) => {
       if (err) {
-
-        // if (this.userToken) {
-        this.sharedService.getUser().subscribe(user => this.user = user);
-        console.log(this.user);
-        console.log(this.userToken);
-        console.log(this.storage.get(this.userToken));
-          this.user = this.storage.get(this.userToken);
-        console.log(this.user);
-          this.getUserDirects();
-          console.log(this.userToken);
-        // }
-        console.log(this.user);
-        console.log('get user from storage');
+        this.user = this.storage.get(this.userToken);
+        this.getUserDirects();
       }
     });
-
-
-    console.log(this.user);
-    console.log(this.userToken);
-    this.storage.set(this.userToken, this.user);
-    console.log(this.user);
+    console.log('user: ', this.user);
   }
 
   getUserDirects() {
@@ -89,14 +62,11 @@ export class ChatComponent implements OnInit {
     }
 
     if (this.user) {
-      console.log(this.userToken);
       console.log(this.user);
       this.roomsToken = getChatRoomStorageToken(  `all_user-id=${this.user.id}`);
       console.log(this.roomsToken);
 
       if (!this.rooms) this.rooms = this.storage.get(this.roomsToken);
-
-      console.log(this.rooms);
 
       if (this.socketService.socket) this.socketService.sendRequestForAllChatRooms(this.user);
       this.socketService.onGetAllChatRooms().subscribe((rooms) => {
@@ -109,13 +79,10 @@ export class ChatComponent implements OnInit {
         }
       });
 
-      this.storage.set(this.roomsToken, this.rooms);
-
     }
   }
 
   exit() {
-    // this.user.online = false;
     this.socketService.initSocket();
     this.socketService.sendUserLogOut(this.user);
   }
