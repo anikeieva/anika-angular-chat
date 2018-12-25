@@ -126,13 +126,16 @@ export class UserParamComponent implements OnInit {
     };
 
     console.log('param', param);
+    console.log(this.user);
 
     this.socketService.initSocket();
+    console.log(this.user);
     this.socketService.sendUser(this.user);
     if (this.user.action.joined) {
       this.socketService.sendMainChatUser(this.user);
     }
     this.sharedService.editUser(param);
+    console.log(this.user);
     this.storage.set(this.userToken, this.user);
 
   }

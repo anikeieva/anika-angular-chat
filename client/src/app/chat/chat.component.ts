@@ -24,7 +24,18 @@ export class ChatComponent implements OnInit {
               private  socketService: SocketService) {}
 
   ngOnInit() {
+    this.sharedService.listenUser().subscribe(param => {
+      console.log('param: ', param);
+      this.user = param.paramAfter;
+      console.log(this.user);
+
+      if (!this.user) {
+        this.getUser();
+      }
+    });
+
     this.getUser();
+
     console.log(this.socketService);
   }
 
@@ -35,18 +46,22 @@ export class ChatComponent implements OnInit {
       this.user = this.storage.get(this.userToken);
       console.log('user: ', this.user);
     }
+
     this.socketService.onUser().subscribe((user: User) => {
 
       this.user = user;
+      console.log('user: ', this.user);
       this.currentUserId = user.id;
       this.userToken = getUserStorageToken(user.id);
       this.storage.set(currentUserToken, this.currentUserId);
       this.storage.set(this.userToken, this.user);
+      this.sharedService.setUser(user);
 
       this.getUserDirects();
     }, (err) => {
       if (err) {
         this.user = this.storage.get(this.userToken);
+        console.log('user: ', this.user);
         this.getUserDirects();
       }
     });
