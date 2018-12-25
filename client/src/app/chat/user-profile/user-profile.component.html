@@ -1,4 +1,4 @@
 <h4>user-profile</h4>
 
 <p>name: {{directRoomUser?.firstName}} {{directRoomUser?.lastName}}</p>
-<a routerLink="../direct-messages-room" [queryParams]="{id: directRoomUser?.id}">sent a message</a>
+<a routerLink="../direct-messages-room" [queryParams]="{from: user?.id, to: directRoomUser?.id}">sent a message</a>

@@ -1,4 +1,4 @@
-import {EventEmitter, Inject, Injectable, Output} from '@angular/core';
+import {EventEmitter, Injectable, Output} from '@angular/core';
 import {User} from '../model/user';
 import {BehaviorSubject, Observable, of} from 'rxjs';
 

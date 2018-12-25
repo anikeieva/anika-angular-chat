@@ -22,7 +22,7 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
 
   public directRoomUser: User;
   public user: User;
-  public id: string;
+  public roomId: string;
   public messageContent: string;
   public messages: Message[];
   private message: Message;
@@ -48,28 +48,28 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
 
   private getDirectRoomUser(): void {
     this.route.queryParams.subscribe(param => {
-      this.id = param.id;
-      this.directRoomUserToken = getUserStorageToken(this.id);
+      this.roomId = `${param.from}${param.to}`;//soon it will be on server
+      this.directRoomUserToken = getUserStorageToken(param.to);
 
       if (this.socketService.socket) {
-        this.socketService.sendRequestForUserById(this.id);
+        this.socketService.sendRequestForUserById(param.to);
       }
 
       this.socketService.onUserById().subscribe((user: User) => {
         if (user) {
           this.directRoomUser = user;
           this.storage.set(this.directRoomUserToken, this.directRoomUser);
-          console.log('user: ',this.directRoomUser);
+          console.log('direct room user: ',this.directRoomUser);
         }
       }, (err) => {
         if (err) {
           this.directRoomUser = this.storage.get(this.directRoomUserToken);
-          console.log('user: ',this.directRoomUser);
+          console.log('direct room user: ',this.directRoomUser);
         }
       });
     });
 
-    console.log('user: ',this.directRoomUser);
+    console.log('direct room user: ',this.directRoomUser);
   }
 
   getUser() {
@@ -91,6 +91,7 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
     });
 
     this.storage.set(this.userToken, this.user);
+    console.log('user: ', this.user);
   }
 
   getAllUsers() {
@@ -114,10 +115,10 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
   }
 
   getChatRoom() {
-    this.chatRoomToken = getChatRoomStorageToken(this.id);
+    this.chatRoomToken = getChatRoomStorageToken(this.roomId);
 
     if (this.socketService.socket) {
-      this.socketService.sendRequestForDirectMessagesRoom(this.user ,this.id);
+      this.socketService.sendRequestForDirectMessagesRoom(this.user ,this.roomId);
     }
 
     this.socketService.onDirectMessagesRoom().subscribe(room => {

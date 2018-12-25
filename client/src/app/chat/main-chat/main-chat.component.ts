@@ -30,7 +30,6 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   private message: Message;
   public user: User;
   public timeNow: Date;
-  public subscription;
   public mainChatRoom: ChatRoom;
   public mainChatRoomToken: string;
   public userToken: string;
