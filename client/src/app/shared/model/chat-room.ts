@@ -10,6 +10,8 @@ export interface IChatRoomOptions {
   users: Array<User>;
   activeUsers: Array<User>;
   messages: Array<Message>;
+  from: string;
+  to: string;
 }
 
 export class ChatRoom {
@@ -21,6 +23,8 @@ export class ChatRoom {
   users: Array<User>;
   activeUsers: Array<User>;
   messages: Array<Message>;
+  from: string;
+  to: string;
 
   constructor(options: IChatRoomOptions) {
     this.id = options.id;
@@ -31,5 +35,7 @@ export class ChatRoom {
     this.users = options.users;
     this.activeUsers = options.activeUsers;
     this.messages = options.messages;
+    this.from = options.from;
+    this.to = options.to;
   }
 }

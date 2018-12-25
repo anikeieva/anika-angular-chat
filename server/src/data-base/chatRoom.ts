@@ -12,7 +12,9 @@ export const chatRoomSchema = new mongoose.Schema({
     lastMessage: String,
     users: [userSchema],
     activeUsers: [userSchema],
-    messages: [messagesSchema]
+    messages: [messagesSchema],
+    from: String,
+    to: String
 });
 
 chatRoomSchema.methods.getActiveUsers = function() {

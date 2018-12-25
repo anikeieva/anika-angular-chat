@@ -1,14 +1,14 @@
 import {
-  Component, Inject, InjectionToken,
+  Component, Inject,
   OnInit,
 } from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {User} from "../../shared/model/user";
 import {SocketService} from "../../shared/servises/socket.service";
 import {SESSION_STORAGE, StorageService} from "angular-webstorage-service";
-import {currentUserToken, getUserStorageToken} from "../../shared/model/getStorageToken";
-import {ChatRoom} from "../../shared/model/chat-room";
+import {currentUserToken, getChatRoomStorageToken, getUserStorageToken} from "../../shared/model/getStorageToken";
 import {SharedService} from "../../shared/servises/shared.service";
+import {ChatRoom} from "../../shared/model/chat-room";
 
 @Component({
   selector: 'app-user-profile',
@@ -22,6 +22,9 @@ export class UserProfileComponent implements OnInit {
   public user: User;
   public currentUserId: string;
   public userToken: string;
+  private directRoomId: string;
+  public directRoomToken: string;
+  public directRoom: ChatRoom;
 
   constructor(private route: ActivatedRoute,
               private socketService: SocketService,
@@ -29,32 +32,9 @@ export class UserProfileComponent implements OnInit {
               private sharedService: SharedService) {}
 
   ngOnInit(): void {
-    this.getDirectRoomUser();
     this.getUser();
-  }
-
-  getDirectRoomUser() {
-    this.route.queryParams.subscribe(param => {
-      const id = param.id;
-      this.directRoomUserToken = getUserStorageToken(id);
-
-      if (this.socketService.socket) {
-        this.socketService.sendRequestForUserById(id);
-      }
-
-      this.socketService.onUserById().subscribe((user: User) => {
-        if (user) {
-          this.directRoomUser = user;
-          this.storage.set(this.directRoomUserToken, this.directRoomUser);
-        }
-      }, (err) => {
-        if (err) {
-          this.directRoomUser = this.storage.get(this.directRoomUserToken);
-        }
-      });
-    });
-
-    console.log('user: ',this.directRoomUser);
+    this.getDirectRoomUser();
+    // this.getDirectRoomId();
   }
 
   getUser() {
@@ -82,4 +62,75 @@ export class UserProfileComponent implements OnInit {
     });
     console.log('user: ', this.user);
   }
+
+  getDirectRoomUser() {
+    this.route.queryParams.subscribe(param => {
+      const id = param.id;
+      console.log(id);
+      this.directRoomUserToken = getUserStorageToken(id);
+
+      if (!this.socketService.socket) {
+        this.socketService.initSocket();
+      }
+
+      if (!this.directRoomUser) {
+        this.directRoomUser = this.storage.get(this.directRoomUserToken);
+      }
+
+      this.socketService.sendRequestForUserById(id);
+
+      this.socketService.onUserById().subscribe((user: User) => {
+        if (user) {
+          this.directRoomUser = user;
+          this.storage.set(this.directRoomUserToken, this.directRoomUser);
+          // this.getDirectRoomId();
+        }
+      }, (err) => {
+        if (err) {
+          this.directRoomUser = this.storage.get(this.directRoomUserToken);
+          // this.getDirectRoomId();
+        }
+      });
+    });
+
+    console.log('direct user: ',this.directRoomUser);
+    this.getDirectRoomId()
+  }
+
+  getDirectRoomId() {
+
+    console.log(this.user);
+    console.log(this.directRoomUser);
+    console.log(this.directRoomId);
+
+    if (!this.directRoom) {
+      this.directRoom = this.storage.get(this.directRoomToken);
+      console.log(this.directRoom);
+    }
+
+    if (!this.socketService.socket) {
+      this.socketService.initSocket();
+    }
+
+    this.socketService.sendRequestForDirectMessagesRoomId(this.user.id, this.directRoomUser.id);
+    this.socketService.onDirectMessagesRoom().subscribe((room: ChatRoom) => {
+      console.log('room: ',room);
+      this.directRoom = room;
+      this.directRoomId = room.id;
+      this.directRoomToken = getChatRoomStorageToken(room.id);
+      this.storage.set(this.directRoomToken, room);
+      console.log(this.directRoomId);
+      console.log(this.directRoom);
+    }, (err) => {
+      if(err) {
+        console.log(this.directRoomId);
+        this.directRoom = this.storage.get(this.directRoomToken);
+        console.log(this.directRoom);
+      }
+    });
+  }
+
+  // onSentMessage() {
+  //   this.getDirectRoomId();
+  // }
 }

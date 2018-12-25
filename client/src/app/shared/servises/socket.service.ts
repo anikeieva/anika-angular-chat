@@ -100,8 +100,12 @@ export class SocketService {
     })
   }
 
-  public sendRequestForDirectMessagesRoom(from, to): void {
-    this.socket.emit('requestForDirectMessagesRoom', from, to);
+  public sendRequestForDirectMessagesRoomId(fromId, toId): void {
+    this.socket.emit('requestForDirectMessagesRoomId', fromId, toId);
+  }
+
+  public sendRequestForDirectMessagesRoom(id, user): void {
+    this.socket.emit('requestForDirectMessagesRoom', id, user);
   }
 
   public onDirectMessagesRoom(): Observable<ChatRoom> {
