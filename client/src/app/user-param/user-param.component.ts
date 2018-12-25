@@ -166,12 +166,17 @@ export class UserParamComponent implements OnInit {
       this.user.avatar = this.selectedAvatar;
 
       console.log('user, own avatar:', this.user);
+
+      if (!this.socketService.socket) {
+        this.socketService.initSocket();
+      }
+
       this.socketService.sendUser(this.user);
       if (this.user.action.joined) {
         this.socketService.sendMainChatUser(this.user);
       }
       this.storage.set(this.userToken, this.user);
-      this.sharedService.editUser(null);
+      this.sharedService.editUser(this.user);
     };
   }
 

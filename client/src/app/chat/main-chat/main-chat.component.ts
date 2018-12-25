@@ -53,6 +53,9 @@ export class MainChatComponent implements OnInit, AfterViewInit {
           this.user = param.paramAfter;
           console.log(this.user);
         }
+        if (param.id) {
+          this.user = param;
+        }
       } else {
         this.getUser();
       }

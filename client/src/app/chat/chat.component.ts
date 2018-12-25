@@ -31,6 +31,9 @@ export class ChatComponent implements OnInit {
           this.user = param.paramAfter;
           console.log(this.user);
         }
+        if (param.id) {
+          this.user = param;
+        }
       } else {
         this.getUser();
       }

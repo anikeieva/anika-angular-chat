@@ -4,7 +4,7 @@ import {User} from "../shared/model/user";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
 import {SocketService} from "../shared/servises/socket.service";
-import {getUserStorageToken} from "../shared/model/getStorageToken";
+import {currentUserToken, getUserStorageToken} from "../shared/model/getStorageToken";
 
 @Component({
   selector: 'app-choose-avatar',
@@ -16,6 +16,7 @@ export class ChooseAvatarComponent implements OnInit {
   public avatars: Array<string> = [];
   private maxAvatarsNumbers = 2;
   public userToken: string;
+  private currentUserId: string;
 
   constructor(private sharedService: SharedService,
               private dialogRef: MatDialogRef<ChooseAvatarComponent>,
@@ -24,25 +25,47 @@ export class ChooseAvatarComponent implements OnInit {
               private  socketService: SocketService) {}
 
   ngOnInit() {
+    this.sharedService.listenUser().subscribe(param => {
+      console.log('param: ', param);
+      if (param) {
+        if (param.paramAfter) {
+          this.user = param.paramAfter;
+          console.log(this.user);
+        }
+      } else {
+        this.getUser();
+      }
+    });
+
+    this.getUser();
+
+    for (let n = 0; n <= this.maxAvatarsNumbers; n++) {
+      this.avatars.push(`src/app/images/avatars/${this.user.gender}/${n}.png`);
+    }
+  }
+  
+  getUser() {
     if (!this.user) {
+      this.currentUserId = this.storage.get(currentUserToken);
+      this.userToken = getUserStorageToken(this.currentUserId);
       this.user = this.storage.get(this.userToken);
+      console.log('user: ', this.user);
     }
 
     this.socketService.onUser().subscribe((user: User) => {
+
       this.user = user;
-      this.userToken = getUserStorageToken(this.user.id);
+      this.currentUserId = user.id;
+      this.userToken = getUserStorageToken(user.id);
+      this.storage.set(currentUserToken, this.currentUserId);
+      this.storage.set(this.userToken, this.user);
       this.sharedService.setUser(user);
     }, (err) => {
       if (err) {
         this.user = this.storage.get(this.userToken);
       }
     });
-
-    this.storage.set(this.userToken, this.user);
-
-    for (let n = 0; n <= this.maxAvatarsNumbers; n++) {
-      this.avatars.push(`src/app/images/avatars/${this.user.gender}/${n}.png`);
-    }
+    console.log('user: ', this.user);
   }
 
   changeAvatar(avatar) {
@@ -50,13 +73,15 @@ export class ChooseAvatarComponent implements OnInit {
       this.user.avatar = avatar;
 
       console.log('user, def avatar: ', this.user);
-      this.socketService.initSocket();
+      if (!this.socketService.socket) {
+        this.socketService.initSocket();
+      }
       this.socketService.sendUser(this.user);
       if (this.user.action.joined) {
         this.socketService.sendMainChatUser(this.user);
       }
+      this.sharedService.editUser(this.user);
       this.storage.set(this.userToken, this.user);
-      this.sharedService.editUser(null);
     }
    }
 
