@@ -128,7 +128,10 @@ export class UserParamComponent implements OnInit {
     console.log('param', param);
     console.log(this.user);
 
-    this.socketService.initSocket();
+    if (!this.socketService.socket) {
+      this.socketService.initSocket();
+    }
+
     console.log(this.user);
     this.socketService.sendUser(this.user);
     if (this.user.action.joined) {

@@ -26,10 +26,12 @@ export class ChatComponent implements OnInit {
   ngOnInit() {
     this.sharedService.listenUser().subscribe(param => {
       console.log('param: ', param);
-      this.user = param.paramAfter;
-      console.log(this.user);
-
-      if (!this.user) {
+      if (param) {
+        if (param.paramAfter) {
+          this.user = param.paramAfter;
+          console.log(this.user);
+        }
+      } else {
         this.getUser();
       }
     });
@@ -82,7 +84,11 @@ export class ChatComponent implements OnInit {
 
       if (!this.rooms) this.rooms = this.storage.get(this.roomsToken);
 
-      if (this.socketService.socket) this.socketService.sendRequestForAllChatRooms(this.user);
+      if (!this.socketService.socket) {
+        this.socketService.initSocket();
+      }
+
+      this.socketService.sendRequestForAllChatRooms(this.user);
 
       this.socketService.onGetAllChatRooms().subscribe((rooms) => {
         this.rooms = rooms;

@@ -45,6 +45,19 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.sharedService.listenUser().subscribe(param => {
+      console.log('param: ', param);
+      if (param) {
+        this.onEditUser(param);
+        if (param.paramAfter) {
+          this.user = param.paramAfter;
+          console.log(this.user);
+        }
+      } else {
+        this.getUser();
+      }
+    });
+
     this.getUser();
     this.getChatRoom();
     this.initIoConnection();
@@ -96,30 +109,6 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   }
 
   private getUser() {
-    // this.sharedService.getUser().subscribe(user => this.user = user);
-    //
-    // this.subscription = this.sharedService.listenUser().pipe(take(1)).subscribe(paramBefore => this.onEditUser(paramBefore));
-    //
-    // if (!this.user) {
-    //   this.user = this.storage.get(this.userToken);
-    // }
-    //
-    // this.socketService.onUser().subscribe((user: User) => {
-    //   this.user = user;
-    //   this.userToken = getUserStorageToken(this.user.id);
-    //   this.storage.set(this.userToken, this.user);
-    //   this.sharedService.setUser(user);
-    // }, (err) => {
-    //   if (err) {
-    //     this.user = this.storage.get(this.userToken);
-    //   }
-    // });
-    //
-    // this.storage.set(this.userToken, this.user);
-    // console.log(this.user);
-
-    this.subscription = this.sharedService.listenUser().pipe(take(1)).subscribe(paramBefore => this.onEditUser(paramBefore));
-
     if (!this.user) {
       this.currentUserId = this.storage.get(currentUserToken);
       this.userToken = getUserStorageToken(this.currentUserId);
@@ -153,6 +142,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
     this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage');
     this.socketService.sendMainChatMessage(this.message);
     this.socketService.sendRequestForAllChatRooms(this.user);
+    this.sharedService.editUser(null);
 
     this.messageContent = null;
 
