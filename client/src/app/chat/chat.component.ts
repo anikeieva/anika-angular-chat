@@ -45,8 +45,9 @@ export class ChatComponent implements OnInit {
   }
 
   getUser() {
+    this.currentUserId = this.storage.get(currentUserToken);
+
     if (!this.user) {
-      this.currentUserId = this.storage.get(currentUserToken);
       this.userToken = getUserStorageToken(this.currentUserId);
       this.user = this.storage.get(this.userToken);
       console.log('user: ', this.user);

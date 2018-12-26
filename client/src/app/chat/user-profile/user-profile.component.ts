@@ -112,7 +112,7 @@ export class UserProfileComponent implements OnInit {
       this.socketService.initSocket();
     }
 
-    this.socketService.sendRequestForDirectMessagesRoomId(this.user.id, this.directRoomUser.id);
+    this.socketService.sendRequestForDirectMessagesRoom(this.user.id, this.directRoomUser.id);
     this.socketService.onDirectMessagesRoom().subscribe((room: ChatRoom) => {
       console.log('room: ',room);
       this.directRoom = room;
@@ -129,8 +129,4 @@ export class UserProfileComponent implements OnInit {
       }
     });
   }
-
-  // onSentMessage() {
-  //   this.getDirectRoomId();
-  // }
 }

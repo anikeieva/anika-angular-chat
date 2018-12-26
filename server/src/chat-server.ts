@@ -99,17 +99,29 @@ export class ChatServer {
                 });
             }));
 
-            socket.on('requestForDirectMessagesRoomId', async (fromId, toId) => {
-                const roomId = fromId + toId + 10 * fromId;
+            socket.on('requestForDirectMessagesRoom', async (fromId, toId) => {
 
-                await UserModel.findOne({id: fromId, direct: {$elemMatch: {id: roomId}}}, async (err, room) => {
+                await UserModel.findOne({id: fromId, direct: {$elemMatch: {from: fromId, to: toId}}}, async (err, room) => {
                     if (err) throw  err;
                     console.log('direct room: ', room);
 
                     if (room) {
-                        console.log('directMessagesRoom', room);
-                        this.io.emit('directMessagesRoom', room);
+                        console.log('room direct: ',room.direct);
+
+                        if (room.direct) {
+                            let directRoom;
+                            for (let i=0; i<= room.direct.length; i++) {
+                                if (room.direct[i].from === fromId && room.direct[i].to === toId) {
+                                    directRoom = room.direct[i];
+                                }
+                            }
+                            console.log('directMessagesRoom', directRoom);
+                            this.io.emit('directMessagesRoom', directRoom);
+                        }
                     } else {
+
+                        const roomId = fromId*toId*Date.now();
+
                         await UserModel.findOne({id: toId}, async (err, to) => {
                             if (err) throw  err;
                             console.log('to: ', to);
@@ -167,15 +179,22 @@ export class ChatServer {
                 });
             });
 
-            socket.on('requestForDirectMessagesRoom', ( async (id, user) => {
+            socket.on('requestForDirectMessagesRoomById', ( async (id, user) => {
 
                 await UserModel.findOne({id: user.id, direct: {$elemMatch: {id: id}}}, async (err, room) => {
                     if (err) throw  err;
-                    console.log('direct room: ', room);
 
                     if (room) {
-                        console.log('directMessagesRoom', room);
-                        this.io.emit('directMessagesRoom', room);
+                        if (room.direct) {
+                            let directRoom;
+                            for (let i = 0; i <= room.direct.length; i++) {
+                                if (room.direct[i].id === id) {
+                                    directRoom = room.direct[i];
+                                }
+                            }
+                            console.log('directMessagesRoom', directRoom);
+                            this.io.emit('directMessagesRoom', directRoom);
+                        }
                     }
                 });
             }));
@@ -279,53 +298,6 @@ export class ChatServer {
                             if (err) throw  err;
                         });
 
-                        // await UserModel.findOne({id: user.id}, async (user) => {
-                        //     await UserModel.find((err, items) => {
-                        //         if (err) throw  err;
-                        //
-                        //         console.log('users items: ', items);
-                        //
-                        //         if (items.length > 0) {
-                        //             items.forEach(async (item) => {
-                        //
-                        //                 await UserModel.findOne({
-                        //                     id: user.id,
-                        //                     direct: {$elemMatch: {id: item.id}}
-                        //                 }, async (err, userChat) => {
-                        //                     if (err) {
-                        //                         console.log(err);
-                        //                     }
-                        //
-                        //                     if (!userChat) {
-                        //                         console.log('no userChat');
-                        //
-                        //                         const itemRoom = new ChatRoomModel({
-                        //                             _id: new mongoose.Types.ObjectId(),
-                        //                             id: item.id,
-                        //                             name: `${item.firstName} ${item.lastName}`,
-                        //                             avatar: item.avatar,
-                        //                             type: TypeChatRooms.direct,
-                        //                             lastMessage: 'direct'
-                        //                         });
-                        //                         user.direct.push(itemRoom);
-                        //                         this.io.to(user.id).emit('user', user);
-                        //                         socket.handshake.session.user = user;
-                        //
-                        //                         await user.save((err) => {
-                        //                             if (err) throw err;
-                        //                         });
-                        //
-                        //                         console.log('userChat after update: ', user);
-                        //                     } else {
-                        //                         console.log('userChat');
-                        //                     }
-                        //                 });
-                        //             });
-                        //         }
-                        //     });
-                        // });
-
-
                         console.log('after update user 2: ', user);
 
                     } else {
@@ -345,45 +317,12 @@ export class ChatServer {
                             online: user.online
                         });
 
-                        // const newUserRoom = new ChatRoomModel({
-                        //     _id: new mongoose.Types.ObjectId(),
-                        //     id: newUser.id,
-                        //     name: `${newUser.firstName} ${newUser.lastName}`,
-                        //     avatar: newUser.avatar,
-                        //     type: TypeChatRooms.direct,
-                        //     lastMessage: 'direct'
-                        // });
-                        //
-                        // newUser.direct.push(newUserRoom);
-                        //
-                        // await UserModel.find(async (err, items) => {
-                        //     if (err) throw  err;
-                        //
-                        //     console.log('users items: ', items);
-                        //
-                        //     if (items.length > 0) {
-                        //         items.forEach(async (item) => {
-                        //             const itemRoom = new ChatRoomModel({
-                        //                 _id: new mongoose.Types.ObjectId(),
-                        //                 id: item.id,
-                        //                 name: `${item.firstName} ${item.lastName}`,
-                        //                 avatar: item.avatar,
-                        //                 type: TypeChatRooms.direct,
-                        //                 lastMessage: 'direct'
-                        //             });
-                        //             newUser.direct.push(itemRoom);
-                        //             console.log('newUser after: ', newUser);
-                        //         });
-                        //     }
-                        //     console.log('after users items: ', items);
-
-                            await newUser.save((err) => {
-                                if (err) throw err;
-                            });
-                            socket.join(newUser.id);
-                            this.io.to(newUser.id).emit('user', newUser);
-                            socket.handshake.session.user = newUser;
-                        // });
+                        await newUser.save((err) => {
+                            if (err) throw err;
+                        });
+                        socket.join(newUser.id);
+                        this.io.to(newUser.id).emit('user', newUser);
+                        socket.handshake.session.user = newUser;
                     }
                 });
             });
@@ -527,10 +466,7 @@ export class ChatServer {
 
             socket.on('disconnect', () => {
                 console.log('Client disconnected');
-                // console.log('socket: ',socket);
                 console.log('socket.id', socket.id);
-                // console.log('socket.session', socket.handshake.session.user);
-                // this.io.emit('user', socket.handshake.session.user);
             });
         });
     }
