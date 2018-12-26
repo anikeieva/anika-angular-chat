@@ -192,8 +192,8 @@ export class ChatServer {
                                     directRoom = room.direct[i];
                                 }
                             }
-                            console.log('directMessagesRoom', directRoom);
-                            this.io.emit('directMessagesRoom', directRoom);
+                            console.log('DirectMessagesRoomById', directRoom);
+                            this.io.emit('directMessagesRoomById', directRoom);
                         }
                     }
                 });
@@ -293,7 +293,9 @@ export class ChatServer {
                             gender: user.gender,
                             avatar: user.avatar,
                             action: user.action,
-                            online: user.online
+                            online: user.online,
+                            direct: user.direct,
+                            lastSeen: user.lastSeen
                         }, (err) => {
                             if (err) throw  err;
                         });

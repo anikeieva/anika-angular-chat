@@ -48,6 +48,7 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
     this.route.queryParams.subscribe(param => {
 
       this.directMessagesRoomId = param.id;
+      console.log(this.directMessagesRoomId);
       this.getDirectRoom();
       this.getDirectRoomUser();
     });
@@ -83,6 +84,7 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
   }
 
   private getDirectRoomUser(): void {
+    console.log('direct: ', this.directMessagesRoom);
     this.directRoomUserToken = getUserStorageToken(this.directMessagesRoom.to);
     console.log('directRoomUserToken', this.directRoomUserToken);
 
@@ -108,7 +110,6 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
         console.log('direct room user: ',this.directRoomUser);
       }
     });
-    this.sharedService.editUser(null);
   }
 
   getDirectRoom() {
@@ -121,10 +122,11 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
     }
 
     if (!this.socketService.socket) this.socketService.initSocket();
+    console.log(this.socketService.socket);
 
     this.socketService.sendRequestForDirectMessagesRoomById(this.directMessagesRoomId, this.user);
 
-    this.socketService.onDirectMessagesRoom().subscribe(room => {
+    this.socketService.onDirectMessagesRoomById().subscribe(room => {
       console.log('direct room', room);
 
       this.directMessagesRoom = room;
@@ -132,8 +134,11 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
       this.storage.set(this.chatRoomToken, this.directMessagesRoom);
       console.log(this.directMessagesRoom);
 
+    }, (err) => {
+      if (err) console.log(this.directMessagesRoom);
     });
     console.log(this.directMessagesRoom);
+    this.socketService.sendRequestForAllChatRooms(this.user);
   }
 
   ngAfterViewInit(): void {

@@ -114,6 +114,12 @@ export class SocketService {
     })
   }
 
+  public onDirectMessagesRoomById(): Observable<ChatRoom> {
+    return new Observable<ChatRoom>(observer => {
+      this.socket.on('directMessagesRoomById', (directMessagesRoom: ChatRoom) => observer.next(directMessagesRoom));
+    })
+  }
+
   public onGetAllChatRooms(): Observable<ChatRoom[]> {
     return new Observable<ChatRoom[]>(observer => {
       this.socket.on('getAllChatRooms', (rooms: ChatRoom[]) => observer.next(rooms));
