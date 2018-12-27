@@ -130,8 +130,8 @@ export class SocketService {
     this.socket.emit('requestForAllChatRooms', user);
   }
 
-  public sendDirectMessagesRoomMessage(message: Message, to: User): void {
-    this.socket.emit('directMessagesRoomMessage', message, to);
+  public sendDirectMessagesRoomMessage(message: Message, toId: string, roomId: string): void {
+    this.socket.emit('directMessagesRoomMessage', message, toId, roomId);
   }
 
   // public onDirectMessagesRoomMessage(): Observable<Message> {

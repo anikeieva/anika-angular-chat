@@ -151,16 +151,14 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
 
     this.timeNow = new Date();
     console.log('this.user', this.user);
-    this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage');
-    this.socketService.sendDirectMessagesRoomMessage(this.message, this.directRoomUser);
+    this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage', this.directRoomUser);
+    console.log(this.message);
+    this.socketService.sendDirectMessagesRoomMessage(this.message, this.directRoomUser.id, this.directMessagesRoom.id);
     this.getDirectRoom();
 
     console.log('messages: ',this.messages);
-
     this.messageContent = null;
-
     console.log('sentMessage messages: ',this.messages);
-
-    console.log('mainChatRoom: ', this.directMessagesRoom);
+    console.log('ChatRoom: ', this.directMessagesRoom);
   }
 }

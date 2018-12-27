@@ -81,7 +81,7 @@ export class ChatServer {
             console.log('Connected client on port %s.', this.port);
 
 
-            // this.clearMongooseData();
+            this.clearMongooseData();
 
             ChatRoomModel.find((err, room) => {
                 if (err) throw err;
@@ -409,10 +409,58 @@ export class ChatServer {
                 }
             });
 
-            socket.on('directMessagesRoomMessage', async (message: Message, to: User) => {
+            socket.on('directMessagesRoomMessage', async (message: Message, toId: string, roomId: string) => {
 
-                await UserModel.update({id: to.id, direct: {$elemMatch: {id: to.id}}},
-                {$push: {'direct.$.messages': message}});
+                await UserModel.findOne({id: message.from.id, direct: {$elemMatch: {id: roomId}}}, async (err, room) => {
+                    if (err) throw  err;
+
+                    if (room) {
+                        console.log('room direct: ', room.direct);
+                        if (room.id && room.direct) {
+                            let directRoom;
+                            for (let i = 0; i < room.direct.length; i++) {
+                                if (room.direct[i].from === message.from.id && room.direct[i].to === message.to.id) {
+                                    directRoom = room.direct[i];
+                                }
+                            }
+                            console.log('directMessagesRoom', directRoom);
+
+                            directRoom.messages.push(message);
+                            await directRoom.save((err) => {
+                                if (err) throw err;
+                            });
+
+                            console.log('directMessagesRoom after send message', directRoom);
+
+                        }
+                    }
+                });
+
+                await UserModel.findOne({id: message.to.id, direct: {$elemMatch: {id: roomId}}}, async (err, room) => {
+                    if (err) throw  err;
+
+                    if (room) {
+                        console.log('room direct: ', room.direct);
+                        if (room.id && room.direct) {
+                            let directRoom;
+                            for (let i = 0; i < room.direct.length; i++) {
+                                if (room.direct[i].from === message.from.id && room.direct[i].to === message.to.id) {
+                                    directRoom = room.direct[i];
+                                }
+                            }
+                            console.log('directMessagesRoom', directRoom);
+
+                            directRoom.messages.push(message);
+                            await directRoom.save((err) => {
+                                if (err) throw err;
+                            });
+
+                            console.log('directMessagesRoom after send message', directRoom);
+
+                        }
+                    }
+                });
+
 
             });
 

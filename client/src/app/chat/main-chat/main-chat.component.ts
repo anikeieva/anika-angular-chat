@@ -13,7 +13,6 @@ import {Message} from '../../shared/model/message';
 import {SocketService} from "../../shared/servises/socket.service";
 import {MatListItem} from "@angular/material";
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
-import {take} from "rxjs/operators";
 import {ChatRoom} from "../../shared/model/chat-room";
 import {getChatRoomStorageToken, getUserStorageToken} from "../../shared/model/getStorageToken";
 import {currentUserToken} from "../../shared/model/getStorageToken";
@@ -141,7 +140,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
     this.timeNow = new Date();
     this.user.action.sentMessage = true;
-    this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage');
+    this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage', null);
     this.socketService.sendMainChatMessage(this.message);
     this.socketService.sendRequestForAllChatRooms(this.user);
     this.sharedService.editUser(null);
@@ -161,7 +160,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
     this.socketService.sendMainChatUser(this.user);
 
     this.timeNow = new Date();
-    this.message = new Message(this.user, `${this.user.firstName} ${this.user.lastName} joined to conversation`, this.timeNow, 'joined');
+    this.message = new Message(this.user, `${this.user.firstName} ${this.user.lastName} joined to conversation`, this.timeNow, 'joined', null);
     this.sendNotification(this.message);
     console.log('join messages: ',this.messages);
 
@@ -193,7 +192,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
         console.log(this.user);
 
         const messageContent = `${param.paramBefore.firstName} ${param.paramBefore.lastName} already is ${this.user.firstName} ${this.user.lastName}`;
-        this.message = new Message(this.user, messageContent, this.timeNow, 'edit');
+        this.message = new Message(this.user, messageContent, this.timeNow, 'edit', null);
         console.log(this.message);
         this.sendNotification(this.message);
         console.log('edit messages: ',this.messages);
