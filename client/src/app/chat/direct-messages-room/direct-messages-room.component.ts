@@ -50,7 +50,6 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
       this.directMessagesRoomId = param.id;
       console.log(this.directMessagesRoomId);
       this.getDirectRoom();
-      this.getDirectRoomUser();
     });
   }
 
@@ -85,7 +84,8 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
 
   private getDirectRoomUser(): void {
     console.log('direct: ', this.directMessagesRoom);
-    this.directRoomUserToken = getUserStorageToken(this.directMessagesRoom.to);
+
+    if (this.directMessagesRoom) this.directRoomUserToken = getUserStorageToken(this.directMessagesRoom.to);
     console.log('directRoomUserToken', this.directRoomUserToken);
 
     if (!this.directRoomUser) {
@@ -95,7 +95,7 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
 
     if (!this.socketService.socket) this.socketService.initSocket();
 
-    console.log('directRoomUserId', this.directMessagesRoom.to);
+    // console.log('directRoomUserId', this.directMessagesRoom.to);
     this.socketService.sendRequestForUserById(this.directMessagesRoom.to);
 
     this.socketService.onUserById().subscribe((user: User) => {
@@ -124,7 +124,7 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
     if (!this.socketService.socket) this.socketService.initSocket();
     console.log(this.socketService.socket);
 
-    this.socketService.sendRequestForDirectMessagesRoomById(this.directMessagesRoomId, this.user);
+    this.socketService.sendRequestForDirectMessagesRoomById(this.directMessagesRoomId, this.user.id);
 
     this.socketService.onDirectMessagesRoomById().subscribe(room => {
       console.log('direct room', room);
@@ -133,9 +133,13 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
       this.messages = room.messages;
       this.storage.set(this.chatRoomToken, this.directMessagesRoom);
       console.log(this.directMessagesRoom);
+      this.getDirectRoomUser();
 
     }, (err) => {
-      if (err) console.log(this.directMessagesRoom);
+      if (err) {
+        this.directMessagesRoom = this.storage.get(this.chatRoomToken);
+        console.log('directRoom', this.directMessagesRoom);
+      }
     });
     console.log(this.directMessagesRoom);
     this.socketService.sendRequestForAllChatRooms(this.user);

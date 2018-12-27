@@ -99,7 +99,7 @@ export class ChatServer {
                 });
             }));
 
-            socket.on('requestForDirectMessagesRoom', async (fromId, toId) => {
+            socket.on('requestForDirectMessagesRoomId', async (fromId, toId) => {
 
                 await UserModel.findOne({id: fromId, direct: {$elemMatch: {from: fromId, to: toId}}}, async (err, room) => {
                     if (err) throw  err;
@@ -108,15 +108,15 @@ export class ChatServer {
                     if (room) {
                         console.log('room direct: ',room.direct);
 
-                        if (room.direct) {
+                        if (room.id && room.direct) {
                             let directRoom;
-                            for (let i=0; i<= room.direct.length; i++) {
+                            for (let i=0; i < room.direct.length; i++) {
                                 if (room.direct[i].from === fromId && room.direct[i].to === toId) {
                                     directRoom = room.direct[i];
                                 }
                             }
                             console.log('directMessagesRoom', directRoom);
-                            this.io.emit('directMessagesRoom', directRoom);
+                            this.io.emit('directMessagesRoomId', directRoom.id);
                         }
                     } else {
 
@@ -145,7 +145,7 @@ export class ChatServer {
                                         roomFrom.users.push(from, to);
                                         roomFrom.from = from.id;
                                         from.direct.push(roomFrom);
-                                        this.io.emit('directMessagesRoom', roomFrom);
+                                        this.io.emit('directMessagesRoomId', roomFrom.id);
                                         console.log('from: ', from);
 
                                         await from.save((err) => {
@@ -175,20 +175,23 @@ export class ChatServer {
                                 });
                             }
                         });
+
                     }
                 });
             });
 
-            socket.on('requestForDirectMessagesRoomById', ( async (id, user) => {
+            socket.on('requestForDirectMessagesRoomById', ( async (roomId, fromId) => {
 
-                await UserModel.findOne({id: user.id, direct: {$elemMatch: {id: id}}}, async (err, room) => {
+                await UserModel.findOne({id: fromId, direct: {$elemMatch: {id: roomId}}}, async (err, room) => {
                     if (err) throw  err;
+                    console.log('direct room by id', room);
 
                     if (room) {
+                        console.log('room.direct: by id',room.direct);
                         if (room.direct) {
                             let directRoom;
-                            for (let i = 0; i <= room.direct.length; i++) {
-                                if (room.direct[i].id === id) {
+                            for (let i = 0; i < room.direct.length; i++) {
+                                if (room.direct[i].id === roomId) {
                                     directRoom = room.direct[i];
                                 }
                             }
