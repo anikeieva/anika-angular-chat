@@ -83,19 +83,11 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
   }
 
   private getDirectRoomUser(): void {
-    console.log('direct: ', this.directMessagesRoom);
-
     if (this.directMessagesRoom) this.directRoomUserToken = getUserStorageToken(this.directMessagesRoom.to);
-    console.log('directRoomUserToken', this.directRoomUserToken);
-
-    if (!this.directRoomUser) {
-      this.directRoomUser = this.storage.get(this.directRoomUserToken);
-      console.log('directRoomUser', this.directRoomUser);
-    }
 
     if (!this.socketService.socket) this.socketService.initSocket();
 
-    // console.log('directRoomUserId', this.directMessagesRoom.to);
+    console.log('directRoomUserId', this.directMessagesRoom.to);
     this.socketService.sendRequestForUserById(this.directMessagesRoom.to);
 
     this.socketService.onUserById().subscribe((user: User) => {
@@ -114,12 +106,6 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
 
   getDirectRoom() {
     this.chatRoomToken = getChatRoomStorageToken(this.directMessagesRoomId);
-    console.log('dir room token', this.chatRoomToken);
-
-    if (!this.directMessagesRoom) {
-      this.directMessagesRoom = this.storage.get(this.chatRoomToken);
-      console.log('directRoom', this.directMessagesRoom);
-    }
 
     if (!this.socketService.socket) this.socketService.initSocket();
     console.log(this.socketService.socket);
