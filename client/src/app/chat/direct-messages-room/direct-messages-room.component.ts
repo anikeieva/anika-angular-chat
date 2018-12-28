@@ -76,7 +76,7 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
       if (err) {
         this.userToken = getUserStorageToken(this.currentUserId);
         this.user = this.storage.get(this.userToken);
-        console.log('user: ', this.user);
+        // console.log('user: ', this.user);
       }
     });
     console.log('user: ', this.user);
@@ -94,14 +94,13 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
       if (user) {
         this.directRoomUser = user;
         this.storage.set(this.directRoomUserToken, this.directRoomUser);
-        console.log('direct room user: ',this.directRoomUser);
       }
     }, (err) => {
       if (err) {
         this.directRoomUser = this.storage.get(this.directRoomUserToken);
-        console.log('direct room user: ',this.directRoomUser);
       }
     });
+    console.log('direct room user: ',this.directRoomUser);
   }
 
   getDirectRoom() {
@@ -113,7 +112,6 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
     this.socketService.sendRequestForDirectMessagesRoomById(this.directMessagesRoomId, this.user.id);
 
     this.socketService.onDirectMessagesRoomById().subscribe(room => {
-      console.log('direct room', room);
 
       this.directMessagesRoom = room;
       this.messages = room.messages;
@@ -124,10 +122,9 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
     }, (err) => {
       if (err) {
         this.directMessagesRoom = this.storage.get(this.chatRoomToken);
-        console.log('directRoom', this.directMessagesRoom);
       }
     });
-    console.log(this.directMessagesRoom);
+    console.log('directRoom', this.directMessagesRoom);
     this.socketService.sendRequestForAllChatRooms(this.user);
   }
 
@@ -145,20 +142,18 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
   }
 
   sendMessage(messageContent: string): void {
+
     if (!messageContent) {
       return;
     }
 
     this.timeNow = new Date();
-    console.log('this.user', this.user);
     this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage', this.directRoomUser);
-    console.log(this.message);
     this.socketService.sendDirectMessagesRoomMessage(this.message, this.directRoomUser.id, this.directMessagesRoom.id);
     this.getDirectRoom();
 
-    console.log('messages: ',this.messages);
     this.messageContent = null;
-    console.log('sentMessage messages: ',this.messages);
+    console.log('chat room messages: ',this.messages);
     console.log('ChatRoom: ', this.directMessagesRoom);
   }
 }
