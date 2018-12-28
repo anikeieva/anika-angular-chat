@@ -115,6 +115,7 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
 
       this.directMessagesRoom = room;
       this.messages = room.messages;
+      console.log(this.messages);
       this.storage.set(this.chatRoomToken, this.directMessagesRoom);
       console.log(this.directMessagesRoom);
       this.getDirectRoomUser();
@@ -153,7 +154,6 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
     this.getDirectRoom();
 
     this.messageContent = null;
-    console.log('chat room messages: ',this.messages);
     console.log('ChatRoom: ', this.directMessagesRoom);
   }
 }

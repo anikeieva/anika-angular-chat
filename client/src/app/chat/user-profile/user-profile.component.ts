@@ -8,12 +8,10 @@ import {SocketService} from "../../shared/servises/socket.service";
 import {SESSION_STORAGE, StorageService} from "angular-webstorage-service";
 import {
   currentUserToken,
-  getChatRoomStorageToken,
   getDirectRoomStorageToken,
   getUserStorageToken
 } from "../../shared/model/getStorageToken";
 import {SharedService} from "../../shared/servises/shared.service";
-import {ChatRoom} from "../../shared/model/chat-room";
 
 @Component({
   selector: 'app-user-profile',
@@ -88,14 +86,11 @@ export class UserProfileComponent implements OnInit {
         if (user) {
           this.directRoomUser = user;
           console.log(this.directRoomUser);
-          this.storage.set(this.directRoomUserToken, this.directRoomUser);
-          // this.getDirectRoomId();
         }
       }, (err) => {
         if (err) {
           this.directRoomUser = this.storage.get(this.directRoomUserToken);
           console.log(this.directRoomUser);
-          // this.getDirectRoomId();
         }
       });
     });
@@ -106,19 +101,14 @@ export class UserProfileComponent implements OnInit {
 
   getDirectRoomId() {
 
-    console.log(this.user);
-    console.log(this.directRoomUser);
-    console.log(this.directRoomId);
     this.directRoomIdToken = getDirectRoomStorageToken(this.user.id, this.directRoomUser.id);
 
     if (!this.directRoomId) {
       this.directRoomId = this.storage.get(this.directRoomIdToken);
-      console.log(this.directRoomId);
     }
 
     if (!this.socketService.socket) {
       this.socketService.initSocket();
-      console.log(this.socketService.socket);
     }
 
     this.socketService.sendRequestForDirectMessagesRoomId(this.user.id, this.directRoomUser.id);
