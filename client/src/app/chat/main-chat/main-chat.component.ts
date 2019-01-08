@@ -98,11 +98,11 @@ export class MainChatComponent implements OnInit, AfterViewInit {
     this.socketService.onMainChatRoom().subscribe(mainChatRoom => {
       this.mainChatRoom = mainChatRoom;
 
-      this.storage.set(this.mainChatRoomToken, this.mainChatRoom);
+      this.storage.set(this.mainChatRoomToken, JSON.stringify(this.mainChatRoom));
       console.log(this.mainChatRoom);
     }, (err) => {
       if (err) {
-        this.mainChatRoom = this.storage.get(this.mainChatRoomToken);
+        this.mainChatRoom = JSON.parse(this.storage.get(this.mainChatRoomToken));
       }
     });
 
@@ -113,7 +113,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
     if (!this.user) {
       this.currentUserId = this.storage.get(currentUserToken);
       this.userToken = getUserStorageToken(this.currentUserId);
-      this.user = this.storage.get(this.userToken);
+      this.user = JSON.parse(this.storage.get(this.userToken));
       console.log('user: ', this.user);
     }
 
@@ -123,11 +123,11 @@ export class MainChatComponent implements OnInit, AfterViewInit {
       this.currentUserId = user.id;
       this.userToken = getUserStorageToken(user.id);
       this.storage.set(currentUserToken, this.currentUserId);
-      this.storage.set(this.userToken, this.user);
+      this.storage.set(this.userToken, JSON.stringify(this.user));
       this.sharedService.setUser(user);
     }, (err) => {
       if (err) {
-        this.user = this.storage.get(this.userToken);
+        this.user = JSON.parse(this.storage.get(this.userToken));
       }
     });
     console.log('user: ', this.user);
@@ -154,7 +154,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
   onJoin(): void {
     this.user.action.joined = true;
-    this.storage.set(this.userToken, this.user);
+    this.storage.set(this.userToken, JSON.stringify(this.user));
     this.socketService.initSocket();
     this.socketService.sendUser(this.user);
     this.socketService.sendMainChatUser(this.user);

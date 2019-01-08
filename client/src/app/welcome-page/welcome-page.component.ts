@@ -1,6 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {SocketService} from "../shared/servises/socket.service";
-import {SESSION_STORAGE, StorageService} from "angular-webstorage-service";
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-welcome-page',
@@ -14,8 +12,7 @@ export class WelcomePageComponent implements OnInit {
   public signUpButtonColor: string = this.activeButtonColor;
   public signInButtonColor: string = this.passiveButtonColor;
 
-  constructor(private socketService: SocketService,
-              @Inject(SESSION_STORAGE) private storage: StorageService) { }
+  constructor() { }
 
   ngOnInit() {}
 

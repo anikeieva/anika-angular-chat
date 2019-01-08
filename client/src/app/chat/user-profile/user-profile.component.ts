@@ -36,14 +36,13 @@ export class UserProfileComponent implements OnInit {
   ngOnInit(): void {
     this.getUser();
     this.getDirectRoomUser();
-    // this.getDirectRoomId();
   }
 
   getUser() {
     if (!this.user) {
       this.currentUserId = this.storage.get(currentUserToken);
       this.userToken = getUserStorageToken(this.currentUserId);
-      this.user = this.storage.get(this.userToken);
+      this.user = JSON.parse(this.storage.get(this.userToken));
       console.log('user: ', this.user);
     }
 
@@ -54,11 +53,11 @@ export class UserProfileComponent implements OnInit {
       this.currentUserId = user.id;
       this.userToken = getUserStorageToken(user.id);
       this.storage.set(currentUserToken, this.currentUserId);
-      this.storage.set(this.userToken, this.user);
+      this.storage.set(this.userToken, JSON.stringify(this.user));
       this.sharedService.setUser(user);
     }, (err) => {
       if (err) {
-        this.user = this.storage.get(this.userToken);
+        this.user = JSON.parse(this.storage.get(this.userToken));
         console.log('user: ', this.user);
       }
     });
@@ -76,7 +75,7 @@ export class UserProfileComponent implements OnInit {
       }
 
       if (!this.directRoomUser) {
-        this.directRoomUser = this.storage.get(this.directRoomUserToken);
+        this.directRoomUser = JSON.parse(this.storage.get(this.directRoomUserToken));
         console.log(this.directRoomUser);
       }
 
@@ -89,7 +88,7 @@ export class UserProfileComponent implements OnInit {
         }
       }, (err) => {
         if (err) {
-          this.directRoomUser = this.storage.get(this.directRoomUserToken);
+          this.directRoomUser = JSON.parse(this.storage.get(this.directRoomUserToken));
           console.log(this.directRoomUser);
         }
       });

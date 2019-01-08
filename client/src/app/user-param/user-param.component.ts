@@ -85,7 +85,7 @@ export class UserParamComponent implements OnInit {
         console.log(user);
         this.user = user;
         this.userToken = getUserStorageToken(user.id);
-        this.storage.set(this.userToken, user);
+        this.storage.set(this.userToken, JSON.stringify(user));
         this.sharedService.setUser(user);
         this.sharedService.updateUser.emit(user);
       }
@@ -139,7 +139,7 @@ export class UserParamComponent implements OnInit {
     }
     this.sharedService.editUser(param);
     console.log(this.user);
-    this.storage.set(this.userToken, this.user);
+    this.storage.set(this.userToken, JSON.stringify(this.user));
 
   }
 
@@ -175,7 +175,7 @@ export class UserParamComponent implements OnInit {
       if (this.user.action.joined) {
         this.socketService.sendMainChatUser(this.user);
       }
-      this.storage.set(this.userToken, this.user);
+      this.storage.set(this.userToken, JSON.stringify(this.user));
       this.sharedService.editUser(this.user);
     };
   }

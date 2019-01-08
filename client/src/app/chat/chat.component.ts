@@ -49,7 +49,7 @@ export class ChatComponent implements OnInit {
 
     if (!this.user) {
       this.userToken = getUserStorageToken(this.currentUserId);
-      this.user = this.storage.get(this.userToken);
+      this.user = JSON.parse(this.storage.get(this.userToken));
       console.log('user: ', this.user);
     }
 
@@ -60,13 +60,13 @@ export class ChatComponent implements OnInit {
       this.currentUserId = user.id;
       this.userToken = getUserStorageToken(user.id);
       this.storage.set(currentUserToken, this.currentUserId);
-      this.storage.set(this.userToken, this.user);
+      this.storage.set(this.userToken, JSON.stringify(this.user));
       this.sharedService.setUser(user);
 
       this.getUserDirects();
     }, (err) => {
       if (err) {
-        this.user = this.storage.get(this.userToken);
+        this.user = JSON.parse(this.storage.get(this.userToken));
         console.log('user: ', this.user);
         this.getUserDirects();
       }
@@ -77,7 +77,7 @@ export class ChatComponent implements OnInit {
   getUserDirects() {
 
     if (!this.user) {
-      this.user = this.storage.get(this.userToken);
+      this.user = JSON.parse(this.storage.get(this.userToken));
       console.log(this.user);
     }
 
@@ -86,7 +86,7 @@ export class ChatComponent implements OnInit {
       this.roomsToken = getChatRoomStorageToken(  `all_user-id=${this.user.id}`);
       console.log(this.roomsToken);
 
-      if (!this.rooms) this.rooms = this.storage.get(this.roomsToken);
+      if (!this.rooms) this.rooms = JSON.parse(this.storage.get(this.roomsToken));
 
       if (!this.socketService.socket) {
         this.socketService.initSocket();
@@ -97,10 +97,10 @@ export class ChatComponent implements OnInit {
       this.socketService.onGetAllChatRooms().subscribe((rooms) => {
         this.rooms = rooms;
         console.log('rooms: ',rooms);
-        this.storage.set(this.roomsToken, this.rooms);
+        this.storage.set(this.roomsToken, JSON.stringify(this.rooms));
       }, (err) => {
         if (err) {
-          this.rooms = this.storage.get(this.roomsToken);
+          this.rooms = JSON.parse(this.storage.get(this.roomsToken));
         }
       });
 

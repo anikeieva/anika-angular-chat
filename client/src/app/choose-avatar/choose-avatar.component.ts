@@ -1,4 +1,4 @@
-import {Component, Inject, InjectionToken, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {SharedService} from "../shared/servises/shared.service";
 import {User} from "../shared/model/user";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
@@ -48,7 +48,7 @@ export class ChooseAvatarComponent implements OnInit {
     if (!this.user) {
       this.currentUserId = this.storage.get(currentUserToken);
       this.userToken = getUserStorageToken(this.currentUserId);
-      this.user = this.storage.get(this.userToken);
+      this.user = JSON.parse(this.storage.get(this.userToken));
       console.log('user: ', this.user);
     }
 
@@ -58,11 +58,11 @@ export class ChooseAvatarComponent implements OnInit {
       this.currentUserId = user.id;
       this.userToken = getUserStorageToken(user.id);
       this.storage.set(currentUserToken, this.currentUserId);
-      this.storage.set(this.userToken, this.user);
+      this.storage.set(this.userToken, JSON.stringify(this.user));
       this.sharedService.setUser(user);
     }, (err) => {
       if (err) {
-        this.user = this.storage.get(this.userToken);
+        this.user = JSON.parse(this.storage.get(this.userToken));
       }
     });
     console.log('user: ', this.user);
@@ -81,7 +81,7 @@ export class ChooseAvatarComponent implements OnInit {
         this.socketService.sendMainChatUser(this.user);
       }
       this.sharedService.editUser(this.user);
-      this.storage.set(this.userToken, this.user);
+      this.storage.set(this.userToken, JSON.stringify(this.user));
     }
    }
 

@@ -28,7 +28,7 @@ export class EditUserParamComponent implements OnInit {
     if (!this.user) {
       this.currentUserId = this.storage.get(currentUserToken);
       this.userToken = getUserStorageToken(this.currentUserId);
-      this.user = this.storage.get(this.userToken);
+      this.user = JSON.parse(this.storage.get(this.userToken));
       console.log('user: ', this.user);
     }
     this.socketService.onUser().subscribe((user: User) => {
@@ -37,12 +37,12 @@ export class EditUserParamComponent implements OnInit {
       this.currentUserId = user.id;
       this.userToken = getUserStorageToken(user.id);
       this.storage.set(currentUserToken, this.currentUserId);
-      this.storage.set(this.userToken, this.user);
+      this.storage.set(this.userToken, JSON.stringify(this.user));
       this.sharedService.setUser(user);
       console.log('user: ', this.user);
     }, (err) => {
       if (err) {
-        this.user = this.storage.get(this.userToken);
+        this.user = JSON.parse(this.storage.get(this.userToken));
         console.log('user: ', this.user);
       }
     });
