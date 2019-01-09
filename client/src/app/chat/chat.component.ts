@@ -6,6 +6,8 @@ import {SocketService} from "../shared/servises/socket.service";
 import {ChatRoom} from "../shared/model/chat-room";
 import {getChatRoomStorageToken, getUserStorageToken} from "../shared/model/getStorageToken";
 import {currentUserToken} from "../shared/model/getStorageToken";
+import {Router} from "@angular/router";
+import {WelcomePageComponent} from "../welcome-page/welcome-page.component";
 
 @Component({
   selector: 'app-chat',
@@ -21,7 +23,8 @@ export class ChatComponent implements OnInit {
 
   constructor(private sharedService: SharedService,
               @Inject(SESSION_STORAGE) private storage: StorageService,
-              private  socketService: SocketService) {}
+              private  socketService: SocketService,
+              private router: Router) {}
 
   ngOnInit() {
     this.sharedService.listenUser().subscribe(param => {
@@ -72,6 +75,10 @@ export class ChatComponent implements OnInit {
       }
     });
     console.log('user: ', this.user);
+
+    if (!this.user) {
+      this.router.navigate(['']);
+    }
   }
 
   getUserDirects() {
