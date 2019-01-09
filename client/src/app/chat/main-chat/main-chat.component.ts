@@ -16,6 +16,7 @@ import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
 import {ChatRoom} from "../../shared/model/chat-room";
 import {getChatRoomStorageToken, getUserStorageToken} from "../../shared/model/getStorageToken";
 import {currentUserToken} from "../../shared/model/getStorageToken";
+import {take} from "rxjs/operators";
 
 @Component({
   selector: 'app-main-chat',
@@ -33,6 +34,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   public mainChatRoomToken: string;
   public userToken: string;
   public currentUserId: string;
+  public subscription: any;
 
   @ViewChild('messageList') messageList: ElementRef;
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;
@@ -43,7 +45,9 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.sharedService.listenUser().subscribe(param => {
+    // this.subscription = this.sharedService.listenUser().pipe(take(1)).
+    // subscribe(paramBefore => this.onEditUser(paramBefore));
+    this.sharedService.listenUser().pipe(take(1)).subscribe(param => {
       console.log('param: ', param);
       if (param) {
         this.onEditUser(param);
@@ -173,17 +177,13 @@ export class MainChatComponent implements OnInit, AfterViewInit {
     console.log(param);
 
     if (param !== null && param.paramBefore && param.paramAfter) {
-      console.log('before: ', param);
+      console.log('after: ', param.paramAfter);
       console.log('user: ' ,this.user);
 
       this.timeNow = new Date();
-
-      for (let key in this.user) {
-        this.user[key] = param.paramAfter[key];
-      }
+      this.user = param.paramAfter;
       console.log('user: ' , this.user);
       this.user.action.edit = true;
-
 
       if (this.user.action.joined === true &&
         param.paramBefore.firstName !== this.user.firstName ||
