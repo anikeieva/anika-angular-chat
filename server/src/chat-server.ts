@@ -80,7 +80,7 @@ export class ChatServer {
             console.log('Connected client on port %s.', this.port);
 
 
-            // this.clearMongooseData();
+            this.clearMongooseData();
 
             ChatRoomModel.find((err, room) => {
                 if (err) throw err;

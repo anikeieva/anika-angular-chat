@@ -55,8 +55,11 @@ export class UserParamComponent implements OnInit {
         lastName: this.userBeforeEdit.lastName,
         gender: this.userBeforeEdit.gender,
         login: this.userBeforeEdit.login,
-        password: this.userBeforeEdit.password
+        password: null
       });
+
+      this.userParameters.removeControl(this.userParameters.value.password);
+
       console.log('user-param init:',this.userParameters.value);
       this.userParametersBeforeEdit = this.userParameters.value;
     }

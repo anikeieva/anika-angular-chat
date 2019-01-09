@@ -23,9 +23,9 @@
       <input matInput formControlName="login" required [value]="(isEdit) ? userBeforeEdit.login : ''">
     </mat-form-field>
 
-    <mat-form-field appearance="legacy">
+    <mat-form-field appearance="legacy" *ngIf="!isEdit">
       <mat-label>Password</mat-label>
-      <input matInput type="password" formControlName="password" required [value]="(isEdit) ? userBeforeEdit.password : ''">
+      <input matInput type="password" formControlName="password" [required]="(isEdit) ? false : true" [value]="''">
     </mat-form-field>
 
      <button mat-raised-button *ngIf="!isEdit" color="primary" [disabled]="!isEnabledSubmit()" class="submit-button" routerLink="/chat" (click)="onSubmit()">
