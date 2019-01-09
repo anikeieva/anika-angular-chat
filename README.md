@@ -1,11 +1,9 @@
 # Anika Angular Chat
-Online chat based on angular and soket.io(not finished yet)
+Online chat based on Angular, Soket.IO, Mongoose (not finished yet)
 
 # Instalation
-## server:
-npm install
-gulp build
+## server:  
+gulp build  
 npm start
 ## client:
 npm install
-ng serve
