@@ -110,6 +110,14 @@ export class ChatComponent implements OnInit {
   exit() {
     this.socketService.initSocket();
     this.socketService.sendUserLogOut(this.user);
+
+    // console.log(currentUserToken);
+    // console.log(this.userToken);
+    // console.log(this.roomsToken);
+    //
+    // this.storage.remove(currentUserToken);
+    // this.storage.remove(this.userToken);
+    // this.storage.remove(this.roomsToken);
   }
 
   getQueryParams(room) {
