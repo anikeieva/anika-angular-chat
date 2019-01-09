@@ -311,31 +311,41 @@ export class ChatServer {
 
                     } else {
 
-                        user.id = users.length + 1 + '';
-
-                        const newUser = new UserModel({
-                            _id: new mongoose.Types.ObjectId(),
-                            firstName: user.firstName,
-                            lastName: user.lastName,
-                            gender: user.gender,
-                            login: user.login,
-                            password: user.password,
-                            avatar: user.avatar,
-                            action: user.action,
-                            id: user.id,
-                            online: user.online
-                        });
-
-                        await newUser.save((err) => {
+                        await UserModel.findOne({login: user.login}, async (err, userWithItLogin) => {
                             if (err) throw err;
-                        });
-                        console.log('new user: ', newUser);
-                        socket.join(newUser.id);
 
-                        const clientUser = new ClientUser(newUser);
-                        console.log('clientUser: ', clientUser);
-                        this.io.to(clientUser.id).emit('user', clientUser);
-                        // socket.handshake.session.user = newUser;
+                            if (userWithItLogin) {
+                                console.log('not unique login');
+                                this.io.emit('userNotSignUp', 'userNotSignUp');
+                            } else {
+
+                                const userId = users.length + 1 + '';
+
+                                const newUser = new UserModel({
+                                    _id: new mongoose.Types.ObjectId(),
+                                    firstName: user.firstName,
+                                    lastName: user.lastName,
+                                    gender: user.gender,
+                                    login: user.login,
+                                    password: user.password,
+                                    avatar: user.avatar,
+                                    action: user.action,
+                                    id: userId,
+                                    online: user.online
+                                });
+
+                                await newUser.save((err) => {
+                                    if (err) throw err;
+                                });
+                                console.log('new user: ', newUser);
+                                socket.join(newUser.id);
+
+                                const clientUser = new ClientUser(newUser);
+                                console.log('clientUser: ', clientUser);
+                                this.io.to(clientUser.id).emit('user', clientUser);
+                                // socket.handshake.session.user = newUser;
+                            }
+                        });
                     }
                 });
             });
@@ -436,53 +446,55 @@ export class ChatServer {
 
             socket.on('userLogOut', async (user: User) => {
 
-                const dateNow = new Date();
+                if (user) {
+                    const dateNow = new Date();
 
-                await UserModel.find(async (err, users) => {
+                    await UserModel.find(async (err, users) => {
 
-                    if (err) throw err;
+                        if (err) throw err;
 
-                    if (users) {
-                        await UserModel.findOneAndUpdate({id: user.id}, {online: false, lastSeen: dateNow}, (err, user) => {
-                            if (err) throw  err;
-                            console.log('user after log out update online: false: ', user);
-                        });
-
-                        console.log('users after log out: ', users);
-                    }
-
-                });
-
-
-                await ChatRoomModel.findOne({id: 'main-chat'}, async (err, room) => {
-                    if (err) throw err;
-
-                    if (room.users) {
-                        await ChatRoomModel.findOneAndUpdate({'id': 'main-chat', users: {$elemMatch: {id: user.id}}},
-                            {
-                                $set: {'users.$.online': false, 'users.$.lastSeen': dateNow}
-                            }, (err, user) => {
-                                if (err) console.log('main chat user log out update error ', err);
-
-                                console.log('user main chat after log out update online: false: ', user);
+                        if (users) {
+                            await UserModel.findOneAndUpdate({id: user.id}, {online: false, lastSeen: dateNow}, (err, user) => {
+                                if (err) throw  err;
+                                console.log('user after log out update online: false: ', user);
                             });
 
-                        await ChatRoomModel.findOne({id: 'main-chat'}, async (err, room) => {
-                            if (err) throw  err;
+                            console.log('users after log out: ', users);
+                        }
 
-                            room.getActiveUsers();
+                    });
 
-                            await room.save((err) => {
-                                if (err) throw err;
+
+                    await ChatRoomModel.findOne({id: 'main-chat'}, async (err, room) => {
+                        if (err) throw err;
+
+                        if (room.users) {
+                            await ChatRoomModel.findOneAndUpdate({'id': 'main-chat', users: {$elemMatch: {id: user.id}}},
+                                {
+                                    $set: {'users.$.online': false, 'users.$.lastSeen': dateNow}
+                                }, (err, user) => {
+                                    if (err) console.log('main chat user log out update error ', err);
+
+                                    console.log('user main chat after log out update online: false: ', user);
+                                });
+
+                            await ChatRoomModel.findOne({id: 'main-chat'}, async (err, room) => {
+                                if (err) throw  err;
+
+                                room.getActiveUsers();
+
+                                await room.save((err) => {
+                                    if (err) throw err;
+                                });
+
+                                this.io.emit('mainChatRoom', room);
+                                console.log('man chat room client log out', room);
                             });
+                        }
+                    });
 
-                            this.io.emit('mainChatRoom', room);
-                            console.log('man chat room client log out', room);
-                        });
-                    }
-                });
-
-                socket.leave(user.id);
+                    socket.leave(user.id);
+                }
 
             });
 

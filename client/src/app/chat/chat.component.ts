@@ -7,7 +7,6 @@ import {ChatRoom} from "../shared/model/chat-room";
 import {getChatRoomStorageToken, getUserStorageToken} from "../shared/model/getStorageToken";
 import {currentUserToken} from "../shared/model/getStorageToken";
 import {Router} from "@angular/router";
-import {WelcomePageComponent} from "../welcome-page/welcome-page.component";
 
 @Component({
   selector: 'app-chat',
@@ -69,16 +68,16 @@ export class ChatComponent implements OnInit {
       this.getUserDirects();
     }, (err) => {
       if (err) {
+        this.userToken = getUserStorageToken(this.currentUserId);
         this.user = JSON.parse(this.storage.get(this.userToken));
         console.log('user: ', this.user);
         this.getUserDirects();
       }
     });
+
     console.log('user: ', this.user);
 
-    if (!this.user) {
-      this.router.navigate(['']);
-    }
+    // if (!this.user) this.router.navigate(['']);
   }
 
   getUserDirects() {
@@ -93,7 +92,9 @@ export class ChatComponent implements OnInit {
       this.roomsToken = getChatRoomStorageToken(  `all_user-id=${this.user.id}`);
       console.log(this.roomsToken);
 
+      console.log('rooms: ',this.rooms);
       if (!this.rooms) this.rooms = JSON.parse(this.storage.get(this.roomsToken));
+      console.log('rooms: ',this.rooms);
 
       if (!this.socketService.socket) {
         this.socketService.initSocket();
@@ -123,7 +124,7 @@ export class ChatComponent implements OnInit {
     // console.log(this.roomsToken);
     //
     // this.storage.remove(currentUserToken);
-    // this.storage.remove(this.userToken);
+    this.storage.remove(this.userToken);
     // this.storage.remove(this.roomsToken);
   }
 

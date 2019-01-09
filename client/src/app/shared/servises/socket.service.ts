@@ -134,17 +134,9 @@ export class SocketService {
     this.socket.emit('directMessagesRoomMessage', message, toId, roomId);
   }
 
-  // public onDirectMessagesRoomMessage(): Observable<Message> {
-  //   return new Observable<Message>(observer => {
-  //     this.socket.on('directMessagesRoomMessage', (data: Message) => observer.next(data));
-  //   });
-  // }
-  //
-  public onDirectMessagesRoomMessages(): Observable<Message[]> {
-    return new Observable<Message[]>( observer => {
-      this.socket.on('directMessagesRoomMessages', (messages: Array<Message>) => {
-        observer.next(messages);
-      });
-    });
+  public onUserNotSignUp(): Observable<string> {
+    return new Observable<string>(observer => {
+      this.socket.on('userNotSignUp', (userNotSignUp: string) => observer.next(userNotSignUp));
+    })
   }
 }

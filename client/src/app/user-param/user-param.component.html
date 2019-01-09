@@ -28,7 +28,10 @@
       <input matInput type="password" formControlName="password" [required]="(isEdit) ? false : true" [value]="''">
     </mat-form-field>
 
-     <button mat-raised-button *ngIf="!isEdit" color="primary" [disabled]="!isEnabledSubmit()" class="submit-button" routerLink="/chat" (click)="onSubmit()">
+    <mat-error *ngIf="!userIsAuthorized">This login is already exist. Try again</mat-error>
+
+     <button mat-raised-button *ngIf="!isEdit" color="primary" [disabled]="!isEnabledSubmit()" class="submit-button"
+             (click)="onSubmit()">
       {{submitTitle}}
     </button>
     <button mat-raised-button *ngIf="isEdit" color="primary" class="submit-button" (click)="onSave()">{{submitTitle}}</button>

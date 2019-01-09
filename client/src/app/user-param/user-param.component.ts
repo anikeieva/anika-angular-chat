@@ -8,6 +8,7 @@ import {ChooseAvatarComponent} from "../choose-avatar/choose-avatar.component";
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
 import {SocketService} from "../shared/servises/socket.service";
 import {getUserStorageToken} from "../shared/model/getStorageToken";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-user-param',
@@ -26,11 +27,13 @@ export class UserParamComponent implements OnInit {
   public selectedAvatar: string | ArrayBuffer;
   private userParametersBeforeEdit: User;
   public userToken: string;
+  public userIsAuthorized: boolean;
 
   constructor(private sharedService: SharedService,
               private dialog: MatDialog,
               @Inject(SESSION_STORAGE) private storage: StorageService,
-              private  socketService: SocketService) {
+              private  socketService: SocketService,
+              private router: Router) {
     this.getUserParams();
     this.genders = ['male', 'female'];
   }
@@ -46,6 +49,8 @@ export class UserParamComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    this.userIsAuthorized = true;
 
     if (this.isEdit) {
       console.log(this.userBeforeEdit);
@@ -63,6 +68,7 @@ export class UserParamComponent implements OnInit {
       console.log('user-param init:',this.userParameters.value);
       this.userParametersBeforeEdit = this.userParameters.value;
     }
+
   }
 
   isEnabledSubmit() {
@@ -80,19 +86,32 @@ export class UserParamComponent implements OnInit {
     };
     this.user.online = true;
 
-    this.socketService.initSocket();
+    if (!this.socketService.socket) this.socketService.initSocket();
     this.socketService.sendUser(this.user);
+
+    console.log(this.userIsAuthorized);
 
     this.socketService.onUser().subscribe((user: User) => {
       if (user) {
+        this.userIsAuthorized = true;
         console.log(user);
         this.user = user;
-        this.userToken = getUserStorageToken(user.id);
-        this.storage.set(this.userToken, JSON.stringify(user));
-        this.sharedService.setUser(user);
-        this.sharedService.updateUser.emit(user);
+        // this.userToken = getUserStorageToken(user.id);
+        // this.storage.set(this.userToken, JSON.stringify(user));
+        // this.sharedService.setUser(user);
+        // this.sharedService.updateUser.emit(user);
+        this.router.navigate(['/chat'], { relativeTo: this.route });
+        console.log('new user');
       }
     });
+
+    this.socketService.onUserNotSignUp().subscribe((userNotSignUp) => {
+      this.userIsAuthorized = false;
+      console.log('user not sign up');
+      // this.router.navigate(['']);
+    });
+
+    console.log(this.userIsAuthorized);
   }
 
   private getRandomInt(max: number) {
