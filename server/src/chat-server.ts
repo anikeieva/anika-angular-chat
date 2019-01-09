@@ -13,8 +13,7 @@ import getMongodb from "./data-base/mongoose";
 import {UserModel} from "./data-base/user";
 import {ChatRoomModel} from "./data-base/chatRoom";
 import {TypeChatRooms} from "./model/type-chat-rooms";
-import {ChatRoom} from "../../client/src/app/shared/model/chat-room";
-import {isString} from "typegoose/lib/utils";
+import {ClientUser} from "./model/clientUser";
 
 
 export class ChatServer {
@@ -140,13 +139,11 @@ export class ChatServer {
                                 await UserModel.findOne({id: fromId}, async (err, from) => {
                                     if (err) throw  err;
 
-                                    // console.log('from: ', from);
                                     if (from) {
                                         roomFrom.users.push(from, to);
                                         roomFrom.from = from.id;
                                         from.direct.push(roomFrom);
                                         this.io.emit('directMessagesRoomId', roomFrom.id);
-                                        // console.log('from: ', from);
 
                                         await from.save((err) => {
                                             if (err) throw  err;
@@ -166,7 +163,6 @@ export class ChatServer {
                                         roomTo.users.push(to, from);
 
                                         to.direct.push(roomTo);
-                                        // console.log('to: ', to);
 
                                         await to.save((err) => {
                                             if (err) throw  err;
@@ -207,7 +203,9 @@ export class ChatServer {
                 await UserModel.findOne({id: id}, (err, user) => {
                     if (err) throw  err;
 
-                    this.io.emit('userById', user);
+                    const clientUser = new ClientUser(user);
+                    console.log('clientUser: ', clientUser);
+                    this.io.emit('userById', clientUser);
                 });
             }));
 
@@ -250,10 +248,13 @@ export class ChatServer {
                             if (err) throw  err;
                         });
 
+                        const clientUser = new ClientUser(user);
+                        console.log('clientUser: ', clientUser);
+
                         console.log('User log in: ', user);
-                        socket.join(user.id);
-                        this.io.emit('userLogIn', user);
-                        this.io.to(user.id).emit('user', user);
+                        socket.join(clientUser.id);
+                        this.io.emit('userLogIn', clientUser);
+                        this.io.to(clientUser.id).emit('user', clientUser);
 
                         await ChatRoomModel.findOneAndUpdate({
                                 id: 'main-chat',
@@ -297,13 +298,16 @@ export class ChatServer {
                             avatar: user.avatar,
                             action: user.action,
                             online: user.online,
-                            direct: user.direct,
                             lastSeen: user.lastSeen
                         }, (err) => {
                             if (err) throw  err;
                         });
 
-                        console.log('after update user 2: ', user);
+                        await UserModel.findOne({id: user.id}, (err, u) => {
+                            if (err) throw err;
+
+                            console.log('after update user 2: ', u);
+                        });
 
                     } else {
 
@@ -325,9 +329,13 @@ export class ChatServer {
                         await newUser.save((err) => {
                             if (err) throw err;
                         });
+                        console.log('new user: ', newUser);
                         socket.join(newUser.id);
-                        this.io.to(newUser.id).emit('user', newUser);
-                        socket.handshake.session.user = newUser;
+
+                        const clientUser = new ClientUser(newUser);
+                        console.log('clientUser: ', clientUser);
+                        this.io.to(clientUser.id).emit('user', clientUser);
+                        // socket.handshake.session.user = newUser;
                     }
                 });
             });

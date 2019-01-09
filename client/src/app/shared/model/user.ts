@@ -6,11 +6,11 @@ export interface User {
   lastName: string;
   gender: string;
   login: string;
-  password: string;
+  // password: string;
   avatar: string | ArrayBuffer;
   action: UserAction;
   id: string;
   online: boolean;
-  direct: ChatRoom[];
+  // direct: ChatRoom[];
   lastSeen: Date;
 }
