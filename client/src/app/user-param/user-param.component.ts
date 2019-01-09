@@ -1,4 +1,4 @@
-import {Component, Inject, InjectionToken, Input, OnInit} from '@angular/core';
+import {Component, Inject, Input, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {User} from '../shared/model/user';
 import {SharedService} from '../shared/servises/shared.service';
@@ -8,7 +8,7 @@ import {ChooseAvatarComponent} from "../choose-avatar/choose-avatar.component";
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
 import {SocketService} from "../shared/servises/socket.service";
 import {getUserStorageToken} from "../shared/model/getStorageToken";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-user-param',
@@ -33,7 +33,8 @@ export class UserParamComponent implements OnInit {
               private dialog: MatDialog,
               @Inject(SESSION_STORAGE) private storage: StorageService,
               private  socketService: SocketService,
-              private router: Router) {
+              private router: Router,
+              private route: ActivatedRoute) {
     this.getUserParams();
     this.genders = ['male', 'female'];
   }
