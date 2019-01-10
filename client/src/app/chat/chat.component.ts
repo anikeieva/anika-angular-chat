@@ -48,24 +48,30 @@ export class ChatComponent implements OnInit {
 
   getUser() {
     this.currentUserId = this.storage.get(currentUserToken);
+    console.log(this.currentUserId);
 
     if (!this.user) {
       this.userToken = getUserStorageToken(this.currentUserId);
       this.user = JSON.parse(this.storage.get(this.userToken));
       console.log('user: ', this.user);
+      this.getUserDirects();
+      // if (!this.user) this.router.navigate(['']);
     }
 
+    if (!this.socketService.socket) this.socketService.initSocket();
+
     this.socketService.onUser().subscribe((user: User) => {
+      if (user) {
+        this.user = user;
+        console.log('user: ', this.user);
+        this.currentUserId = user.id;
+        this.userToken = getUserStorageToken(user.id);
+        this.storage.set(currentUserToken, this.currentUserId);
+        this.storage.set(this.userToken, JSON.stringify(this.user));
+        this.sharedService.setUser(user);
 
-      this.user = user;
-      console.log('user: ', this.user);
-      this.currentUserId = user.id;
-      this.userToken = getUserStorageToken(user.id);
-      this.storage.set(currentUserToken, this.currentUserId);
-      this.storage.set(this.userToken, JSON.stringify(this.user));
-      this.sharedService.setUser(user);
-
-      this.getUserDirects();
+        this.getUserDirects();
+      }
     }, (err) => {
       if (err) {
         this.userToken = getUserStorageToken(this.currentUserId);
@@ -76,8 +82,6 @@ export class ChatComponent implements OnInit {
     });
 
     console.log('user: ', this.user);
-
-    // if (!this.user) this.router.navigate(['']);
   }
 
   getUserDirects() {

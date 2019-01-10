@@ -46,6 +46,8 @@ export class UserProfileComponent implements OnInit {
       console.log('user: ', this.user);
     }
 
+    if (!this.socketService.socket) this.socketService.initSocket();
+
     this.socketService.onUser().subscribe((user: User) => {
 
       this.user = user;
@@ -70,14 +72,12 @@ export class UserProfileComponent implements OnInit {
       console.log(id);
       this.directRoomUserToken = getUserStorageToken(id);
 
-      if (!this.socketService.socket) {
-        this.socketService.initSocket();
-      }
-
       if (!this.directRoomUser) {
         this.directRoomUser = JSON.parse(this.storage.get(this.directRoomUserToken));
         console.log(this.directRoomUser);
       }
+
+      if (!this.socketService.socket) this.socketService.initSocket();
 
       this.socketService.sendRequestForUserById(id);
 
@@ -85,17 +85,18 @@ export class UserProfileComponent implements OnInit {
         if (user) {
           this.directRoomUser = user;
           console.log(this.directRoomUser);
+          this.getDirectRoomId();
         }
       }, (err) => {
         if (err) {
           this.directRoomUser = JSON.parse(this.storage.get(this.directRoomUserToken));
           console.log(this.directRoomUser);
+          this.getDirectRoomId();
         }
       });
     });
 
     console.log('direct user: ',this.directRoomUser);
-    this.getDirectRoomId();
   }
 
   getDirectRoomId() {

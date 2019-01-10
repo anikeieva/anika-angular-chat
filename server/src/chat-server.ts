@@ -342,6 +342,7 @@ export class ChatServer {
 
                                 const clientUser = new ClientUser(newUser);
                                 console.log('clientUser: ', clientUser);
+                                this.io.emit('userSignUp', 'userSignUp');
                                 this.io.to(clientUser.id).emit('user', clientUser);
                                 // socket.handshake.session.user = newUser;
                             }

@@ -92,24 +92,25 @@ export class UserParamComponent implements OnInit {
 
     console.log(this.userIsAuthorized);
 
-    this.socketService.onUser().subscribe((user: User) => {
-      if (user) {
-        this.userIsAuthorized = true;
-        console.log(user);
-        this.user = user;
-        // this.userToken = getUserStorageToken(user.id);
-        // this.storage.set(this.userToken, JSON.stringify(user));
-        // this.sharedService.setUser(user);
-        // this.sharedService.updateUser.emit(user);
-        this.router.navigate(['/chat'], { relativeTo: this.route });
-        console.log('new user');
-      }
+    this.socketService.onUserSignUp().subscribe((userSignUp) => {
+      console.log('user sign up');
+      this.router.navigateByUrl('/chat').then(e => {
+        if (e) console.log('client not navigate to /chat because of', e);
+        else {
+          this.userIsAuthorized = true;
+        }
+      });
     });
 
     this.socketService.onUserNotSignUp().subscribe((userNotSignUp) => {
-      this.userIsAuthorized = false;
       console.log('user not sign up');
-      // this.router.navigate(['']);
+      this.userIsAuthorized = false;
+      // this.router.navigateByUrl('').then(e => {
+      //   if (e) console.log('client not navigate to / because of', e);
+      //   else {
+      //     this.userIsAuthorized = false;
+      //   }
+      // });
     });
 
     console.log(this.userIsAuthorized);

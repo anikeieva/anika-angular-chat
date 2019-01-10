@@ -139,4 +139,10 @@ export class SocketService {
       this.socket.on('userNotSignUp', (userNotSignUp: string) => observer.next(userNotSignUp));
     })
   }
+
+  public onUserSignUp(): Observable<string> {
+    return new Observable<string>(observer => {
+      this.socket.on('userSignUp', (userSignUp: string) => observer.next(userSignUp));
+    })
+  }
 }

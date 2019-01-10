@@ -26,4 +26,6 @@ npm install
 npm start
 ```
 
-![anika-angular-chat_welcome](https://user-images.githubusercontent.com/33197158/50926711-55c58480-145e-11e9-9b4b-b8155dd03332.png)
+![selection_009](https://user-images.githubusercontent.com/33197158/50971638-2a3dab00-14ed-11e9-9bf1-362ce6ac3d79.png)
+
+![selection_007](https://user-images.githubusercontent.com/33197158/50971652-3a558a80-14ed-11e9-9a51-dfe25bf17b3e.png)
