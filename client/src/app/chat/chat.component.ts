@@ -51,11 +51,13 @@ export class ChatComponent implements OnInit {
     if (!this.user) {
       this.userToken = getUserStorageToken(this.currentUserId);
       this.user = JSON.parse(this.storage.get(this.userToken));
-      console.log('user no end: ', this.user);
-      this.getUserDirects();
+      if (this.user) {
+        console.log('user no, start: ', this.user);
+        this.getUserDirects();
+      }
     }
 
-    if (!this.socketService.socket) this.socketService.initSocket();
+    // if (!this.socketService.socket) this.socketService.initSocket();
 
     this.socketService.onUser().subscribe((user: User) => {
       if (user) {

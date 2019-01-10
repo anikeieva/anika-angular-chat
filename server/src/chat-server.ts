@@ -110,7 +110,6 @@ export class ChatServer {
                                     directRoom = room.direct[i];
                                 }
                             }
-                            // console.log('directMessagesRoom Id', directRoom);
                             this.io.emit('directMessagesRoomId', directRoom.id);
                         }
                     } else {
@@ -139,6 +138,7 @@ export class ChatServer {
                                         roomFrom.users.push(from, to);
                                         roomFrom.from = from.id;
                                         from.direct.push(roomFrom);
+
                                         this.io.emit('directMessagesRoomId', roomFrom.id);
 
                                         await from.save((err) => {
@@ -172,7 +172,7 @@ export class ChatServer {
                 });
             });
 
-            socket.on('requestForDirectMessagesRoomById', ( async (roomId, fromId) => {
+            socket.on('requestForDirectMessagesRoomById', ( async (fromId, roomId) => {
 
                 await UserModel.findOne({id: fromId, direct: {$elemMatch: {id: roomId}}}, async (err, room) => {
                     if (err) throw  err;
@@ -333,7 +333,7 @@ export class ChatServer {
 
                                 const clientUser = new ClientUser(newUser);
                                 console.log('clientUser: ', clientUser);
-                                this.io.emit('userSignUp', clientUser.id);
+                                this.io.to(clientUser.id).emit('userSignUp', clientUser);
                                 this.io.to(clientUser.id).emit('user', clientUser);
                             }
                         });

@@ -104,8 +104,8 @@ export class SocketService {
     this.socket.emit('requestForDirectMessagesRoomId', fromId, toId);
   }
 
-  public sendRequestForDirectMessagesRoomById(id: string, fromId: string): void {
-    this.socket.emit('requestForDirectMessagesRoomById', id, fromId);
+  public sendRequestForDirectMessagesRoomById(fromId: string, roomId: string): void {
+    this.socket.emit('requestForDirectMessagesRoomById', fromId, roomId);
   }
 
   public onDirectMessagesRoomId(): Observable<string> {
@@ -140,9 +140,9 @@ export class SocketService {
     })
   }
 
-  public onUserSignUp(): Observable<string> {
-    return new Observable<string>(observer => {
-      this.socket.on('userSignUp', (userId: string) => observer.next(userId));
+  public onUserSignUp(): Observable<User> {
+    return new Observable<User>(observer => {
+      this.socket.on('userSignUp', (user: User) => observer.next(user));
     })
   }
 }

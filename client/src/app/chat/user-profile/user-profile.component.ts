@@ -100,6 +100,8 @@ export class UserProfileComponent implements OnInit {
   }
 
   getDirectRoomId() {
+    console.log(this.user);
+    console.log(this.directRoomUser);
 
     this.directRoomIdToken = getDirectRoomStorageToken(this.user.id, this.directRoomUser.id);
 
@@ -115,6 +117,7 @@ export class UserProfileComponent implements OnInit {
     this.socketService.onDirectMessagesRoomId().subscribe((roomId: string) => {
       console.log('room id: ', roomId);
       this.directRoomId = roomId;
+      console.log(this.directRoomId);
       this.storage.set(this.directRoomIdToken, this.directRoomId);
     }, (err) => {
       if(err) {
