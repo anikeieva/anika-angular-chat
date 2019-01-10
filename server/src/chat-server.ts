@@ -3,7 +3,6 @@ import * as express from 'express';
 import * as socketIo from 'socket.io';
 import * as session from "express-session";
 import * as sharedSession from "express-socket.io-session";
-// import * as cookie from "cookie";
 
 import {Message} from './model';
 import {User} from "./model/user";

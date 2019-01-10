@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {AfterContentInit, Component, Inject, OnInit} from '@angular/core';
 import {User} from '../shared/model/user';
 import {SharedService} from '../shared/servises/shared.service';
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
@@ -13,7 +13,7 @@ import {Router} from "@angular/router";
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, AfterContentInit {
   public user: User;
   public userToken: string;
   public rooms: ChatRoom[];
@@ -46,6 +46,13 @@ export class ChatComponent implements OnInit {
     console.log(this.socketService);
   }
 
+  ngAfterContentInit(): void {
+    setTimeout(() => {
+      console.log('user after init', this.user);
+      if (!this.user) this.router.navigate(['']);
+    }, 0);
+  }
+
   getUser() {
     this.currentUserId = this.storage.get(currentUserToken);
     console.log(this.currentUserId);
@@ -55,7 +62,6 @@ export class ChatComponent implements OnInit {
       this.user = JSON.parse(this.storage.get(this.userToken));
       console.log('user: ', this.user);
       this.getUserDirects();
-      // if (!this.user) this.router.navigate(['']);
     }
 
     if (!this.socketService.socket) this.socketService.initSocket();
