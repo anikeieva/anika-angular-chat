@@ -7,7 +7,7 @@ import {MatDialog} from "@angular/material";
 import {ChooseAvatarComponent} from "../choose-avatar/choose-avatar.component";
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
 import {SocketService} from "../shared/servises/socket.service";
-import {getUserStorageToken} from "../shared/model/getStorageToken";
+import {currentUserToken, getUserStorageToken} from "../shared/model/getStorageToken";
 import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
@@ -92,8 +92,11 @@ export class UserParamComponent implements OnInit {
 
     console.log(this.userIsAuthorized);
 
-    this.socketService.onUserSignUp().subscribe((userSignUp) => {
+    this.socketService.onUserSignUp().subscribe((userId) => {
       console.log('user sign up');
+      if (userId) {
+        this.storage.set(currentUserToken, userId);
+      }
       this.router.navigateByUrl('/chat').then(e => {
         if (e) console.log('client not navigate to /chat because of', e);
         else {

@@ -86,8 +86,8 @@ export class SocketService {
     })
   }
 
-  public sendUserLogOut(user: User): void {
-    this.socket.emit('userLogOut', user);
+  public sendUserLogOut(userId: string): void {
+    this.socket.emit('userLogOut', userId);
   }
 
   public sendRequestForUserById(id): void {
@@ -130,8 +130,8 @@ export class SocketService {
     this.socket.emit('requestForAllChatRooms', user);
   }
 
-  public sendDirectMessagesRoomMessage(message: Message, toId: string, roomId: string): void {
-    this.socket.emit('directMessagesRoomMessage', message, toId, roomId);
+  public sendDirectMessagesRoomMessage(message: Message, roomId: string): void {
+    this.socket.emit('directMessagesRoomMessage', message, roomId);
   }
 
   public onUserNotSignUp(): Observable<string> {
@@ -142,7 +142,7 @@ export class SocketService {
 
   public onUserSignUp(): Observable<string> {
     return new Observable<string>(observer => {
-      this.socket.on('userSignUp', (userSignUp: string) => observer.next(userSignUp));
+      this.socket.on('userSignUp', (userId: string) => observer.next(userId));
     })
   }
 }

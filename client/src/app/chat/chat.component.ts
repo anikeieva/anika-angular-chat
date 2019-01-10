@@ -1,4 +1,4 @@
-import {AfterContentInit, Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {User} from '../shared/model/user';
 import {SharedService} from '../shared/servises/shared.service';
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
@@ -6,14 +6,13 @@ import {SocketService} from "../shared/servises/socket.service";
 import {ChatRoom} from "../shared/model/chat-room";
 import {getChatRoomStorageToken, getUserStorageToken} from "../shared/model/getStorageToken";
 import {currentUserToken} from "../shared/model/getStorageToken";
-import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit, AfterContentInit {
+export class ChatComponent implements OnInit {
   public user: User;
   public userToken: string;
   public rooms: ChatRoom[];
@@ -22,8 +21,7 @@ export class ChatComponent implements OnInit, AfterContentInit {
 
   constructor(private sharedService: SharedService,
               @Inject(SESSION_STORAGE) private storage: StorageService,
-              private  socketService: SocketService,
-              private router: Router) {}
+              private  socketService: SocketService) {}
 
   ngOnInit() {
     this.sharedService.listenUser().subscribe(param => {
@@ -46,21 +44,14 @@ export class ChatComponent implements OnInit, AfterContentInit {
     console.log(this.socketService);
   }
 
-  ngAfterContentInit(): void {
-    setTimeout(() => {
-      console.log('user after init', this.user);
-      if (!this.user) this.router.navigate(['']);
-    }, 0);
-  }
-
   getUser() {
     this.currentUserId = this.storage.get(currentUserToken);
-    console.log(this.currentUserId);
+    console.log('currentUserId',this.currentUserId);
 
     if (!this.user) {
       this.userToken = getUserStorageToken(this.currentUserId);
       this.user = JSON.parse(this.storage.get(this.userToken));
-      console.log('user: ', this.user);
+      console.log('user no end: ', this.user);
       this.getUserDirects();
     }
 
@@ -69,7 +60,7 @@ export class ChatComponent implements OnInit, AfterContentInit {
     this.socketService.onUser().subscribe((user: User) => {
       if (user) {
         this.user = user;
-        console.log('user: ', this.user);
+        console.log('user on: ', this.user);
         this.currentUserId = user.id;
         this.userToken = getUserStorageToken(user.id);
         this.storage.set(currentUserToken, this.currentUserId);
@@ -80,9 +71,10 @@ export class ChatComponent implements OnInit, AfterContentInit {
       }
     }, (err) => {
       if (err) {
+        this.currentUserId = this.storage.get(currentUserToken);
         this.userToken = getUserStorageToken(this.currentUserId);
         this.user = JSON.parse(this.storage.get(this.userToken));
-        console.log('user: ', this.user);
+        console.log('user on, err: ', this.user);
         this.getUserDirects();
       }
     });
@@ -127,7 +119,7 @@ export class ChatComponent implements OnInit, AfterContentInit {
 
   exit() {
     this.socketService.initSocket();
-    this.socketService.sendUserLogOut(this.user);
+    this.socketService.sendUserLogOut(this.user.id);
 
     // console.log(currentUserToken);
     // console.log(this.userToken);

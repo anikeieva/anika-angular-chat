@@ -149,7 +149,7 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
 
     this.timeNow = new Date();
     this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage', this.directRoomUser);
-    this.socketService.sendDirectMessagesRoomMessage(this.message, this.directRoomUser.id, this.directMessagesRoom.id);
+    this.socketService.sendDirectMessagesRoomMessage(this.message, this.directMessagesRoom.id);
     this.getDirectRoom();
 
     this.messageContent = null;
