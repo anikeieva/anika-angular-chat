@@ -8,7 +8,7 @@ import {ChooseAvatarComponent} from "../choose-avatar/choose-avatar.component";
 import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
 import {SocketService} from "../shared/servises/socket.service";
 import {currentUserToken, getUserStorageToken} from "../shared/model/getStorageToken";
-import {ActivatedRoute, Router} from "@angular/router";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-user-param',
@@ -33,8 +33,7 @@ export class UserParamComponent implements OnInit {
               private dialog: MatDialog,
               @Inject(SESSION_STORAGE) private storage: StorageService,
               private  socketService: SocketService,
-              private router: Router,
-              private route: ActivatedRoute) {
+              private router: Router) {
     this.getUserParams();
     this.genders = ['male', 'female'];
   }
@@ -111,12 +110,6 @@ export class UserParamComponent implements OnInit {
     this.socketService.onUserNotSignUp().subscribe((userNotSignUp) => {
       console.log('user not sign up');
       this.userIsAuthorized = false;
-      // this.router.navigateByUrl('').then(e => {
-      //   if (e) console.log('client not navigate to / because of', e);
-      //   else {
-      //     this.userIsAuthorized = false;
-      //   }
-      // });
     });
 
     console.log(this.userIsAuthorized);
