@@ -102,6 +102,9 @@ export class ChatServer {
                 await UserModel.findOne({id: fromId, direct: {$elemMatch: {from: fromId, to: toId}}}, async (err, room) => {
                     if (err) throw  err;
 
+                    socket.join(fromId);
+                    socket.join(toId);
+
                     if (room) {
                         if (room.id && room.direct) {
                             let directRoom;
@@ -110,7 +113,7 @@ export class ChatServer {
                                     directRoom = room.direct[i];
                                 }
                             }
-                            this.io.emit('directMessagesRoomId', directRoom.id);
+                            this.io.to(fromId).to(toId).emit('directMessagesRoomId', directRoom.id);
                         }
                     } else {
 
@@ -139,7 +142,7 @@ export class ChatServer {
                                         roomFrom.from = from.id;
                                         from.direct.push(roomFrom);
 
-                                        this.io.emit('directMessagesRoomId', roomFrom.id);
+                                        this.io.to(fromId).emit('directMessagesRoomId', roomFrom.id);
 
                                         await from.save((err) => {
                                             if (err) throw  err;
@@ -159,6 +162,8 @@ export class ChatServer {
                                         roomTo.users.push(to, from);
 
                                         to.direct.push(roomTo);
+
+                                        this.io.to(toId).emit('directMessagesRoomId', roomFrom.id);
 
                                         await to.save((err) => {
                                             if (err) throw  err;
@@ -187,7 +192,8 @@ export class ChatServer {
                                 }
                             }
                             // console.log('DirectMessagesRoomById', directRoom);
-                            this.io.emit('directMessagesRoomById', directRoom);
+                            socket.join(roomId);
+                            this.io.to(roomId).emit('directMessagesRoomById', directRoom);
                         }
                     }
                 });
@@ -219,7 +225,7 @@ export class ChatServer {
                         }
 
                         // console.log('rooms requestForAllChatRooms: ', rooms);
-                        this.io.emit('getAllChatRooms', rooms);
+                        this.io.to(user.id).emit('getAllChatRooms', rooms);
                     });
                 });
             }));
@@ -428,6 +434,40 @@ export class ChatServer {
                     $push: {
                         'direct.$.messages': message
                     }
+                });
+
+                await UserModel.findOne({id: message.from.id, direct: {$elemMatch: {id: roomId}}}, (err, fromUser) => {
+                    if (err) throw  err;
+
+                    if (fromUser) {
+                        console.log('fromUser: ', fromUser);
+                    }
+                });
+
+                await UserModel.findOne({id: message.to.id, direct: {$elemMatch: {id: roomId}}}, (err, toUser) => {
+                    if (err) throw  err;
+
+                    if (toUser) {
+                        console.log('toUser: ', toUser);
+                    }
+                });
+
+                await ChatRoomModel.findOne({id: 'main-chat'}, (err, mainChatRoom) => {
+                    if (err) throw  err;
+
+                    let rooms = [];
+                    rooms.push(mainChatRoom);
+
+                    UserModel.findOne({id: message.to.id}, (err, item) => {
+                        if (err) throw  err;
+
+                        for (let i = 0; i < item.direct.length; i++) {
+                            rooms.push(item.direct[i]);
+                        }
+
+                        // console.log('rooms requestForAllChatRooms: ', rooms);
+                        this.io.to(message.to.id).emit('getAllChatRooms', rooms);
+                    });
                 });
 
             });
