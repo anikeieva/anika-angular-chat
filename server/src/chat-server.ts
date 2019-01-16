@@ -103,9 +103,9 @@ export class ChatServer {
                     if (err) throw  err;
 
                     socket.join(fromId);
-                    socket.join(toId);
 
                     if (room) {
+                        console.log('user request room id before', room);
                         if (room.id && room.direct) {
                             let directRoom;
                             for (let i=0; i < room.direct.length; i++) {
@@ -113,7 +113,7 @@ export class ChatServer {
                                     directRoom = room.direct[i];
                                 }
                             }
-                            this.io.to(fromId).to(toId).emit('directMessagesRoomId', directRoom.id);
+                            this.io.to(fromId).emit('directMessagesRoomId', directRoom.id);
                         }
                     } else {
 
@@ -140,6 +140,7 @@ export class ChatServer {
                                     if (from) {
                                         roomFrom.users.push(from, to);
                                         roomFrom.from = from.id;
+                                        console.log(`from id ${fromId} `,'user from request room id before', from);
                                         from.direct.push(roomFrom);
 
                                         this.io.to(fromId).emit('directMessagesRoomId', roomFrom.id);
@@ -147,6 +148,8 @@ export class ChatServer {
                                         await from.save((err) => {
                                             if (err) throw  err;
                                         });
+
+                                        console.log(`from id ${fromId} `,'user from request room id after', from);
 
                                         const roomTo = new ChatRoomModel({
                                             _id: new mongoose.Types.ObjectId(),
@@ -159,15 +162,17 @@ export class ChatServer {
                                             from: to.id
                                         });
 
+                                        console.log(`to id ${toId}`,'user to request room id before', to);
+
                                         roomTo.users.push(to, from);
 
                                         to.direct.push(roomTo);
 
-                                        this.io.to(toId).emit('directMessagesRoomId', roomFrom.id);
-
                                         await to.save((err) => {
                                             if (err) throw  err;
                                         });
+
+                                        console.log(`to id ${toId}`,'user to request room id after', to);
                                     }
                                 });
                             }
@@ -181,9 +186,9 @@ export class ChatServer {
 
                 await UserModel.findOne({id: fromId, direct: {$elemMatch: {id: roomId}}}, async (err, room) => {
                     if (err) throw  err;
-                    // console.log('direct room by id', room);
 
                     if (room) {
+                        console.log('user request room by id before:', room)
                         if (room.direct) {
                             let directRoom;
                             for (let i = 0; i < room.direct.length; i++) {
@@ -191,7 +196,7 @@ export class ChatServer {
                                     directRoom = room.direct[i];
                                 }
                             }
-                            // console.log('DirectMessagesRoomById', directRoom);
+                            console.log('DirectMessagesRoomById', directRoom);
                             socket.join(roomId);
                             this.io.to(roomId).emit('directMessagesRoomById', directRoom);
                         }
@@ -481,7 +486,7 @@ export class ChatServer {
                             rooms.push(item.direct[i]);
                         }
 
-                        // console.log('rooms requestForAllChatRooms: ', rooms);
+                        console.log('rooms requestForAllChatRooms: ', rooms);
                         this.io.to(message.to.id).emit('getAllChatRooms', rooms);
                     });
                 });
