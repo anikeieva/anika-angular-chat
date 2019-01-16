@@ -93,9 +93,11 @@ export class UserParamComponent implements OnInit {
 
     this.socketService.onUserSignUp().subscribe((user) => {
       console.log('user sign up');
+      console.log('user', user);
       if (user) {
         this.userIsAuthorized = true;
         this.storage.set(currentUserToken, user.id);
+        this.userToken = getUserStorageToken(user.id);
         this.storage.set(this.userToken, JSON.stringify(user));
         this.sharedService.setUser(user);
       }

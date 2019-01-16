@@ -224,7 +224,7 @@ export class ChatServer {
                             rooms.push(item.direct[i]);
                         }
 
-                        // console.log('rooms requestForAllChatRooms: ', rooms);
+                        console.log('rooms requestForAllChatRooms: ', rooms);
                         this.io.to(user.id).emit('getAllChatRooms', rooms);
                     });
                 });
@@ -423,6 +423,22 @@ export class ChatServer {
             });
 
             socket.on('directMessagesRoomMessage', async (message: Message, roomId: string) => {
+
+                await UserModel.findOne({id: message.from.id, direct: {$elemMatch: {id: roomId}}}, (err, fromUser) => {
+                    if (err) throw  err;
+
+                    if (fromUser) {
+                        console.log('fromUser: ', fromUser);
+                    }
+                });
+
+                await UserModel.findOne({id: message.to.id, direct: {$elemMatch: {id: roomId}}}, (err, toUser) => {
+                    if (err) throw  err;
+
+                    if (toUser) {
+                        console.log('toUser: ', toUser);
+                    }
+                });
 
                 await UserModel.update({id: message.from.id, direct: {$elemMatch: {id: roomId}}},{
                     $push: {
