@@ -69,7 +69,7 @@ export class UserProfileComponent implements OnInit {
   getDirectRoomUser() {
     this.route.queryParams.subscribe(param => {
       const id = param.id;
-      console.log(id);
+      console.log('direct room user id',id);
       this.directRoomUserToken = getUserStorageToken(id);
 
       if (!this.directRoomUser) {
@@ -81,7 +81,7 @@ export class UserProfileComponent implements OnInit {
 
       this.socketService.sendRequestForUserById(id);
 
-      this.socketService.onUserById().subscribe((user: User) => {
+      this.socketService.onUserById(id).subscribe((user: User) => {
         if (user) {
           this.directRoomUser = user;
           console.log(this.directRoomUser);

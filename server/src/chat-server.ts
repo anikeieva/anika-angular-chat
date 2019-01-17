@@ -103,6 +103,8 @@ export class ChatServer {
                     if (err) throw  err;
 
                     socket.join(fromId);
+                    console.log('fromId', fromId);
+                    console.log('toId', toId);
 
                     if (room) {
                         console.log('user request room id before', room);
@@ -211,7 +213,7 @@ export class ChatServer {
 
                     const clientUser = new ClientUser(user);
                     console.log('clientUser: ', clientUser);
-                    this.io.emit('userById', clientUser);
+                    this.io.emit(`userById=${id}`, clientUser);
                 });
             }));
 

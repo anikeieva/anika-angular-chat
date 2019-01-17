@@ -94,9 +94,9 @@ export class SocketService {
     this.socket.emit('requestForUserById', id);
   }
 
-  public onUserById(): Observable<User> {
+  public onUserById(userId): Observable<User> {
     return new Observable<User>(observer => {
-      this.socket.on('userById', (user: User) => observer.next(user));
+      this.socket.on(`userById=${userId}`, (user: User) => observer.next(user));
     })
   }
 
