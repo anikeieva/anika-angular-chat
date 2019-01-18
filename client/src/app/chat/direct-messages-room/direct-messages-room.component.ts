@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  Component, ElementRef, Inject,
+  Component, ElementRef, Inject, OnDestroy,
   OnInit, QueryList, ViewChild, ViewChildren,
 } from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
@@ -18,7 +18,7 @@ import {SharedService} from "../../shared/servises/shared.service";
   templateUrl: './direct-messages-room.component.html',
   styleUrls: ['./direct-messages-room.component.css']
 })
-export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
+export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public directRoomUser: User;
   public user: User;
@@ -157,5 +157,9 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
 
     this.messageContent = null;
     console.log('ChatRoom: ', this.directMessagesRoom);
+  }
+
+  ngOnDestroy(): void {
+    this.storage.remove(this.chatRoomToken);
   }
 }

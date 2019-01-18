@@ -1,7 +1,7 @@
 import {
   AfterViewInit,
   Component,
-  ElementRef, Inject,
+  ElementRef, Inject, OnDestroy,
   OnInit,
   QueryList,
   ViewChild,
@@ -23,7 +23,7 @@ import {take} from "rxjs/operators";
   templateUrl: './main-chat.component.html',
   styleUrls: ['./main-chat.component.css']
 })
-export class MainChatComponent implements OnInit, AfterViewInit {
+export class MainChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public messageContent: string;
   public messages: Message[];
@@ -34,7 +34,6 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   public mainChatRoomToken: string;
   public userToken: string;
   public currentUserId: string;
-  public subscription: any;
 
   @ViewChild('messageList') messageList: ElementRef;
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;
@@ -45,8 +44,6 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    // this.subscription = this.sharedService.listenUser().pipe(take(1)).
-    // subscribe(paramBefore => this.onEditUser(paramBefore));
     this.sharedService.listenUser().pipe(take(1)).subscribe(param => {
       console.log('param: ', param);
       if (param) {
@@ -214,5 +211,9 @@ export class MainChatComponent implements OnInit, AfterViewInit {
       return 'message-item';
     }
     return 'action-item';
+  }
+
+  ngOnDestroy(): void {
+    this.storage.remove(this.mainChatRoomToken);
   }
 }

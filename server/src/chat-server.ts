@@ -431,22 +431,6 @@ export class ChatServer {
 
             socket.on('directMessagesRoomMessage', async (message: Message, roomId: string) => {
 
-                await UserModel.findOne({id: message.from.id, direct: {$elemMatch: {id: roomId}}}, (err, fromUser) => {
-                    if (err) throw  err;
-
-                    if (fromUser) {
-                        console.log('fromUser: ', fromUser);
-                    }
-                });
-
-                await UserModel.findOne({id: message.to.id, direct: {$elemMatch: {id: roomId}}}, (err, toUser) => {
-                    if (err) throw  err;
-
-                    if (toUser) {
-                        console.log('toUser: ', toUser);
-                    }
-                });
-
                 await UserModel.update({id: message.from.id, direct: {$elemMatch: {id: roomId}}},{
                     $push: {
                         'direct.$.messages': message
@@ -459,43 +443,6 @@ export class ChatServer {
                     }
                 });
 
-                await UserModel.findOne({id: message.from.id, direct: {$elemMatch: {id: roomId}}}, (err, fromUser) => {
-                    if (err) throw  err;
-
-                    if (fromUser) {
-                        console.log('fromUser: ', fromUser);
-                    }
-                });
-
-                await UserModel.findOne({id: message.to.id, direct: {$elemMatch: {id: roomId}}}, (err, toUser) => {
-                    if (err) throw  err;
-
-                    if (toUser) {
-                        console.log('toUser: ', toUser);
-                    }
-                });
-
-                // UserModel.findOne({id: message.from.id, direct: {$elemMatch: {id: roomId}}}, (err, room) => {
-                //     if (err) throw  err;
-                //
-                //     console.log('room messages', room);
-                //     console.log('room messages', room.direct);
-                //     if (room.direct.id === roomId) {
-                //         this.io.to(message.from.id).emit(`directRoomMessages`, room.direct);
-                //     }
-                // });
-                //
-                //
-                // UserModel.findOne({id: message.to.id, direct: {$elemMatch: {id: roomId}}}, (err, room) => {
-                //     if (err) throw  err;
-                //
-                //     console.log('room messages', room);
-                //     console.log('room messages', room.direct);
-                //     if (room.direct.id === roomId) {
-                //         this.io.to(message.to.id).emit(`directRoomMessages`, room.direct);
-                //     }
-                // });
-
                 await ChatRoomModel.findOne({id: 'main-chat'}, (err, mainChatRoom) => {
                     if (err) throw  err;
 
@@ -503,6 +450,8 @@ export class ChatServer {
                     rooms.push(mainChatRoom);
                     UserModel.findOne({id: message.from.id}, (err, item) => {
                         if (err) throw  err;
+
+                        console.log('fromUser: ', item);
 
                         for (let i = 0; i < item.direct.length; i++) {
                             rooms.push(item.direct[i]);
@@ -524,6 +473,8 @@ export class ChatServer {
 
                     UserModel.findOne({id: message.to.id}, (err, item) => {
                         if (err) throw  err;
+
+                        console.log('toUser: ', item);
 
                         for (let i = 0; i < item.direct.length; i++) {
                             rooms.push(item.direct[i]);

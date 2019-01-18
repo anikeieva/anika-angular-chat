@@ -6,7 +6,6 @@ import {SocketService} from "../shared/servises/socket.service";
 import {ChatRoom} from "../shared/model/chat-room";
 import {getChatRoomStorageToken, getUserStorageToken} from "../shared/model/getStorageToken";
 import {currentUserToken} from "../shared/model/getStorageToken";
-import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-chat',
@@ -22,8 +21,7 @@ export class ChatComponent implements OnInit {
 
   constructor(private sharedService: SharedService,
               @Inject(SESSION_STORAGE) private storage: StorageService,
-              private  socketService: SocketService,
-              private router: Router) {}
+              private  socketService: SocketService) {}
 
   ngOnInit() {
     this.sharedService.listenUser().subscribe(param => {
@@ -123,13 +121,10 @@ export class ChatComponent implements OnInit {
     this.socketService.initSocket();
     this.socketService.sendUserLogOut(this.user.id);
 
-    // console.log(currentUserToken);
-    // console.log(this.userToken);
-    // console.log(this.roomsToken);
-    //
-    // this.storage.remove(currentUserToken);
+    this.storage.remove(currentUserToken);
     this.storage.remove(this.userToken);
-    // this.storage.remove(this.roomsToken);
+    this.storage.remove(this.roomsToken);
+    this.storage.remove(undefined);
   }
 
   getQueryParams(room) {
