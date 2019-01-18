@@ -145,4 +145,12 @@ export class SocketService {
       this.socket.on('userSignUp', (user: User) => observer.next(user));
     })
   }
+
+  // public onDirectRoomMessages(): Observable<Message[]> {
+  //   return new Observable<Message[]>( observer => {
+  //     this.socket.on(`directRoomMessages`, (messages: Array<Message>) => {
+  //       observer.next(messages);
+  //     });
+  //   });
+  // }
 }

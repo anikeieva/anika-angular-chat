@@ -201,8 +201,6 @@ export class ChatServer {
                             console.log('DirectMessagesRoomById', directRoom);
                             socket.join(roomId);
                             this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${fromId}`, directRoom);
-                            // socket.join(fromId);
-                            // this.io.to(fromId).emit('directMessagesRoomById', directRoom);
                         }
                     }
                 });
@@ -477,6 +475,47 @@ export class ChatServer {
                     }
                 });
 
+                // UserModel.findOne({id: message.from.id, direct: {$elemMatch: {id: roomId}}}, (err, room) => {
+                //     if (err) throw  err;
+                //
+                //     console.log('room messages', room);
+                //     console.log('room messages', room.direct);
+                //     if (room.direct.id === roomId) {
+                //         this.io.to(message.from.id).emit(`directRoomMessages`, room.direct);
+                //     }
+                // });
+                //
+                //
+                // UserModel.findOne({id: message.to.id, direct: {$elemMatch: {id: roomId}}}, (err, room) => {
+                //     if (err) throw  err;
+                //
+                //     console.log('room messages', room);
+                //     console.log('room messages', room.direct);
+                //     if (room.direct.id === roomId) {
+                //         this.io.to(message.to.id).emit(`directRoomMessages`, room.direct);
+                //     }
+                // });
+
+                await ChatRoomModel.findOne({id: 'main-chat'}, (err, mainChatRoom) => {
+                    if (err) throw  err;
+
+                    let rooms = [];
+                    rooms.push(mainChatRoom);
+                    UserModel.findOne({id: message.from.id}, (err, item) => {
+                        if (err) throw  err;
+
+                        for (let i = 0; i < item.direct.length; i++) {
+                            rooms.push(item.direct[i]);
+
+                            if (item.direct[i].id === roomId) this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.from.id}`, item.direct[i]);
+                        }
+
+                        console.log('rooms requestForAllChatRooms from: ', rooms);
+                        socket.join(message.from.id);
+                        this.io.to(message.from.id).emit('getAllChatRooms', rooms);
+                    });
+                });
+
                 await ChatRoomModel.findOne({id: 'main-chat'}, (err, mainChatRoom) => {
                     if (err) throw  err;
 
@@ -488,13 +527,15 @@ export class ChatServer {
 
                         for (let i = 0; i < item.direct.length; i++) {
                             rooms.push(item.direct[i]);
+
+                            if (item.direct[i].id === roomId) this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.to.id}`, item.direct[i]);
                         }
 
-                        console.log('rooms requestForAllChatRooms: ', rooms);
+                        console.log('rooms requestForAllChatRooms to: ', rooms);
+                        socket.join(message.to.id);
                         this.io.to(message.to.id).emit('getAllChatRooms', rooms);
                     });
                 });
-
             });
 
 

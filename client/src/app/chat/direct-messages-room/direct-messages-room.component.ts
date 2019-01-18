@@ -116,9 +116,8 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
     this.socketService.onDirectMessagesRoomById(this.user.id, this.directMessagesRoomId).subscribe(room => {
 
       this.directMessagesRoom = room;
-      console.log('room', room);
       this.messages = room.messages;
-      console.log(this.messages);
+      console.log('room', room);
       this.storage.set(this.chatRoomToken, JSON.stringify(this.directMessagesRoom));
       console.log(this.directMessagesRoom);
       this.getDirectRoomUser(room.to);
