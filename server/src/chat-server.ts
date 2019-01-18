@@ -79,7 +79,7 @@ export class ChatServer {
             console.log('Connected client on port %s.', this.port);
 
 
-            this.clearMongooseData();
+            // this.clearMongooseData();
 
             ChatRoomModel.find((err, room) => {
                 if (err) throw err;
@@ -200,7 +200,7 @@ export class ChatServer {
                             }
                             console.log('DirectMessagesRoomById', directRoom);
                             socket.join(roomId);
-                            this.io.to(roomId).emit('directMessagesRoomById', directRoom);
+                            this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${fromId}`, directRoom);
                             // socket.join(fromId);
                             // this.io.to(fromId).emit('directMessagesRoomById', directRoom);
                         }
