@@ -5,7 +5,7 @@ import {SharedService} from '../shared/servises/shared.service';
 import {UserAction} from '../shared/model/userAction';
 import {MatDialog} from "@angular/material";
 import {ChooseAvatarComponent} from "../choose-avatar/choose-avatar.component";
-import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
+import {SESSION_STORAGE, StorageService} from 'ngx-webstorage-service';
 import {SocketService} from "../shared/servises/socket.service";
 import {currentUserToken, getUserStorageToken} from "../shared/model/getStorageToken";
 import {Router} from "@angular/router";

@@ -1,7 +1,7 @@
-import {Component, Inject, InjectionToken, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {SharedService} from '../../shared/servises/shared.service';
 import {User} from '../../shared/model/user';
-import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
+import {SESSION_STORAGE, StorageService} from 'ngx-webstorage-service';
 import {SocketService} from "../../shared/servises/socket.service";
 import {currentUserToken, getUserStorageToken} from "../../shared/model/getStorageToken";
 
@@ -25,12 +25,16 @@ export class EditUserParamComponent implements OnInit {
   }
 
   getUser() {
-    if (!this.user) {
+    if (this.storage.has(currentUserToken)) {
       this.currentUserId = this.storage.get(currentUserToken);
       this.userToken = getUserStorageToken(this.currentUserId);
-      this.user = JSON.parse(this.storage.get(this.userToken));
-      console.log('user: ', this.user);
+
+      if (!this.user && this.storage.has(this.userToken)) {
+        this.user = JSON.parse(this.storage.get(this.userToken));
+        console.log('user: ', this.user);
+      }
     }
+
     this.socketService.onUser().subscribe((user: User) => {
 
       this.user = user;
@@ -41,7 +45,7 @@ export class EditUserParamComponent implements OnInit {
       this.sharedService.setUser(user);
       console.log('user: ', this.user);
     }, (err) => {
-      if (err) {
+      if (err && this.storage.has(this.userToken)) {
         this.user = JSON.parse(this.storage.get(this.userToken));
         console.log('user: ', this.user);
       }

@@ -1,7 +1,7 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnInit, OnDestroy} from '@angular/core';
 import {User} from '../shared/model/user';
 import {SharedService} from '../shared/servises/shared.service';
-import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
+import {SESSION_STORAGE, StorageService} from 'ngx-webstorage-service';
 import {SocketService} from "../shared/servises/socket.service";
 import {ChatRoom} from "../shared/model/chat-room";
 import {getChatRoomStorageToken, getUserStorageToken} from "../shared/model/getStorageToken";
@@ -12,7 +12,7 @@ import {currentUserToken} from "../shared/model/getStorageToken";
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, OnDestroy {
   public user: User;
   public userToken: string;
   public rooms: ChatRoom[];
@@ -48,8 +48,8 @@ export class ChatComponent implements OnInit {
     this.currentUserId = this.storage.get(currentUserToken);
     console.log('currentUserId',this.currentUserId);
 
-    if (!this.user) {
-      this.userToken = getUserStorageToken(this.currentUserId);
+    this.userToken = getUserStorageToken(this.currentUserId);
+    if (!this.user && this.storage.has(this.userToken)) {
       this.user = JSON.parse(this.storage.get(this.userToken));
       console.log('user no, start: ', this.user);
       this.getUserDirects();
@@ -84,7 +84,7 @@ export class ChatComponent implements OnInit {
 
   getUserDirects() {
 
-    if (!this.user) {
+    if (!this.user && this.storage.has(this.userToken)) {
       this.user = JSON.parse(this.storage.get(this.userToken));
       console.log(this.user);
     }
@@ -95,7 +95,7 @@ export class ChatComponent implements OnInit {
       console.log(this.roomsToken);
 
       console.log('rooms: ',this.rooms);
-      if (!this.rooms) this.rooms = JSON.parse(this.storage.get(this.roomsToken));
+      if (!this.rooms && this.storage.has(this.roomsToken)) this.rooms = JSON.parse(this.storage.get(this.roomsToken));
       console.log('rooms: ',this.rooms);
 
       if (!this.socketService.socket) {
@@ -118,13 +118,9 @@ export class ChatComponent implements OnInit {
   }
 
   exit() {
+    this.storage.clear();
     this.socketService.initSocket();
     this.socketService.sendUserLogOut(this.user.id);
-
-    this.storage.remove(currentUserToken);
-    this.storage.remove(this.userToken);
-    this.storage.remove(this.roomsToken);
-    this.storage.remove(undefined);
   }
 
   getQueryParams(room) {
@@ -133,5 +129,9 @@ export class ChatComponent implements OnInit {
         return {id: room.id}
       }
     }
+  }
+
+  ngOnDestroy(): void {
+    // this.storage.clear();
   }
 }

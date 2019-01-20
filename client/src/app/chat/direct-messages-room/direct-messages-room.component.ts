@@ -6,7 +6,7 @@ import {
 import {ActivatedRoute} from "@angular/router";
 import {User} from "../../shared/model/user";
 import {SocketService} from "../../shared/servises/socket.service";
-import {SESSION_STORAGE, StorageService} from "angular-webstorage-service";
+import {SESSION_STORAGE, StorageService} from "ngx-webstorage-service";
 import {Message} from "../../shared/model/message";
 import {ChatRoom} from "../../shared/model/chat-room";
 import {MatListItem} from "@angular/material";
@@ -54,12 +54,14 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, OnDes
   }
 
   getUser() {
-    this.currentUserId = this.storage.get(currentUserToken);
-
-    if (!this.user) {
+    if (this.storage.has(currentUserToken)) {
+      this.currentUserId = this.storage.get(currentUserToken);
       this.userToken = getUserStorageToken(this.currentUserId);
-      this.user = JSON.parse(this.storage.get(this.userToken));
-      console.log('user: ', this.user);
+
+      if (!this.user && this.storage.has(this.userToken)) {
+        this.user = JSON.parse(this.storage.get(this.userToken));
+        console.log('user: ', this.user);
+      }
     }
 
     this.socketService.onUser().subscribe((user: User) => {
@@ -160,6 +162,6 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, OnDes
   }
 
   ngOnDestroy(): void {
-    this.storage.remove(this.chatRoomToken);
+    // this.storage.remove(this.chatRoomToken);
   }
 }

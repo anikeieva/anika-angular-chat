@@ -12,7 +12,7 @@ import {SharedService} from '../../shared/servises/shared.service';
 import {Message} from '../../shared/model/message';
 import {SocketService} from "../../shared/servises/socket.service";
 import {MatListItem} from "@angular/material";
-import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
+import {SESSION_STORAGE, StorageService} from 'ngx-webstorage-service';
 import {ChatRoom} from "../../shared/model/chat-room";
 import {getChatRoomStorageToken, getUserStorageToken} from "../../shared/model/getStorageToken";
 import {currentUserToken} from "../../shared/model/getStorageToken";
@@ -90,6 +90,7 @@ export class MainChatComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   getChatRoom() {
+    console.log('main-chat room', this.mainChatRoom);
     this.mainChatRoomToken = getChatRoomStorageToken('main-chat');
 
     if (this.socketService.socket) {
@@ -111,11 +112,15 @@ export class MainChatComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private getUser() {
-    if (!this.user) {
+    if (!this.user && this.storage.has(currentUserToken)) {
+
       this.currentUserId = this.storage.get(currentUserToken);
       this.userToken = getUserStorageToken(this.currentUserId);
-      this.user = JSON.parse(this.storage.get(this.userToken));
-      console.log('user: ', this.user);
+
+      if (this.storage.has(this.userToken)) {
+        this.user = JSON.parse(this.storage.get(this.userToken));
+        console.log('user: ', this.user);
+      }
     }
 
     this.socketService.onUser().subscribe((user: User) => {
@@ -214,6 +219,5 @@ export class MainChatComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.storage.remove(this.mainChatRoomToken);
   }
 }

@@ -2,7 +2,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {SharedService} from "../shared/servises/shared.service";
 import {User} from "../shared/model/user";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
-import {SESSION_STORAGE, StorageService} from 'angular-webstorage-service';
+import {SESSION_STORAGE, StorageService} from 'ngx-webstorage-service';
 import {SocketService} from "../shared/servises/socket.service";
 import {currentUserToken, getUserStorageToken} from "../shared/model/getStorageToken";
 

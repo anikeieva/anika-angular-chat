@@ -13,7 +13,7 @@ import {EditUserParamComponent} from './chat/edit-user-param/edit-user-param.com
 import {WelcomePageComponent} from './welcome-page/welcome-page.component';
 import {HttpClientModule} from "@angular/common/http";
 import {ChooseAvatarComponent} from "./choose-avatar/choose-avatar.component";
-import {StorageServiceModule} from  "angular-webstorage-service";
+import {StorageServiceModule} from  "ngx-webstorage-service";
 import {UserLogInComponent} from './user-log-in/user-log-in.component';
 import {UserProfileComponent} from "./chat/user-profile/user-profile.component";
 import {DirectMessagesRoomComponent} from "./chat/direct-messages-room/direct-messages-room.component";
