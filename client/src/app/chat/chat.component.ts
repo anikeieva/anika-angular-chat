@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit, OnDestroy} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {User} from '../shared/model/user';
 import {SharedService} from '../shared/servises/shared.service';
 import {SESSION_STORAGE, StorageService} from 'ngx-webstorage-service';
@@ -12,7 +12,7 @@ import {currentUserToken} from "../shared/model/getStorageToken";
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit, OnDestroy {
+export class ChatComponent implements OnInit {
   public user: User;
   public userToken: string;
   public rooms: ChatRoom[];
@@ -129,9 +129,5 @@ export class ChatComponent implements OnInit, OnDestroy {
         return {id: room.id}
       }
     }
-  }
-
-  ngOnDestroy(): void {
-    // this.storage.clear();
   }
 }

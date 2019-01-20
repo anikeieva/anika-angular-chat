@@ -1,7 +1,7 @@
 import {
   AfterViewInit,
   Component,
-  ElementRef, Inject, OnDestroy,
+  ElementRef, Inject,
   OnInit,
   QueryList,
   ViewChild,
@@ -23,7 +23,7 @@ import {take} from "rxjs/operators";
   templateUrl: './main-chat.component.html',
   styleUrls: ['./main-chat.component.css']
 })
-export class MainChatComponent implements OnInit, AfterViewInit, OnDestroy {
+export class MainChatComponent implements OnInit, AfterViewInit {
 
   public messageContent: string;
   public messages: Message[];
@@ -216,8 +216,5 @@ export class MainChatComponent implements OnInit, AfterViewInit, OnDestroy {
       return 'message-item';
     }
     return 'action-item';
-  }
-
-  ngOnDestroy(): void {
   }
 }

@@ -1,5 +1,5 @@
 import {
-  Component, Inject, OnDestroy,
+  Component, Inject,
   OnInit,
 } from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
@@ -18,7 +18,7 @@ import {SharedService} from "../../shared/servises/shared.service";
   templateUrl: './user-profile.component.html',
   styleUrls: ['./user-profile.component.css']
 })
-export class UserProfileComponent implements OnInit, OnDestroy {
+export class UserProfileComponent implements OnInit {
 
   public directRoomUser: User;
   public directRoomUserToken: string;
@@ -129,8 +129,4 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       }
     });
   }
-
-  ngOnDestroy(): void {
-  }
-
 }

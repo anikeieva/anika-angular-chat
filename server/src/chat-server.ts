@@ -531,7 +531,7 @@ export class ChatServer {
                                     if (err) throw err;
                                 });
 
-                                this.io.emit('mainChatRoom', room);
+                                // this.io.emit('mainChatRoom', room);
                                 console.log('man chat room client log out', room);
                             });
                         }
@@ -544,7 +544,6 @@ export class ChatServer {
 
             socket.on('disconnect', () => {
                 console.log('Client disconnected');
-                // console.log('socket.id', socket.id);
             });
         });
     }

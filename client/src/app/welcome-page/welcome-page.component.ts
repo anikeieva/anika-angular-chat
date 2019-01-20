@@ -1,6 +1,5 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {SESSION_STORAGE, StorageService} from "ngx-webstorage-service";
-import {SocketService} from "../shared/servises/socket.service";
 
 @Component({
   selector: 'app-welcome-page',
@@ -16,10 +15,7 @@ export class WelcomePageComponent implements OnInit {
 
   constructor(@Inject(SESSION_STORAGE) private storage: StorageService) {}
 
-  ngOnInit() {
-    console.log('welcome init');
-    this.storage.clear();
-  }
+  ngOnInit() {}
 
   signUp() {
     this.isSignUp = true;
