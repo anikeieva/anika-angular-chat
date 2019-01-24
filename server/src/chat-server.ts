@@ -147,6 +147,8 @@ export class ChatServer {
 
                                         this.io.to(fromId).emit('directMessagesRoomId', roomFrom.id);
 
+                                        await delete from.__v;
+
                                         await from.save((err) => {
                                             if (err) throw  err;
                                         });
@@ -169,6 +171,8 @@ export class ChatServer {
                                         roomTo.users.push(to, from);
 
                                         to.direct.push(roomTo);
+
+                                        await delete to.__v;
 
                                         await to.save((err) => {
                                             if (err) throw  err;
@@ -249,7 +253,10 @@ export class ChatServer {
                     if (user) {
 
                         user.online = true;
-                        user.save((err) => {
+
+                        await delete user.__v;
+
+                        await user.save((err) => {
                             if (err) throw  err;
                         });
 
@@ -273,6 +280,8 @@ export class ChatServer {
                             if (err) throw  err;
 
                             room.getActiveUsers();
+
+                            await delete room.__v;
 
                             await room.save((err) => {
                                 if (err) throw err;
@@ -338,6 +347,8 @@ export class ChatServer {
                                     online: user.online
                                 });
 
+                                await delete newUser.__v;
+
                                 await newUser.save((err) => {
                                     if (err) throw err;
                                 });
@@ -393,6 +404,8 @@ export class ChatServer {
 
                         room.getActiveUsers();
 
+                        await delete room.__v;
+
                         await room.save((err) => {
                             if (err) throw err;
                         });
@@ -411,6 +424,8 @@ export class ChatServer {
                     if (err) console.log('main chat message err: ',err);
 
                     room.messages.push(m);
+
+                    await delete room.__v;
 
                     await room.save((err) => {
                         if (err) throw err;
@@ -526,6 +541,8 @@ export class ChatServer {
                                 if (err) throw  err;
 
                                 room.getActiveUsers();
+
+                                await delete room.__v;
 
                                 await room.save((err) => {
                                     if (err) throw err;
