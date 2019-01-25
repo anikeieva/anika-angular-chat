@@ -159,7 +159,7 @@ export class ChatComponent implements OnInit {
   }
 
   getDirectRoomButtonBack() {
-    console.log(this.router.url.includes('direct'));
+    // console.log(this.router.url.includes('direct'));
 
     if (this.router.url.includes('direct')) {
       return true;

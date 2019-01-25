@@ -1,9 +1,14 @@
 <mat-card class="mat-card user-profile__component">
-  <mat-card-header>
-    <mat-card-title class="user-profile__title">User Profile</mat-card-title>
+  <mat-card-header class="user-profile__header">
+    <img mat-card-avatar class="user-avatar" [src]="directRoomUser?.avatar || ''">
+    <mat-card-title class="user-profile__title">{{directRoomUser?.firstName}} {{directRoomUser?.lastName}}</mat-card-title>
+    <mat-card-subtitle class="user-profile__item">
+      last seen at {{directRoomUser?.lastSeen | date: 'h:mma' | lowercase}}
+    </mat-card-subtitle>
+    <span routerLink="../direct-messages-room" [queryParams]="{id: directRoomId}" class="user-profile__sent-message">
+      <mat-icon>message</mat-icon>
+    </span>
   </mat-card-header>
   <mat-card-content>
-    <p>name: {{directRoomUser?.firstName}} {{directRoomUser?.lastName}}</p>
-    <a routerLink="../direct-messages-room" [queryParams]="{id: directRoomId}">sent a message</a>
   </mat-card-content>
 </mat-card>
