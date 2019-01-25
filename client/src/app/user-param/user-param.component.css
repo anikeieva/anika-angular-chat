@@ -107,3 +107,14 @@
   color: dimgrey;
   font-size: 16px;
 }
+
+@media only screen and (max-width: 1024px) and (min-width: 400px) {
+  .welcome-component__title {
+    font-size: 18px;
+  }
+
+  .mat-radio-button, .mat-form-field {
+    font-size: 16px!important;
+  }
+}
+

@@ -1,10 +1,13 @@
 .welcome-component-container {
   position: relative;
+  height: calc(100vh - 79px);
+  display: grid;
+  align-content: center;
 }
 
 .welcome-component-container:before {
   content: '';
-  min-width: 400px;
+  min-width: 320px;
   position: fixed;
   top: 0;
   left: 0;
@@ -25,8 +28,9 @@
 
 .welcome-component__sign-container {
   max-width: 400px;
+  min-width: 320px;
   width: 100%;
-  margin: 50px auto;
+  margin: 0 auto;
 }
 
 .sign-container__switch-block {
@@ -61,4 +65,20 @@
   background-color: white;
 }
 
+
+@media only screen and (max-width: 400px){
+  .switch-block__button:first-child {
+    border-top-left-radius: 0;
+  }
+
+  .switch-block__button:last-child {
+    border-top-right-radius: 0;
+  }
+}
+
+@media only screen and (max-width: 1024px) and (min-width: 400px) {
+  .switch-block__button {
+    font-size: 20px;
+  }
+}
 
