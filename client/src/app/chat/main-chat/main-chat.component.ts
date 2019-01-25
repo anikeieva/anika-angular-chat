@@ -17,6 +17,7 @@ import {ChatRoom} from "../../shared/model/chat-room";
 import {getChatRoomStorageToken, getUserStorageToken} from "../../shared/model/getStorageToken";
 import {currentUserToken} from "../../shared/model/getStorageToken";
 import {take} from "rxjs/operators";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-main-chat',
@@ -34,16 +35,27 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   public mainChatRoomToken: string;
   public userToken: string;
   public currentUserId: string;
+  public isChatRoomActive: boolean;
 
   @ViewChild('messageList') messageList: ElementRef;
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;
 
   constructor(private sharedService: SharedService,
               private socketService: SocketService,
-              @Inject(SESSION_STORAGE) private storage: StorageService) {
+              @Inject(SESSION_STORAGE) private storage: StorageService,
+              private router: Router) {
   }
 
   ngOnInit(): void {
+
+    if (this.router.url.includes('main-chat') ||
+      this.router.url.includes('room') ||
+      this.router.url.includes('profile')) {
+      this.isChatRoomActive = true;
+    } else {
+      this.isChatRoomActive = false;
+    }
+
     this.sharedService.listenUser().pipe(take(1)).subscribe(param => {
       console.log('param: ', param);
       if (param) {
@@ -216,5 +228,9 @@ export class MainChatComponent implements OnInit, AfterViewInit {
       return 'message-item';
     }
     return 'action-item';
+  }
+
+  activeChatRoom() {
+    this.isChatRoomActive = true;
   }
 }

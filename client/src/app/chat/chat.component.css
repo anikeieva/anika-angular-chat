@@ -174,4 +174,16 @@
     cursor: pointer;
     z-index: 1;
   }
+
+  .mobile_button-back .profile-button {
+    color: black!important;
+  }
+
+  .mobile_button-back.profile-button {
+    top: 15px!important;
+  }
+
+  .mobile_button-back.direct-room-button {
+    top: 20px!important;;
+  }
 }

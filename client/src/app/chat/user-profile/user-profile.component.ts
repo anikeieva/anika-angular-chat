@@ -75,7 +75,7 @@ export class UserProfileComponent implements OnInit {
       console.log('direct room user id',id);
       this.directRoomUserToken = getUserStorageToken(id);
 
-      if (!this.directRoomUser && this.storage.has(this.directRoomIdToken)) {
+      if (!this.directRoomUser && this.storage.has(this.directRoomUserToken)) {
         this.directRoomUser = JSON.parse(this.storage.get(this.directRoomUserToken));
         console.log(this.directRoomUser);
       }

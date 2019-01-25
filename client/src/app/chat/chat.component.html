@@ -2,7 +2,9 @@
   <mat-card-header class="side-bar-header">
     <img mat-card-avatar class="user-avatar" [src]="user?.avatar || ''">
     <mat-card-title class="side-bar-title">{{user?.firstName}} {{user?.lastName}}</mat-card-title>
-    <mat-card-subtitle class="side-bar-item" routerLink="edit-profile">Edit Profile</mat-card-subtitle>
+    <mat-card-subtitle class="side-bar-item" routerLink="edit-profile" (click)="activeChatRoom()">
+      Edit Profile
+    </mat-card-subtitle>
     <mat-card-subtitle class="side-bar-item" routerLink="/" (click)="exit()">Exit</mat-card-subtitle>
   </mat-card-header>
   <mat-card-content class="rooms-container">
@@ -26,8 +28,10 @@
 
 
 <div class="chat-container" [class.active-chat-room]="isChatRoomActive">
-  <a (click)="redirectToChat()" *ngIf="isChatRoomActive" class="mobile_button-back">
-    <mat-icon>arrow_back</mat-icon>
+  <a (click)="redirectToChat()" *ngIf="isChatRoomActive" class="mobile_button-back"
+     [class.direct-room-button]="getDirectRoomButtonBack()"
+     [class.profile-button]="getProfileButtonBack()">
+    <mat-icon [class.profile-button]="getProfileButtonBack()">arrow_back</mat-icon>
   </a>
   <router-outlet></router-outlet>
 </div>

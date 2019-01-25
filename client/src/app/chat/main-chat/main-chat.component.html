@@ -21,7 +21,7 @@
           <img mat-card-avatar [src]="message.from.avatar"
                *ngIf="message.action === 'sentMessage' && message.from.id !== user.id"
                class="message-list-item__avatar" routerLink="../user-profile"
-               [queryParams]="{id: message.from.id}">
+               [queryParams]="{id: message.from.id}" (click)="activeChatRoom()">
 
 
           <h3 mat-line class="message-item-user-name"

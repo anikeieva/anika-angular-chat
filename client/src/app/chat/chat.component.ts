@@ -24,14 +24,13 @@ export class ChatComponent implements OnInit {
   constructor(private sharedService: SharedService,
               @Inject(SESSION_STORAGE) private storage: StorageService,
               private  socketService: SocketService,
-              private router: Router,
-              private route: ActivatedRoute) {}
+              private router: Router) {}
 
   ngOnInit() {
-    console.log(this.router.url);
-    console.log(this.router.url.includes('main-chat'));
 
-    if (this.router.url.includes('main-chat') || this.router.url.includes('room')) {
+    if (this.router.url.includes('main-chat') ||
+      this.router.url.includes('room') ||
+      this.router.url.includes('profile')) {
       this.isChatRoomActive = true;
     } else {
       this.isChatRoomActive = false;
@@ -151,5 +150,19 @@ export class ChatComponent implements OnInit {
   redirectToChat() {
     this.router.navigateByUrl('/chat');
     this.isChatRoomActive = false;
+  }
+
+  getProfileButtonBack() {
+    if (this.router.url.includes('profile')) {
+      return true;
+    } else false;
+  }
+
+  getDirectRoomButtonBack() {
+    console.log(this.router.url.includes('direct'));
+
+    if (this.router.url.includes('direct')) {
+      return true;
+    } else false;
   }
 }
