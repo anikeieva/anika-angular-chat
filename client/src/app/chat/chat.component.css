@@ -82,6 +82,9 @@
   visibility: visible;
 }
 
+.mobile_button-back {
+  display: none;
+}
 
 /* width */
 ::-webkit-scrollbar {
@@ -101,4 +104,74 @@
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #a391b0;
+}
+
+@media only screen and (max-width: 900px) {
+  .side-bar {
+    width: 250px;
+  }
+
+  .chat-container {
+    width: calc(100% - 250px);
+    left: 250px;
+  }
+
+  .user-avatar {
+    height: 90px;
+    width: 90px;
+    padding: 10px;
+  }
+
+  .mat-card-avatar {
+    margin-right: 10px;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .side-bar, .chat-item {
+    max-width: 600px;
+    min-width: 320px;
+    width: 100%;
+  }
+
+  .user-avatar {
+    height: 100px;
+    width: 100px;
+    padding: 10px;
+  }
+
+  .mat-card-avatar {
+    margin-right: 20px;
+  }
+
+  .chat-container {
+    display: none;
+  }
+
+  .active-chat-room {
+    display: block;
+    max-width: 600px;
+    min-width: 320px;
+    width: 100%;
+    left: 0;
+  }
+
+  .disable-side-bar {
+    display: none;
+  }
+
+  .mobile_button-back {
+    display: block;
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    z-index: 1;
+  }
+
+  .mobile_button-back .mat-icon {
+    color: white;
+    font-size: 26px;
+    cursor: pointer;
+    z-index: 1;
+  }
 }

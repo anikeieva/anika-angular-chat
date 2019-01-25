@@ -6,6 +6,7 @@ import {SocketService} from "../shared/servises/socket.service";
 import {ChatRoom} from "../shared/model/chat-room";
 import {getChatRoomStorageToken, getUserStorageToken} from "../shared/model/getStorageToken";
 import {currentUserToken} from "../shared/model/getStorageToken";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-chat',
@@ -18,12 +19,24 @@ export class ChatComponent implements OnInit {
   public rooms: ChatRoom[];
   public roomsToken: string;
   public currentUserId: string;
+  public isChatRoomActive: boolean;
 
   constructor(private sharedService: SharedService,
               @Inject(SESSION_STORAGE) private storage: StorageService,
-              private  socketService: SocketService) {}
+              private  socketService: SocketService,
+              private router: Router,
+              private route: ActivatedRoute) {}
 
   ngOnInit() {
+    console.log(this.router.url);
+    console.log(this.router.url.includes('main-chat'));
+
+    if (this.router.url.includes('main-chat') || this.router.url.includes('room')) {
+      this.isChatRoomActive = true;
+    } else {
+      this.isChatRoomActive = false;
+    }
+
     this.sharedService.listenUser().subscribe(param => {
       console.log('param: ', param);
       if (param) {
@@ -129,5 +142,14 @@ export class ChatComponent implements OnInit {
         return {id: room.id}
       }
     }
+  }
+
+  activeChatRoom() {
+    this.isChatRoomActive = true;
+  }
+
+  redirectToChat() {
+    this.router.navigateByUrl('/chat');
+    this.isChatRoomActive = false;
   }
 }

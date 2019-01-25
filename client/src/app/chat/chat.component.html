@@ -1,4 +1,4 @@
-<mat-card class="side-bar">
+<mat-card class="side-bar" [class.disable-side-bar]="isChatRoomActive">
   <mat-card-header class="side-bar-header">
     <img mat-card-avatar class="user-avatar" [src]="user?.avatar || ''">
     <mat-card-title class="side-bar-title">{{user?.firstName}} {{user?.lastName}}</mat-card-title>
@@ -10,7 +10,8 @@
     <div class="rooms-container-content">
       <mat-card class="chat-item" *ngFor="let room of rooms"
                 [routerLink]="[(room?.type === 'chat')? room?.id : 'direct-messages-room']"
-                [queryParams]="getQueryParams(room)">
+                [queryParams]="getQueryParams(room)"
+                (click)="activeChatRoom()">
         <mat-card-header>
           <img mat-card-avatar class="chat-item-avatar" [src]="room?.avatar || ''">
           <mat-card-title class="chat-item-title">{{room?.name}}</mat-card-title>
@@ -24,6 +25,9 @@
 </mat-card>
 
 
-<div class="chat-container">
+<div class="chat-container" [class.active-chat-room]="isChatRoomActive">
+  <a (click)="redirectToChat()" *ngIf="isChatRoomActive" class="mobile_button-back">
+    <mat-icon>arrow_back</mat-icon>
+  </a>
   <router-outlet></router-outlet>
 </div>
