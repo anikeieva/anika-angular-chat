@@ -58,7 +58,7 @@ export class ChatComponent implements OnInit {
 
     this.getUser();
 
-    console.log(this.socketService);
+    console.log("socket: ", this.socketService.socket);
   }
 
   getUser() {
@@ -73,9 +73,20 @@ export class ChatComponent implements OnInit {
     }
 
     if (!this.socketService.socket) this.socketService.initSocket();
+    console.log("socket: ", this.socketService.socket);
 
     this.socketService.onUser().subscribe((user: User) => {
-      if (user) {
+      if (user && this.storage.has(currentUserToken)) {
+        this.currentUserId = this.storage.get(currentUserToken);
+        console.log('currentUserId',this.currentUserId);
+
+        if (user.id === this.currentUserId) {
+          this.user = user;
+          console.log('user on: ', this.user);
+          this.storage.set(this.userToken, JSON.stringify(this.user));
+          this.getUserDirects();
+        }
+      } else {
         this.user = user;
         console.log('user on: ', this.user);
         this.currentUserId = user.id;

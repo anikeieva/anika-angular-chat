@@ -20,6 +20,8 @@ export class SocketService {
 
   public initSocket(): void {
     this.socket = socketIo(SERVER_URL);
+    console.log('socket.id', this.socket.id);
+    console.log('socket: ', this.socket);
   }
 
   public sendMainChatMessage(message: Message): void {

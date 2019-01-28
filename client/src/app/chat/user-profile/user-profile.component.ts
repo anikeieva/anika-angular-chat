@@ -52,14 +52,24 @@ export class UserProfileComponent implements OnInit {
     if (!this.socketService.socket) this.socketService.initSocket();
 
     this.socketService.onUser().subscribe((user: User) => {
+      if (user && this.storage.has(currentUserToken)) {
+        this.currentUserId = this.storage.get(currentUserToken);
+        console.log('currentUserId',this.currentUserId);
 
-      this.user = user;
-      console.log('user: ', this.user);
-      this.currentUserId = user.id;
-      this.userToken = getUserStorageToken(user.id);
-      this.storage.set(currentUserToken, this.currentUserId);
-      this.storage.set(this.userToken, JSON.stringify(this.user));
-      this.sharedService.setUser(user);
+        if (user.id === this.currentUserId) {
+          this.user = user;
+          console.log('user on: ', this.user);
+          this.storage.set(this.userToken, JSON.stringify(this.user));
+        }
+      } else {
+        this.user = user;
+        console.log('user on: ', this.user);
+        this.currentUserId = user.id;
+        this.userToken = getUserStorageToken(user.id);
+        this.storage.set(currentUserToken, this.currentUserId);
+        this.storage.set(this.userToken, JSON.stringify(this.user));
+        this.sharedService.setUser(user);
+      }
     }, (err) => {
       if (err && this.storage.has(this.userToken)) {
         this.user = JSON.parse(this.storage.get(this.userToken));

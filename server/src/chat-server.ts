@@ -147,8 +147,6 @@ export class ChatServer {
 
                                         this.io.to(fromId).emit('directMessagesRoomId', roomFrom.id);
 
-                                        // await delete from.__v;
-
                                         await from.save((err) => {
                                             if (err) throw  err;
                                         });
@@ -171,8 +169,6 @@ export class ChatServer {
                                         roomTo.users.push(to, from);
 
                                         to.direct.push(roomTo);
-
-                                        // await delete to.__v;
 
                                         await to.save((err) => {
                                             if (err) throw  err;
@@ -235,14 +231,13 @@ export class ChatServer {
                             rooms.push(item.direct[i]);
                         }
 
-                        console.log('rooms requestForAllChatRooms: ', rooms);
+                        console.log(`rooms requestForAllChatRooms id=${user.id}: `, rooms);
                         this.io.to(user.id).emit('getAllChatRooms', rooms);
                     });
                 });
             }));
 
             socket.on('userLogInParam', async (userLogInParam: UserLogInParam) => {
-
 
                 await UserModel.findOne({
                     login: userLogInParam.login,
@@ -253,8 +248,6 @@ export class ChatServer {
                     if (user) {
 
                         user.online = true;
-
-                        // await delete user.__v;
 
                         await user.save((err) => {
                             if (err) throw  err;
@@ -280,8 +273,6 @@ export class ChatServer {
                             if (err) throw  err;
 
                             room.getActiveUsers();
-
-                            // await delete room.__v;
 
                             await room.save((err) => {
                                 if (err) throw err;
