@@ -21,6 +21,8 @@ export class UserLogInComponent implements OnInit {
       login: new FormControl('', Validators.required),
       password: new FormControl('', Validators.required)
     });
+
+    this.userIsAuthorized = true;
   }
 
   ngOnInit() {

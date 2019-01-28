@@ -97,6 +97,9 @@ export class ChatComponent implements OnInit {
 
         this.getUserDirects();
       }
+      // console.log('user: ', this.user);
+      // if (!this.user) this.router.navigateByUrl('/');
+
     }, (err) => {
       if (err) {
         this.currentUserId = this.storage.get(currentUserToken);
@@ -108,6 +111,12 @@ export class ChatComponent implements OnInit {
     });
 
     console.log('user: ', this.user);
+
+    // setTimeout(() => {
+    //   console.log('user: ', this.user);
+    //   if (!this.user) this.router.navigateByUrl('/');
+    // }, 500);
+
   }
 
   getUserDirects() {

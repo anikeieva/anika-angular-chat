@@ -16,7 +16,7 @@ import {ClientUser} from "./model/clientUser";
 
 
 export class ChatServer {
-    public static readonly PORT:number = 8080;
+    public static readonly PORT:number = 8082;
     private app: express.Application;
     private server: Server;
     private io: SocketIO.Server;
