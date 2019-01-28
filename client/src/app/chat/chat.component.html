@@ -27,11 +27,16 @@
 </mat-card>
 
 
-<div class="chat-container" [class.active-chat-room]="isChatRoomActive">
+<div class="chat-container"
+     [class.active-chat-room]="isMobile && isChatRoomActive"
+     [class.no-active-chat-room]="!isChatRoomActive">
   <a (click)="redirectToChat()" *ngIf="isChatRoomActive" class="mobile_button-back"
      [class.direct-room-button]="getDirectRoomButtonBack()"
      [class.profile-button]="getProfileButtonBack()">
     <mat-icon [class.profile-button]="getProfileButtonBack()">arrow_back</mat-icon>
   </a>
   <router-outlet></router-outlet>
+  <p *ngIf="!isChatRoomActive" class="no-active-chat-room__text">
+    Chat isn't selected. Click on "Main chat" to start chatting
+  </p>
 </div>

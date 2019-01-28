@@ -7,6 +7,6 @@ const messagesSchema = new mongoose.Schema({
     sendingTime: Date,
     action: String,
     to: userSchema
-});
+}, {versionKey: false});
 
 export default messagesSchema;

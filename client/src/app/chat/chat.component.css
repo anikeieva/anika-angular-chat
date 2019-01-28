@@ -86,6 +86,16 @@
   display: none;
 }
 
+.no-active-chat-room {
+  display: grid;
+  align-content: center;
+}
+
+.no-active-chat-room__text {
+  text-align: center;
+  color: #686869;
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 7px;

@@ -9,6 +9,7 @@ import {
   MatMenuModule,
   MatRadioModule, MatSidenavModule, MatToolbarModule
 } from '@angular/material';
+import {LayoutModule} from "@angular/cdk/layout";
 
 @NgModule({
   imports: [
@@ -19,7 +20,8 @@ import {
     MatCardModule,
     MatButtonToggleModule,
     MatIconModule,
-    MatMenuModule, MatSidenavModule, MatToolbarModule, MatListModule, MatDialogModule, MatButtonToggleModule
+    MatMenuModule, MatSidenavModule, MatToolbarModule, MatListModule, MatDialogModule, MatButtonToggleModule,
+    LayoutModule
   ],
   exports: [
     MatInputModule,
@@ -28,7 +30,8 @@ import {
     MatCardModule,
     MatButtonToggleModule,
     MatIconModule,
-    MatMenuModule, MatSidenavModule, MatToolbarModule, MatListModule, MatDialogModule, MatButtonToggleModule
+    MatMenuModule, MatSidenavModule, MatToolbarModule, MatListModule, MatDialogModule, MatButtonToggleModule,
+    LayoutModule
   ],
   declarations: []
 })

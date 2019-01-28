@@ -7,7 +7,7 @@ import {User} from "../model/user";
 import {UserLogInParam} from "../model/userLogInParam";
 import {ChatRoom} from "../model/chat-room";
 
-const SERVER_URL = 'http://192.168.88.116:8080';
+const SERVER_URL = 'http://192.168.88.112:8080';
 
 @Injectable({
   providedIn: 'root'
