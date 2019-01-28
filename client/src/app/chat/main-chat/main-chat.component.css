@@ -205,4 +205,8 @@
   .message-item {
     margin-bottom: 10px;
   }
+
+  .join-button {
+    bottom: 0;
+  }
 }
