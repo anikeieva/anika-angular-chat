@@ -1,4 +1,4 @@
-<mat-sidenav-container *ngIf="!(isChatRoomActive && isMobile)">
+<mat-sidenav-container [class.active-chat-room]="isChatRoomActive">
   <mat-sidenav-content>
     <mat-icon>forum</mat-icon>
     <span class="mat-sidenav-title">Anika Angular chat</span>

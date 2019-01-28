@@ -1,8 +1,9 @@
-mat-sidenav-container {
+.mat-sidenav-container {
   background-color: #8d63ad;
   padding: 20px 30px;
   height: 79px;
   z-index: 3;
+  display: block;
 }
 .mat-sidenav-title {
   font-size: 23px;
@@ -14,4 +15,10 @@ mat-sidenav-container {
   font-size: 25px;
   margin-right: 5px;
   color: bisque;
+}
+
+@media only screen and (max-width: 600px) {
+  .active-chat-room {
+    display: none;
+  }
 }
