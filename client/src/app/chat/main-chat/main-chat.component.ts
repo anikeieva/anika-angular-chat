@@ -164,22 +164,22 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   }
 
   sendMessage(messageContent: string): void {
-    if (!messageContent) {
+    if (!messageContent || /^\s*$/.test(messageContent)) {
       return;
+    } else {
+      this.timeNow = new Date();
+      this.user.action.sentMessage = true;
+      this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage', null);
+      this.socketService.sendMainChatMessage(this.message);
+      this.socketService.sendRequestForAllChatRooms(this.user);
+      this.sharedService.editUser(null);
+
+      this.messageContent = null;
+
+      console.log('sentMessage messages: ',this.messages);
+
+      console.log('mainChatRoom: ', this.mainChatRoom);
     }
-
-    this.timeNow = new Date();
-    this.user.action.sentMessage = true;
-    this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage', null);
-    this.socketService.sendMainChatMessage(this.message);
-    this.socketService.sendRequestForAllChatRooms(this.user);
-    this.sharedService.editUser(null);
-
-    this.messageContent = null;
-
-    console.log('sentMessage messages: ',this.messages);
-
-    console.log('mainChatRoom: ', this.mainChatRoom);
   }
 
   onJoin(): void {
