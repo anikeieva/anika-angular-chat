@@ -16,7 +16,7 @@ import {ClientUser} from "./model/clientUser";
 
 
 export class ChatServer {
-    public static readonly PORT:number = 8082;
+    public static readonly PORT:number = 8084;
     private app: express.Application;
     private server: Server;
     private io: SocketIO.Server;
@@ -217,22 +217,25 @@ export class ChatServer {
                 });
             }));
 
-            socket.on('requestForAllChatRooms', ( async (user: User) => {
+            socket.on('requestForAllChatRooms', ( async (userId: string) => {
                 await ChatRoomModel.findOne({id: 'main-chat'}, (err, mainChatRoom) => {
                     if (err) throw  err;
 
                     let rooms = [];
                     rooms.push(mainChatRoom);
 
-                    UserModel.findOne({id: user.id}, (err, item) => {
+                    UserModel.findOne({id: userId}, (err, item) => {
                         if (err) throw  err;
 
-                        for (let i = 0; i < item.direct.length; i++) {
-                            rooms.push(item.direct[i]);
-                        }
+                        if (item) {
+                            for (let i = 0; i < item.direct.length; i++) {
+                                rooms.push(item.direct[i]);
+                            }
 
-                        console.log(`rooms requestForAllChatRooms id=${user.id}: `, rooms);
-                        this.io.to(user.id).emit('getAllChatRooms', rooms);
+                            console.log(`rooms requestForAllChatRooms id=${userId}: `, rooms);
+                            socket.join(userId);
+                            this.io.to(userId).emit(`get=${userId}AllChatRooms`, rooms);
+                        }
                     });
                 });
             }));
@@ -424,6 +427,7 @@ export class ChatServer {
 
                     // console.log('main chat room messages', room);
                     this.io.emit('mainChatMessage', m);
+                    this.io.emit('mainChatMessageNotification', 'message');
                 });
             });
 
@@ -467,7 +471,8 @@ export class ChatServer {
 
                         console.log('rooms requestForAllChatRooms from: ', rooms);
                         socket.join(message.from.id);
-                        this.io.to(message.from.id).emit('getAllChatRooms', rooms);
+                        this.io.to(message.from.id).emit('directMessagesRoomMessage', message);
+                        this.io.to(message.from.id).emit(`get=${message.from.id}AllChatRooms`, rooms);
                     });
                 });
 
@@ -490,7 +495,8 @@ export class ChatServer {
 
                         console.log('rooms requestForAllChatRooms to: ', rooms);
                         socket.join(message.to.id);
-                        this.io.to(message.to.id).emit('getAllChatRooms', rooms);
+                        this.io.to(message.to.id).emit('directMessagesRoomMessage', message);
+                        this.io.to(message.to.id).emit(`get=${message.to.id}AllChatRooms`, rooms);
                     });
                 });
             });

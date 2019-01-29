@@ -7,8 +7,8 @@ import {User} from "../model/user";
 import {UserLogInParam} from "../model/userLogInParam";
 import {ChatRoom} from "../model/chat-room";
 
-const SERVER_URL = 'http://192.168.88.112:8082';
-
+// const SERVER_URL = 'http://192.168.88.112:8082';
+const SERVER_URL = '31.43.112.244:4000';
 @Injectable({
   providedIn: 'root'
 })
@@ -31,6 +31,12 @@ export class SocketService {
   public onMainChatMessage(): Observable<Message> {
     return new Observable<Message>(observer => {
       this.socket.on('mainChatMessage', (data: Message) => observer.next(data));
+    });
+  }
+
+  public onMainChatMessageNotification(): Observable<string> {
+    return new Observable<string>(observer => {
+      this.socket.on('mainChatMessageNotification', (data: string) => observer.next(data));
     });
   }
 
@@ -122,18 +128,24 @@ export class SocketService {
     })
   }
 
-  public onGetAllChatRooms(): Observable<ChatRoom[]> {
+  public onGetAllChatRooms(userId): Observable<ChatRoom[]> {
     return new Observable<ChatRoom[]>(observer => {
-      this.socket.on('getAllChatRooms', (rooms: ChatRoom[]) => observer.next(rooms));
+      this.socket.on(`get=${userId}AllChatRooms`, (rooms: ChatRoom[]) => observer.next(rooms));
     })
   }
 
-  public sendRequestForAllChatRooms(user: User): void {
-    this.socket.emit('requestForAllChatRooms', user);
+  public sendRequestForAllChatRooms(userId: string): void {
+    this.socket.emit('requestForAllChatRooms', userId);
   }
 
   public sendDirectMessagesRoomMessage(message: Message, roomId: string): void {
     this.socket.emit('directMessagesRoomMessage', message, roomId);
+  }
+
+  public onDirectMessagesRoomMessage(): Observable<Message> {
+    return new Observable<Message>(observer => {
+      this.socket.on('directMessagesRoomMessage', (data: Message) => observer.next(data));
+    });
   }
 
   public onUserNotSignUp(): Observable<string> {

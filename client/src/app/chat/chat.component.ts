@@ -59,6 +59,21 @@ export class ChatComponent implements OnInit {
     this.getUser();
 
     console.log("socket: ", this.socketService.socket);
+
+
+    this.socketService.onDirectMessagesRoomMessage().subscribe(message => {
+      console.log(message);
+      if (message) {
+        this.getUserDirects();
+      }
+    });
+
+    this.socketService.onMainChatMessageNotification().subscribe(message => {
+      console.log(message);
+      if (message) {
+        this.getUserDirects();
+      }
+    });
   }
 
   getUser() {
@@ -95,10 +110,8 @@ export class ChatComponent implements OnInit {
         this.storage.set(this.userToken, JSON.stringify(this.user));
         this.sharedService.setUser(user);
 
-        this.getUserDirects();
+        // this.getUserDirects();
       }
-      // console.log('user: ', this.user);
-      // if (!this.user) this.router.navigateByUrl('/');
 
     }, (err) => {
       if (err) {
@@ -106,48 +119,41 @@ export class ChatComponent implements OnInit {
         this.userToken = getUserStorageToken(this.currentUserId);
         this.user = JSON.parse(this.storage.get(this.userToken));
         console.log('user on, err: ', this.user);
-        this.getUserDirects();
+        // this.getUserDirects();
       }
     });
 
     console.log('user: ', this.user);
-
-    // setTimeout(() => {
-    //   console.log('user: ', this.user);
-    //   if (!this.user) this.router.navigateByUrl('/');
-    // }, 500);
-
+    console.log(currentUserToken);
+    console.log(this.currentUserId);
+    this.getUserDirects();
   }
 
   getUserDirects() {
 
-    if (!this.user && this.storage.has(this.userToken)) {
-      this.user = JSON.parse(this.storage.get(this.userToken));
-      console.log(this.user);
-    }
+    if (this.storage.has(currentUserToken)) {
+      if (!this.currentUserId) this.currentUserId = this.storage.get(currentUserToken);
+      console.log(this.currentUserId);
 
-    if (this.user) {
-      console.log(this.user);
-      this.roomsToken = getChatRoomStorageToken(  `all_user-id=${this.user.id}`);
-      console.log(this.roomsToken);
-
-      console.log('rooms: ',this.rooms);
-      if (!this.rooms && this.storage.has(this.roomsToken)) this.rooms = JSON.parse(this.storage.get(this.roomsToken));
-      console.log('rooms: ',this.rooms);
+      // if (!this.rooms && this.storage.has(this.roomsToken)) this.rooms = JSON.parse(this.storage.get(this.roomsToken));
+      // console.log('rooms: ',this.rooms);
 
       if (!this.socketService.socket) {
         this.socketService.initSocket();
       }
 
-      this.socketService.sendRequestForAllChatRooms(this.user);
+      console.log(this.socketService.socket);
 
-      this.socketService.onGetAllChatRooms().subscribe((rooms) => {
+      this.socketService.sendRequestForAllChatRooms(this.currentUserId);
+
+      this.socketService.onGetAllChatRooms(this.currentUserId).subscribe((rooms) => {
         this.rooms = rooms;
         console.log('rooms: ',rooms);
         this.storage.set(this.roomsToken, JSON.stringify(this.rooms));
       }, (err) => {
         if (err) {
           this.rooms = JSON.parse(this.storage.get(this.roomsToken));
+          console.log('rooms: ',this.rooms);
         }
       });
 

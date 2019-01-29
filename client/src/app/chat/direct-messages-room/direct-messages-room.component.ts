@@ -142,7 +142,7 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
       }
     });
     console.log('directRoom', this.directMessagesRoom);
-    this.socketService.sendRequestForAllChatRooms(this.user);
+    // this.socketService.sendRequestForAllChatRooms(this.user.id);
   }
 
   ngAfterViewInit(): void {

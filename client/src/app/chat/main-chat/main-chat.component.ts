@@ -171,7 +171,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
       this.user.action.sentMessage = true;
       this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage', null);
       this.socketService.sendMainChatMessage(this.message);
-      this.socketService.sendRequestForAllChatRooms(this.user);
+      // this.socketService.sendRequestForAllChatRooms(this.user.id);
       this.sharedService.editUser(null);
 
       this.messageContent = null;
