@@ -8,6 +8,7 @@ import {getChatRoomStorageToken, getUserStorageToken} from "../shared/model/getS
 import {currentUserToken} from "../shared/model/getStorageToken";
 import {Router} from "@angular/router";
 import {BreakpointObserver} from '@angular/cdk/layout';
+import {Message} from "../shared/model/message";
 
 @Component({
   selector: 'app-chat',
@@ -187,5 +188,23 @@ export class ChatComponent implements OnInit {
     if (this.router.url.includes('direct')) {
       return true;
     } else false;
+  }
+
+  getLastMessage(roomType,roomMsg, userId) {
+    if (roomType === 'chat') {
+      return this.getFirstSymbols(roomMsg[roomMsg.length - 1].messageContent);
+    } else if(roomType === 'direct') {
+      const userMessages = roomMsg.filter(message => message.from.id === userId);
+      return this.getFirstSymbols(userMessages[userMessages.length - 1].messageContent);
+    }
+  }
+
+  getFirstSymbols(str) {
+    const maxLength = 25;
+    if (str.length < maxLength) {
+      return str;
+    } else {
+      return `${str.slice(0, 25)}...`;
+    }
   }
 }
