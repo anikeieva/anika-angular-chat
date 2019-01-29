@@ -14,13 +14,14 @@
                 [routerLink]="[(room?.type === 'chat')? room?.id : 'direct-messages-room']"
                 [queryParams]="getQueryParams(room)"
                 (click)="activeChatRoom()">
-        <mat-card-header>
+        <mat-card-header class="chat-item__container">
           <img mat-card-avatar class="chat-item-avatar" [src]="room?.avatar || ''">
           <mat-card-title class="chat-item-title">{{room?.name}}</mat-card-title>
           <mat-card-subtitle *ngIf="room?.messages.length < 1">
             {{room?.lastMessage}}
           </mat-card-subtitle>
-          <mat-card-subtitle *ngIf="room?.messages.length > 0">
+          <mat-card-subtitle [class.chat-item__last-message]="room?.messages.length > 0"
+                             *ngIf="room?.messages.length > 0">
             {{getLastMessage(room, user.id)}}
           </mat-card-subtitle>
         </mat-card-header>

@@ -96,6 +96,24 @@
   color: #686869;
 }
 
+.chat-item__container {
+  position: relative;
+}
+
+.mat-card-subtitle.chat-item__last-message {
+  position: absolute;
+  left: 70px;
+  right: 0;
+  bottom: -16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+::ng-deep .mat-card-header-text {
+  margin: 0!important;
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 7px;
@@ -117,7 +135,7 @@
 }
 
 @media only screen and (max-width: 900px) {
-  .side-bar {
+  .side-bar, .chat-item {
     width: 250px;
   }
 
@@ -130,15 +148,12 @@
     height: 90px;
     width: 90px;
     padding: 10px;
-  }
-
-  .mat-card-avatar {
     margin-right: 10px;
   }
 }
 
 @media only screen and (max-width: 600px) {
-  .side-bar, .chat-item {
+  .side-bar, .chat-item, .last-message-text {
     max-width: 600px;
     min-width: 320px;
     width: 100%;

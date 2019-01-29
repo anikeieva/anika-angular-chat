@@ -56,7 +56,7 @@
   position: absolute;
   top: 40px;
   left: 40px;
-  bottom: 260px;
+  bottom: 230px;
   right: 40px;
   visibility: hidden;
   padding-top: 15px;
@@ -67,6 +67,7 @@
 }
 
 .message-item {
+  max-width: 40%;
   width: fit-content;
   min-width: 50px;
   position: relative;
@@ -122,6 +123,10 @@
   left: -60px;
   width: 50px;
   height: 50px;
+}
+
+.main-chat-container-footer {
+  bottom: 40px;
 }
 
 /*.avatar-block {*/
@@ -184,26 +189,33 @@
 
 @media only screen and (max-width: 900px) {
   .main-chat-container-footer {
-    left: 310px;
-  }
-}
-
-@media only screen and (max-width: 600px) {
-  .main-chat-container-footer, .message-list {
-    left: 30px;
-    right: 30px;
-  }
-
-  .main-chat-container-footer {
+    left: 300px;
+    right: 50px;
     bottom: 30px;
   }
 
   .message-list {
-    bottom: 155px;
+    left: 20px;
+    right: 10px;
+    bottom: 220px;
+    padding-right: 10px;
   }
 
   .message-item {
-    margin-bottom: 10px;
+    max-width: 60%;
+    margin: 0 0 10px 60px;
+  }
+
+}
+
+@media only screen and (max-width: 600px) {
+  .main-chat-container-footer {
+    left: 30px;
+    right: 30px;
+  }
+
+  .message-list {
+    bottom: 140px;
   }
 
   .join-button {

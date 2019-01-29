@@ -48,7 +48,7 @@
 
 .chat-room-container-footer {
   position: fixed;
-  bottom: 50px;
+  bottom: 40px;
   left: 410px;
   right: 60px;
 }
@@ -67,7 +67,7 @@
   position: absolute;
   top: 68px;
   left: 40px;
-  bottom: 260px;
+  bottom: 230px;
   right: 40px;
   visibility: hidden;
   padding-top: 15px;
@@ -123,13 +123,14 @@
 }
 
 .message-item {
+  max-width: 40%;
   padding: 7px 10px 20px 10px;
   clear: both;
 }
 
 /* width */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 7px;
 }
 /* Track */
 ::-webkit-scrollbar-track {
@@ -167,13 +168,27 @@
 }
 
 @media only screen and (max-width: 900px) {
-  .chat-room-container-footer {
-    left: 310px;
+  .main-chat-container-footer {
+    left: 300px;
+    right: 50px;
+    bottom: 30px;
+  }
+
+  .message-list {
+    left: 20px!important;
+    right: 10px!important;
+    bottom: 220px;
+    padding-right: 10px;
+  }
+
+  .message-item {
+    max-width: 60%;
+    margin: 0 0 10px;
   }
 }
 
 @media only screen and (max-width: 600px) {
-  .chat-room-container-footer, .message-list {
+  .chat-room-container-footer {
     left: 30px!important;
     right: 30px!important;
   }
@@ -182,15 +197,7 @@
     padding: 14px 40px;
   }
 
-  .main-chat-container-footer {
-    bottom: 30px;
-  }
-
   .message-list {
-    bottom: 155px;
-  }
-
-  .message-item {
-    margin-bottom: 10px;
+    bottom: 140px;
   }
 }
