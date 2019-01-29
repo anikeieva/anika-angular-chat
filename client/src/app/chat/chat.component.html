@@ -21,7 +21,7 @@
             {{room?.lastMessage}}
           </mat-card-subtitle>
           <mat-card-subtitle *ngIf="room?.messages.length > 0">
-            {{getLastMessage(room.type, room.messages, user.id)}}
+            {{getLastMessage(room, user.id)}}
           </mat-card-subtitle>
         </mat-card-header>
       </mat-card>

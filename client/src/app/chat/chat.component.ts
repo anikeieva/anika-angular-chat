@@ -190,12 +190,14 @@ export class ChatComponent implements OnInit {
     } else false;
   }
 
-  getLastMessage(roomType,roomMsg, userId) {
-    if (roomType === 'chat') {
-      return this.getFirstSymbols(roomMsg[roomMsg.length - 1].messageContent);
-    } else if(roomType === 'direct') {
-      const userMessages = roomMsg.filter(message => message.from.id === userId);
-      return this.getFirstSymbols(userMessages[userMessages.length - 1].messageContent);
+  getLastMessage(room, userId) {
+    if (room && room.messages) {
+      if (room.type === 'chat') {
+        return this.getFirstSymbols(room.messages[room.messages.length - 1].messageContent);
+      } else if(room.type === 'direct') {
+        const userMessages = room.messages.filter(message => message.from.id === userId);
+        if (userMessages[userMessages.length - 1]) return this.getFirstSymbols(userMessages[userMessages.length - 1].messageContent);
+      }
     }
   }
 
