@@ -81,20 +81,14 @@ export class ChatServer {
 
             // this.clearMongooseData();
 
-            ChatRoomModel.find((err, room) => {
-                if (err) throw err;
-
-                console.log('man chat room int', room);
-            }); // for only reading in terminal!
-
             socket.on('requestForMainChatRoom', ( async () => {
 
                 await ChatRoomModel.findOne({id: 'main-chat'}, (err, room) => {
                     if (err) throw  err;
 
                     this.io.emit('mainChatRoom', room);
-
                 });
+
             }));
 
             socket.on('requestForDirectMessagesRoomId', async (fromId, toId) => {
@@ -103,11 +97,9 @@ export class ChatServer {
                     if (err) throw  err;
 
                     socket.join(fromId);
-                    console.log('fromId', fromId);
-                    console.log('toId', toId);
 
                     if (room) {
-                        console.log('user request room id before', room);
+
                         if (room.id && room.direct) {
                             let directRoom;
                             for (let i=0; i < room.direct.length; i++) {
@@ -117,6 +109,7 @@ export class ChatServer {
                             }
                             this.io.to(fromId).emit('directMessagesRoomId', directRoom.id);
                         }
+
                     } else {
 
                         const roomId = fromId*toId*Date.now();
@@ -142,7 +135,6 @@ export class ChatServer {
                                     if (from) {
                                         roomFrom.users.push(from, to);
                                         roomFrom.from = from.id;
-                                        console.log(`from id ${fromId} `,'user from request room id before', from);
                                         from.direct.push(roomFrom);
 
                                         this.io.to(fromId).emit('directMessagesRoomId', roomFrom.id);
@@ -150,8 +142,6 @@ export class ChatServer {
                                         await from.save((err) => {
                                             if (err) throw  err;
                                         });
-
-                                        console.log(`from id ${fromId} `,'user from request room id after', from);
 
                                         const roomTo = new ChatRoomModel({
                                             _id: new mongoose.Types.ObjectId(),
@@ -164,8 +154,6 @@ export class ChatServer {
                                             from: to.id
                                         });
 
-                                        console.log(`to id ${toId}`,'user to request room id before', to);
-
                                         roomTo.users.push(to, from);
 
                                         to.direct.push(roomTo);
@@ -173,8 +161,6 @@ export class ChatServer {
                                         await to.save((err) => {
                                             if (err) throw  err;
                                         });
-
-                                        console.log(`to id ${toId}`,'user to request room id after', to);
                                     }
                                 });
                             }
@@ -190,7 +176,6 @@ export class ChatServer {
                     if (err) throw  err;
 
                     if (room) {
-                        console.log('user request room by id before:', room)
                         if (room.direct) {
                             let directRoom;
                             for (let i = 0; i < room.direct.length; i++) {
@@ -198,7 +183,6 @@ export class ChatServer {
                                     directRoom = room.direct[i];
                                 }
                             }
-                            console.log('DirectMessagesRoomById', directRoom);
                             socket.join(roomId);
                             this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${fromId}`, directRoom);
                         }
@@ -212,7 +196,6 @@ export class ChatServer {
                     if (err) throw  err;
 
                     const clientUser = new ClientUser(user);
-                    console.log('clientUser: ', clientUser);
                     this.io.emit(`userById=${id}`, clientUser);
                 });
             }));
@@ -232,7 +215,6 @@ export class ChatServer {
                                 rooms.push(item.direct[i]);
                             }
 
-                            console.log(`rooms requestForAllChatRooms id=${userId}: `, rooms);
                             socket.join(userId);
                             this.io.to(userId).emit(`get=${userId}AllChatRooms`, rooms);
                         }
@@ -255,7 +237,6 @@ export class ChatServer {
                                 rooms.push(item.direct[i]);
                             }
 
-                            console.log(`rooms requestForAllChatRooms id=${userId}: `, rooms);
                             socket.join(userId);
                             this.io.to(userId).emit('directMessagesRoomNotification', 'message');
                         }
@@ -280,8 +261,7 @@ export class ChatServer {
                         });
 
                         const clientUser = new ClientUser(user);
-                        console.log('clientUser: ', clientUser);
-                        console.log('User log in: ', user);
+
                         socket.join(clientUser.id);
                         this.io.emit('userLogIn', clientUser);
                         this.io.to(clientUser.id).emit('user', clientUser);
@@ -293,7 +273,7 @@ export class ChatServer {
                             {$set: {'users.$.online': user.online}
                             }, (err) => {
                                 if (err) throw  err;
-                            });
+                        });
 
                         await ChatRoomModel.findOne({id: 'main-chat'}, async (err, room) => {
                             if (err) throw  err;
@@ -306,7 +286,6 @@ export class ChatServer {
                         });
 
                     } else {
-                        console.log('User not log in!');
                         this.io.emit('userNotLogIn', 'userNotLogIn');
                     }
                 });
@@ -333,20 +312,15 @@ export class ChatServer {
                             if (err) throw  err;
                         });
 
-                        await UserModel.findOne({id: user.id}, (err, user) => {
-                            if (err) throw err;
-
-                            console.log('after update user 2: ', user);
-                        });
-
                     } else {
 
                         await UserModel.findOne({login: user.login}, async (err, userWithItLogin) => {
                             if (err) throw err;
 
                             if (userWithItLogin) {
-                                console.log('not unique login');
+
                                 this.io.emit('userNotSignUp', 'userNotSignUp');
+
                             } else {
 
                                 const userId = users.length + 1 + '';
@@ -367,11 +341,11 @@ export class ChatServer {
                                 await newUser.save((err) => {
                                     if (err) throw err;
                                 });
-                                console.log('new user: ', newUser);
-                                socket.join(newUser.id);
 
+
+                                socket.join(newUser.id);
                                 const clientUser = new ClientUser(newUser);
-                                console.log('clientUser: ', clientUser);
+
                                 this.io.to(clientUser.id).emit('userSignUp', clientUser);
                                 this.io.to(clientUser.id).emit('user', clientUser);
                             }
@@ -419,15 +393,12 @@ export class ChatServer {
 
                         room.getActiveUsers();
 
-                        // await delete room.__v;
-
                         await room.save((err) => {
                             if (err) throw err;
                         });
                     }
 
                     this.io.emit('mainChatRoom', room);
-                    console.log('main chat room added or updated user', room);
                 });
             });
 
@@ -479,15 +450,12 @@ export class ChatServer {
                     UserModel.findOne({id: message.from.id}, (err, item) => {
                         if (err) throw  err;
 
-                        console.log('fromUser: ', item);
-
                         for (let i = 0; i < item.direct.length; i++) {
                             rooms.push(item.direct[i]);
 
                             if (item.direct[i].id === roomId) this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.from.id}`, item.direct[i]);
                         }
 
-                        console.log('rooms requestForAllChatRooms from: ', rooms);
                         socket.join(message.from.id);
                         this.io.to(message.from.id).emit('directMessagesRoomMessageNotification', 'message');
                         this.io.to(message.from.id).emit(`get=${message.from.id}AllChatRooms`, rooms);
@@ -503,15 +471,12 @@ export class ChatServer {
                     UserModel.findOne({id: message.to.id}, (err, item) => {
                         if (err) throw  err;
 
-                        console.log('toUser: ', item);
-
                         for (let i = 0; i < item.direct.length; i++) {
                             rooms.push(item.direct[i]);
 
                             if (item.direct[i].id === roomId) this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.to.id}`, item.direct[i]);
                         }
 
-                        console.log('rooms requestForAllChatRooms to: ', rooms);
                         socket.join(message.to.id);
                         this.io.to(message.to.id).emit('directMessagesRoomMessageNotification', 'message');
                         this.io.to(message.to.id).emit(`get=${message.to.id}AllChatRooms`, rooms);
@@ -533,7 +498,6 @@ export class ChatServer {
                             await UserModel.findOneAndUpdate({id: userId}, {online: false, lastSeen: dateNow}, (err, user) => {
                                 if (err) throw  err;
                             });
-                            console.log('users after log out: ', users);
                         }
 
                     });
@@ -543,13 +507,12 @@ export class ChatServer {
                         if (err) throw err;
 
                         if (room.users) {
+
                             await ChatRoomModel.findOneAndUpdate({'id': 'main-chat', users: {$elemMatch: {id: userId}}},
                                 {
                                     $set: {'users.$.online': false, 'users.$.lastSeen': dateNow}
-                                }, (err, user) => {
-                                    if (err) console.log('main chat user log out update error ', err);
-
-                                    console.log('user main chat after log out update online: false: ', user);
+                                }, (err) => {
+                                    if (err) throw err;
                                 });
 
                             await ChatRoomModel.findOne({id: 'main-chat'}, async (err, room) => {
@@ -560,9 +523,8 @@ export class ChatServer {
                                 await room.save((err) => {
                                     if (err) throw err;
                                 });
-
-                                console.log('man chat room client log out', room);
                             });
+
                         }
                     });
 
