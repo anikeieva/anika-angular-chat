@@ -20,15 +20,9 @@ export class AppComponent implements OnInit {
     this.router.events.subscribe(event => {
 
       if (event instanceof RoutesRecognized) {
-
-        if (event.url.includes('main') ||
+        this.isChatRoomActive = event.url.includes('main') ||
           event.url.includes('room') ||
-          event.url.includes('profile')) {
-          this.isChatRoomActive = true;
-        } else {
-          this.isChatRoomActive = false;
-        }
-
+          event.url.includes('profile');
       }
 
     });

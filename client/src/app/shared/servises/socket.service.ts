@@ -20,8 +20,6 @@ export class SocketService {
 
   public initSocket(): void {
     this.socket = socketIo(SERVER_URL);
-    console.log('socket.id', this.socket.id);
-    console.log('socket: ', this.socket);
   }
 
   public sendMainChatMessage(message: Message): void {
@@ -60,12 +58,6 @@ export class SocketService {
 
   public sendMainChatUser(user: User): void {
     this.socket.emit('mainChatUser', user);
-  }
-
-  public onMainChatUser(): Observable<User> {
-    return new Observable<User>(observer => {
-      this.socket.on('mainChatUser', (user: User) => observer.next(user));
-    })
   }
 
   public sendUserLogInParam (userLogInParam: UserLogInParam): void {
@@ -142,9 +134,19 @@ export class SocketService {
     this.socket.emit('directMessagesRoomMessage', message, roomId);
   }
 
-  public onDirectMessagesRoomMessage(): Observable<Message> {
-    return new Observable<Message>(observer => {
-      this.socket.on('directMessagesRoomMessage', (data: Message) => observer.next(data));
+  public sendDirectMessagesRoomNotification(userId): void {
+    this.socket.emit('directMessagesRoomNotification',userId);
+  }
+
+  public onDirectMessagesRoomNotification(): Observable<string> {
+    return new Observable<string>(observer => {
+      this.socket.on('directMessagesRoomNotification', (data: string) => observer.next(data));
+    });
+  }
+
+  public onDirectMessagesRoomMessageNotification(): Observable<string> {
+    return new Observable<string>(observer => {
+      this.socket.on('directMessagesRoomMessageNotification', (data: string) => observer.next(data));
     });
   }
 

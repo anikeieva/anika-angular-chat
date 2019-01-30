@@ -5,7 +5,8 @@
     <mat-card-subtitle class="user-profile__item">
       last seen at {{directRoomUser?.lastSeen | date: 'h:mma' | lowercase}}
     </mat-card-subtitle>
-    <span routerLink="../direct-messages-room" [queryParams]="{id: directRoomId}" class="user-profile__sent-message">
+    <span routerLink="../direct-messages-room" [queryParams]="{id: directRoomId}" class="user-profile__sent-message"
+    (click)="openDirectRoom()">
       <mat-icon>message</mat-icon>
     </span>
   </mat-card-header>

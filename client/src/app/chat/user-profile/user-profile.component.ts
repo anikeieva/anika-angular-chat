@@ -11,7 +11,6 @@ import {
   getDirectRoomStorageToken,
   getUserStorageToken
 } from "../../shared/model/getStorageToken";
-import {SharedService} from "../../shared/servises/shared.service";
 
 @Component({
   selector: 'app-user-profile',
@@ -30,8 +29,7 @@ export class UserProfileComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
               private socketService: SocketService,
-              @Inject(SESSION_STORAGE) private storage: StorageService,
-              private sharedService: SharedService) {}
+              @Inject(SESSION_STORAGE) private storage: StorageService) {}
 
   ngOnInit(): void {
     this.getUser();
@@ -54,7 +52,6 @@ export class UserProfileComponent implements OnInit {
     this.socketService.onUser().subscribe((user: User) => {
       if (user && this.storage.has(currentUserToken)) {
         this.currentUserId = this.storage.get(currentUserToken);
-        console.log('currentUserId',this.currentUserId);
 
         if (user.id === this.currentUserId) {
           this.user = user;
@@ -68,7 +65,6 @@ export class UserProfileComponent implements OnInit {
         this.userToken = getUserStorageToken(user.id);
         this.storage.set(currentUserToken, this.currentUserId);
         this.storage.set(this.userToken, JSON.stringify(this.user));
-        this.sharedService.setUser(user);
       }
     }, (err) => {
       if (err && this.storage.has(this.userToken)) {
@@ -82,13 +78,7 @@ export class UserProfileComponent implements OnInit {
   getDirectRoomUser() {
     this.route.queryParams.subscribe(param => {
       const id = param.id;
-      console.log('direct room user id',id);
       this.directRoomUserToken = getUserStorageToken(id);
-
-      if (!this.directRoomUser && this.storage.has(this.directRoomUserToken)) {
-        this.directRoomUser = JSON.parse(this.storage.get(this.directRoomUserToken));
-        console.log(this.directRoomUser);
-      }
 
       if (!this.socketService.socket) this.socketService.initSocket();
 
@@ -98,13 +88,13 @@ export class UserProfileComponent implements OnInit {
         if (user) {
           this.directRoomUser = user;
           this.storage.set(this.directRoomUserToken, JSON.stringify(user));
-          console.log(this.directRoomUser);
+          console.log('directRoomUser on', this.directRoomUser);
           this.getDirectRoomId();
         }
       }, (err) => {
         if (err && this.storage.has(this.directRoomUserToken)) {
           this.directRoomUser = JSON.parse(this.storage.get(this.directRoomUserToken));
-          console.log(this.directRoomUser);
+          console.log('directRoomUser on err', this.directRoomUser);
           this.getDirectRoomId();
         }
       });
@@ -114,29 +104,33 @@ export class UserProfileComponent implements OnInit {
   }
 
   getDirectRoomId() {
-    console.log(this.user);
-    console.log(this.directRoomUser);
-
     this.directRoomIdToken = getDirectRoomStorageToken(this.user.id, this.directRoomUser.id);
 
     if (!this.directRoomId && this.storage.has(this.directRoomIdToken)) {
       this.directRoomId = this.storage.get(this.directRoomIdToken);
     }
 
-    if (!this.socketService.socket) {
-      this.socketService.initSocket();
-    }
+    if (!this.socketService.socket) this.socketService.initSocket();
 
     this.socketService.sendRequestForDirectMessagesRoomId(this.user.id, this.directRoomUser.id);
+
     this.socketService.onDirectMessagesRoomId().subscribe((roomId: string) => {
-      console.log('room id: ', roomId);
       this.directRoomId = roomId;
       this.storage.set(this.directRoomIdToken, this.directRoomId);
     }, (err) => {
       if(err && !this.directRoomId && this.storage.has(this.directRoomIdToken)) {
         this.directRoomId = this.storage.get(this.directRoomIdToken);
-        console.log(this.directRoomId);
       }
     });
+  }
+
+  openDirectRoom() {
+    if (this.storage.has(currentUserToken)) {
+      if (!this.currentUserId) this.currentUserId = this.storage.get(currentUserToken);
+
+      if (!this.socketService.socket) this.socketService.initSocket();
+
+      this.socketService.sendDirectMessagesRoomNotification(this.currentUserId);
+    }
   }
 }

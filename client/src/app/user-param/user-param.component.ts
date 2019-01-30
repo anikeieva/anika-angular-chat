@@ -53,7 +53,6 @@ export class UserParamComponent implements OnInit {
     this.userIsAuthorized = true;
 
     if (this.isEdit) {
-      console.log(this.userBeforeEdit);
 
       this.userParameters.setValue({
         firstName: this.userBeforeEdit.firstName,
@@ -64,9 +63,8 @@ export class UserParamComponent implements OnInit {
       });
 
       this.userParameters.removeControl(this.userParameters.value.password);
-
-      console.log('user-param init:',this.userParameters.value);
       this.userParametersBeforeEdit = this.userParameters.value;
+
     }
 
   }
@@ -77,7 +75,7 @@ export class UserParamComponent implements OnInit {
 
   onSubmit() {
     this.user = this.userParameters.value;
-    this.user.avatar = `src/app/images/avatars/${this.user.gender}/${this.getRandomInt(3)}.png`;
+    this.user.avatar = `src/app/images/avatars/${this.user.gender}/${UserParamComponent.getRandomInt(3)}.png`;
     this.user.action = {
       signed: true,
       edit: false,
@@ -92,39 +90,32 @@ export class UserParamComponent implements OnInit {
     console.log(this.userIsAuthorized);
 
     this.socketService.onUserSignUp().subscribe((user) => {
-      console.log('user sign up');
-      console.log('user', user);
       if (user) {
         this.userIsAuthorized = true;
         this.storage.set(currentUserToken, user.id);
         this.userToken = getUserStorageToken(user.id);
         this.storage.set(this.userToken, JSON.stringify(user));
-        this.sharedService.setUser(user);
       }
       this.router.navigateByUrl('/chat').then(e => {
         if (e) {
-          console.log('client not navigate to /chat because of', e);
           console.log('user sign up err');
         }
       });
     });
 
     this.socketService.onUserNotSignUp().subscribe((userNotSignUp) => {
-      console.log('user not sign up');
-      this.userIsAuthorized = false;
+      if (userNotSignUp) {
+        this.userIsAuthorized = false;
+        console.log('user not sign up');
+      }
     });
-
-    console.log(this.userIsAuthorized);
   }
 
-  private getRandomInt(max: number) {
+  private static getRandomInt(max: number) {
     return Math.floor(Math.random() * Math.floor(max));
   }
 
   onSave() {
-
-    console.log(this.userBeforeEdit);
-    console.log(this.userParametersBeforeEdit);
     this.currentAction = this.userBeforeEdit.action;
     this.user = this.userBeforeEdit;
 
@@ -133,73 +124,51 @@ export class UserParamComponent implements OnInit {
         this.user[key] = this.userParameters.value[key];
       }
     }
-    console.log('bef: ', this.user);
 
     if (this.userParametersBeforeEdit.gender !== this.user.gender) {
-      this.user.avatar = `src/app/images/avatars/${this.user.gender}/${this.getRandomInt(3)}.png`;
+      this.user.avatar = `src/app/images/avatars/${this.user.gender}/${UserParamComponent.getRandomInt(3)}.png`;
     }
 
     this.user.action = this.currentAction;
     this.user.action.edit = true;
     this.userToken = getUserStorageToken(this.user.id);
 
-    console.log(this.user);
 
     const param: object = {
       paramBefore: this.userParametersBeforeEdit,
       paramAfter: this.user
     };
 
-    console.log('param', param);
-    console.log(this.user);
 
-    if (!this.socketService.socket) {
-      this.socketService.initSocket();
-    }
+    if (!this.socketService.socket) this.socketService.initSocket();
 
-    console.log(this.user);
     this.socketService.sendUser(this.user);
-    if (this.user.action.joined) {
-      this.socketService.sendMainChatUser(this.user);
-    }
+    if (this.user.action.joined) this.socketService.sendMainChatUser(this.user);
     this.sharedService.editUser(param);
-    console.log(this.user);
     this.storage.set(this.userToken, JSON.stringify(this.user));
-
   }
 
   isChecked(gender: string) {
-    if (this.isEdit) {
-      return (this.userBeforeEdit.gender === gender);
-    }
-    return false;
+    if (this.isEdit) return (this.userBeforeEdit.gender === gender);
+    else return false;
   }
 
   onSelectAvatar(event) {
     const fileReader = new FileReader();
     const file = event.target.files[0];
-    console.log(event);
-
     fileReader.readAsDataURL(file);
+
     fileReader.onload = () => {
       this.selectedAvatar = fileReader.result;
 
-      if (!this.user) {
-        this.user = this.userBeforeEdit;
-      }
+      if (!this.user) this.user = this.userBeforeEdit;
 
       this.user.avatar = this.selectedAvatar;
 
-      console.log('user, own avatar:', this.user);
-
-      if (!this.socketService.socket) {
-        this.socketService.initSocket();
-      }
+      if (!this.socketService.socket) this.socketService.initSocket();
 
       this.socketService.sendUser(this.user);
-      if (this.user.action.joined) {
-        this.socketService.sendMainChatUser(this.user);
-      }
+      if (this.user.action.joined) this.socketService.sendMainChatUser(this.user);
       this.storage.set(this.userToken, JSON.stringify(this.user));
       this.sharedService.editUser(this.user);
     };
@@ -209,7 +178,8 @@ export class UserParamComponent implements OnInit {
     const dialogRef = this.dialog.open(ChooseAvatarComponent);
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result);
+      console.log('chooseAvatar result: ', result);
+      console.log('chooseAvatar result: ', result);
     });
   }
 }

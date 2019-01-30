@@ -26,11 +26,10 @@ export class ChooseAvatarComponent implements OnInit {
 
   ngOnInit() {
     this.sharedService.listenUser().subscribe(param => {
-      console.log('param: ', param);
       if (param) {
         if (param.paramAfter) {
           this.user = param.paramAfter;
-          console.log(this.user);
+          console.log('user', this.user);
         }
       } else {
         this.getUser();
@@ -49,7 +48,7 @@ export class ChooseAvatarComponent implements OnInit {
       this.currentUserId = this.storage.get(currentUserToken);
       this.userToken = getUserStorageToken(this.currentUserId);
       this.user = JSON.parse(this.storage.get(this.userToken));
-      console.log('user: ', this.user);
+      console.log('user storage: ', this.user);
     }
 
     this.socketService.onUser().subscribe((user: User) => {
@@ -69,11 +68,11 @@ export class ChooseAvatarComponent implements OnInit {
         this.userToken = getUserStorageToken(user.id);
         this.storage.set(currentUserToken, this.currentUserId);
         this.storage.set(this.userToken, JSON.stringify(this.user));
-        this.sharedService.setUser(user);
       }
     }, (err) => {
       if (err) {
         this.user = JSON.parse(this.storage.get(this.userToken));
+        console.log('user err: ', this.user);
       }
     });
     console.log('user: ', this.user);
@@ -83,7 +82,6 @@ export class ChooseAvatarComponent implements OnInit {
     if (this.user.avatar !== avatar) {
       this.user.avatar = avatar;
 
-      console.log('user, def avatar: ', this.user);
       if (!this.socketService.socket) {
         this.socketService.initSocket();
       }

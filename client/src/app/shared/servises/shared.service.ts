@@ -1,6 +1,6 @@
 import {EventEmitter, Injectable, Output} from '@angular/core';
 import {User} from '../model/user';
-import {BehaviorSubject, Observable, of} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -23,13 +23,5 @@ export class SharedService {
 
   editUserClear(): void {
     this.listenerUser.next(null);
-  }
-
-  setUser(data: any) {
-    this.user = data;
-  }
-
-  getUser(): Observable<User> {
-    return of(this.user);
   }
 }

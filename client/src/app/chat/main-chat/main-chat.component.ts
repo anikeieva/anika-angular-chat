@@ -1,7 +1,7 @@
 import {
   AfterViewInit,
   Component,
-  ElementRef, Inject,
+  ElementRef, Inject, OnDestroy,
   OnInit,
   QueryList,
   ViewChild,
@@ -24,7 +24,7 @@ import {Router} from "@angular/router";
   templateUrl: './main-chat.component.html',
   styleUrls: ['./main-chat.component.css']
 })
-export class MainChatComponent implements OnInit, AfterViewInit {
+export class MainChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public messageContent: string;
   public messages: Message[];
@@ -36,6 +36,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   public userToken: string;
   public currentUserId: string;
   public isChatRoomActive: boolean;
+  private mainChatRoomSubscribe: any;
 
   @ViewChild('messageList') messageList: ElementRef;
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;
@@ -48,21 +49,16 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
 
-    if (this.router.url.includes('main-chat') ||
+    this.isChatRoomActive = this.router.url.includes('main-chat') ||
       this.router.url.includes('room') ||
-      this.router.url.includes('profile')) {
-      this.isChatRoomActive = true;
-    } else {
-      this.isChatRoomActive = false;
-    }
+      this.router.url.includes('profile');
 
     this.sharedService.listenUser().pipe(take(1)).subscribe(param => {
-      console.log('param: ', param);
+
       if (param) {
         this.onEditUser(param);
         if (param.paramAfter) {
           this.user = param.paramAfter;
-          console.log(this.user);
         }
         if (param.id) {
           this.user = param;
@@ -76,7 +72,6 @@ export class MainChatComponent implements OnInit, AfterViewInit {
     this.getChatRoom();
     this.initIoConnection();
     this.socketService.onMainChatMessages().subscribe((messages) => this.messages = messages);
-    console.log('init messages: ',this.messages);
   }
 
   ngAfterViewInit(): void {
@@ -105,11 +100,9 @@ export class MainChatComponent implements OnInit, AfterViewInit {
     console.log('main-chat room', this.mainChatRoom);
     this.mainChatRoomToken = getChatRoomStorageToken('main-chat');
 
-    if (this.socketService.socket) {
-      this.socketService.sendRequestForMainChatRoom();
-    }
+    if (this.socketService.socket) this.socketService.sendRequestForMainChatRoom();
 
-    this.socketService.onMainChatRoom().subscribe(mainChatRoom => {
+    this.mainChatRoomSubscribe = this.socketService.onMainChatRoom().pipe(take(1)).subscribe(mainChatRoom => {
       this.mainChatRoom = mainChatRoom;
 
       this.storage.set(this.mainChatRoomToken, JSON.stringify(this.mainChatRoom));
@@ -120,7 +113,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
       }
     });
 
-    console.log(this.mainChatRoom);
+    console.log('main-chat-room: ',this.mainChatRoom);
   }
 
   private getUser() {
@@ -131,14 +124,13 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
       if (this.storage.has(this.userToken)) {
         this.user = JSON.parse(this.storage.get(this.userToken));
-        console.log('user: ', this.user);
+        console.log('user storage: ', this.user);
       }
     }
 
     this.socketService.onUser().subscribe((user: User) => {
       if (user && this.storage.has(currentUserToken)) {
         this.currentUserId = this.storage.get(currentUserToken);
-        console.log('currentUserId',this.currentUserId);
 
         if (user.id === this.currentUserId) {
           this.user = user;
@@ -152,7 +144,6 @@ export class MainChatComponent implements OnInit, AfterViewInit {
         this.userToken = getUserStorageToken(user.id);
         this.storage.set(currentUserToken, this.currentUserId);
         this.storage.set(this.userToken, JSON.stringify(this.user));
-        this.sharedService.setUser(user);
         this.sharedService.editUser(this.user);
       }
     }, (err) => {
@@ -166,20 +157,16 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   sendMessage(messageContent: string): void {
     if (!messageContent || /^\s*$/.test(messageContent)) {
       return;
-    } else {
-      this.timeNow = new Date();
-      this.user.action.sentMessage = true;
-      this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage', null);
-      this.socketService.sendMainChatMessage(this.message);
-      // this.socketService.sendRequestForAllChatRooms(this.user.id);
-      this.sharedService.editUser(null);
-
-      this.messageContent = null;
-
-      console.log('sentMessage messages: ',this.messages);
-
-      console.log('mainChatRoom: ', this.mainChatRoom);
     }
+    this.timeNow = new Date();
+    this.user.action.sentMessage = true;
+    this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage', null);
+    this.socketService.sendMainChatMessage(this.message);
+    this.sharedService.editUser(null);
+
+    this.messageContent = null;
+
+    console.log('sentMessage messages: ', this.messages);
   }
 
   onJoin(): void {
@@ -192,36 +179,24 @@ export class MainChatComponent implements OnInit, AfterViewInit {
     this.timeNow = new Date();
     this.message = new Message(this.user, `${this.user.firstName} ${this.user.lastName} joined to conversation`, this.timeNow, 'joined', null);
     this.sendNotification(this.message);
-    console.log('join messages: ',this.messages);
 
     this.getChatRoom();
-    console.log(this.mainChatRoom);
   }
 
   onEditUser(param): void {
 
-    console.log(param);
-
     if (param !== null && param.paramBefore && param.paramAfter) {
-      console.log('after: ', param.paramAfter);
-      console.log('user: ' ,this.user);
-
       this.timeNow = new Date();
       this.user = param.paramAfter;
-      console.log('user: ' , this.user);
       this.user.action.edit = true;
 
       if (this.user.action.joined === true &&
         param.paramBefore.firstName !== this.user.firstName ||
         param.paramBefore.lastName !== this.user.lastName) {
 
-        console.log(this.user);
-
         const messageContent = `${param.paramBefore.firstName} ${param.paramBefore.lastName} already is ${this.user.firstName} ${this.user.lastName}`;
         this.message = new Message(this.user, messageContent, this.timeNow, 'edit', null);
-        console.log(this.message);
         this.sendNotification(this.message);
-        console.log('edit messages: ',this.messages);
       }
 
       this.sharedService.editUserClear();
@@ -244,5 +219,9 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
   activeChatRoom() {
     this.isChatRoomActive = true;
+  }
+
+  ngOnDestroy(): void {
+    this.mainChatRoomSubscribe.unsubscribe();
   }
 }

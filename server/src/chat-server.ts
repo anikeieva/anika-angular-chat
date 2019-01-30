@@ -240,6 +240,29 @@ export class ChatServer {
                 });
             }));
 
+            socket.on('directMessagesRoomNotification', ( async (userId: string) => {
+                await ChatRoomModel.findOne({id: 'main-chat'}, (err, mainChatRoom) => {
+                    if (err) throw  err;
+
+                    let rooms = [];
+                    rooms.push(mainChatRoom);
+
+                    UserModel.findOne({id: userId}, (err, item) => {
+                        if (err) throw  err;
+
+                        if (item) {
+                            for (let i = 0; i < item.direct.length; i++) {
+                                rooms.push(item.direct[i]);
+                            }
+
+                            console.log(`rooms requestForAllChatRooms id=${userId}: `, rooms);
+                            socket.join(userId);
+                            this.io.to(userId).emit('directMessagesRoomNotification', 'message');
+                        }
+                    });
+                });
+            }));
+
             socket.on('userLogInParam', async (userLogInParam: UserLogInParam) => {
 
                 await UserModel.findOne({
@@ -341,8 +364,6 @@ export class ChatServer {
                                     online: user.online
                                 });
 
-                                // await delete newUser.__v;
-
                                 await newUser.save((err) => {
                                     if (err) throw err;
                                 });
@@ -419,13 +440,10 @@ export class ChatServer {
 
                     room.messages.push(m);
 
-                    // await delete room.__v;
-
                     await room.save((err) => {
                         if (err) throw err;
                     });
 
-                    // console.log('main chat room messages', room);
                     this.io.emit('mainChatMessage', m);
                     this.io.emit('mainChatMessageNotification', 'message');
                 });
@@ -471,7 +489,7 @@ export class ChatServer {
 
                         console.log('rooms requestForAllChatRooms from: ', rooms);
                         socket.join(message.from.id);
-                        this.io.to(message.from.id).emit('directMessagesRoomMessage', message);
+                        this.io.to(message.from.id).emit('directMessagesRoomMessageNotification', 'message');
                         this.io.to(message.from.id).emit(`get=${message.from.id}AllChatRooms`, rooms);
                     });
                 });
@@ -495,7 +513,7 @@ export class ChatServer {
 
                         console.log('rooms requestForAllChatRooms to: ', rooms);
                         socket.join(message.to.id);
-                        this.io.to(message.to.id).emit('directMessagesRoomMessage', message);
+                        this.io.to(message.to.id).emit('directMessagesRoomMessageNotification', 'message');
                         this.io.to(message.to.id).emit(`get=${message.to.id}AllChatRooms`, rooms);
                     });
                 });
@@ -538,8 +556,6 @@ export class ChatServer {
                                 if (err) throw  err;
 
                                 room.getActiveUsers();
-
-                                // await delete room.__v;
 
                                 await room.save((err) => {
                                     if (err) throw err;
