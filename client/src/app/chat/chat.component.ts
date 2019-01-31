@@ -4,7 +4,6 @@ import {SharedService} from '../shared/servises/shared.service';
 import {SESSION_STORAGE, StorageService} from 'ngx-webstorage-service';
 import {SocketService} from "../shared/servises/socket.service";
 import {ChatRoom} from "../shared/model/chat-room";
-import {getUserStorageToken} from "../shared/model/getStorageToken";
 import {currentUserToken} from "../shared/model/getStorageToken";
 import {Router} from "@angular/router";
 import {BreakpointObserver} from '@angular/cdk/layout';
@@ -17,9 +16,7 @@ import {take} from "rxjs/operators";
 })
 export class ChatComponent implements OnInit {
   user: User;
-  userToken: string;
   rooms: ChatRoom[];
-  roomsToken: string;
   currentUserId: string;
   isChatRoomActive: boolean;
   isMobile: boolean;
@@ -43,7 +40,6 @@ export class ChatComponent implements OnInit {
       if (param) {
         if (param.paramAfter) {
           this.user = param.paramAfter;
-          console.log(this.user);
         }
         if (param.id) {
           this.user = param;
@@ -58,12 +54,10 @@ export class ChatComponent implements OnInit {
     if (!this.socketService.socket) this.socketService.initSocket();
 
     this.socketService.onDirectRoomMessage().subscribe(message => {
-      console.log(message);
       if (message) this.getUserDirects();
     });
 
     this.socketService.onDirectMessagesRoomNotification().subscribe(message => {
-      console.log(message);
       if (message) this.getUserDirects();
     });
 
@@ -74,42 +68,27 @@ export class ChatComponent implements OnInit {
 
   getUser() {
     this.currentUserId = this.storage.get(currentUserToken);
-    this.userToken = getUserStorageToken(this.currentUserId);
-
-    if (!this.user && this.storage.has(this.userToken)) {
-      this.user = JSON.parse(this.storage.get(this.userToken));
-      console.log('user storage: ', this.user);
-    }
 
     if (!this.socketService.socket) this.socketService.initSocket();
 
-    this.socketService.onUser().subscribe((user: User) => {
-      if (user && this.storage.has(currentUserToken)) {
-        this.currentUserId = this.storage.get(currentUserToken);
+    if (this.currentUserId) this.socketService.sendRequestForUserById(this.currentUserId);
 
-        if (user.id === this.currentUserId) {
-          this.user = user;
-          console.log('user on: ', this.user);
-          this.storage.set(this.userToken, JSON.stringify(this.user));
-        }
-      } else {
-        this.user = user;
-        console.log('user on: ', this.user);
-        this.currentUserId = user.id;
-        this.userToken = getUserStorageToken(user.id);
-        this.storage.set(currentUserToken, this.currentUserId);
-        this.storage.set(this.userToken, JSON.stringify(this.user));
-      }
-
-    }, (err) => {
-      if (err) {
-        this.currentUserId = this.storage.get(currentUserToken);
-        this.userToken = getUserStorageToken(this.currentUserId);
-        this.user = JSON.parse(this.storage.get(this.userToken));
-      }
+    this.socketService.onUserById(this.currentUserId).subscribe((user: User) => {
+      if (user) this.user = user;
     });
 
-    console.log('user after: ', this.user);
+
+    this.socketService.onUser().subscribe((user: User) => {
+      if (user.id === this.currentUserId) {
+        this.user = user;
+      } else {
+        this.user = user;
+        this.currentUserId = user.id;
+        this.storage.set(currentUserToken, this.currentUserId);
+      }
+
+    });
+
     this.getUserDirects();
   }
 
@@ -124,21 +103,19 @@ export class ChatComponent implements OnInit {
 
       this.socketService.onGetAllChatRooms(this.currentUserId).pipe(take(1)).subscribe((rooms) => {
         this.rooms = rooms;
-        console.log('rooms: ',rooms);
-        this.storage.set(this.roomsToken, JSON.stringify(this.rooms));
-      }, (err) => {
-        if (err) {
-          this.rooms = JSON.parse(this.storage.get(this.roomsToken));
-        }
       });
-
     }
   }
 
   exit() {
     this.storage.clear();
-    this.socketService.initSocket();
-    this.socketService.sendUserLogOut(this.user.id);
+    if (!this.socketService.socket) this.socketService.initSocket();
+
+    if(this.currentUserId) {
+      this.socketService.sendUserLogOut(this.currentUserId);
+    } else {
+      this.currentUserId = this.storage.get(currentUserToken);
+    }
   }
 
   getQueryParams(room) {

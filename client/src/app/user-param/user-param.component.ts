@@ -7,7 +7,7 @@ import {MatDialog} from "@angular/material";
 import {ChooseAvatarComponent} from "../choose-avatar/choose-avatar.component";
 import {SESSION_STORAGE, StorageService} from 'ngx-webstorage-service';
 import {SocketService} from "../shared/servises/socket.service";
-import {currentUserToken, getUserStorageToken} from "../shared/model/getStorageToken";
+import {currentUserToken} from "../shared/model/getStorageToken";
 import {Router} from "@angular/router";
 
 @Component({
@@ -22,11 +22,10 @@ export class UserParamComponent implements OnInit {
   @Input() title: string;
   @Input() submitTitle: string;
   @Input() isEdit: boolean;
-  @Input() userBeforeEdit: User;
+  userBeforeEdit: User;
   private currentAction: UserAction;
   selectedAvatar: string | ArrayBuffer;
   private userParametersBeforeEdit: User;
-  userToken: string;
   userIsAuthorized: boolean;
 
   constructor(private sharedService: SharedService,
@@ -53,6 +52,12 @@ export class UserParamComponent implements OnInit {
     this.userIsAuthorized = true;
 
     if (this.isEdit) {
+      this.getUserEdit();
+    }
+  }
+
+  getUserParamAfterEdit() {
+    if (this.isEdit) {
 
       this.userParameters.setValue({
         firstName: this.userBeforeEdit.firstName,
@@ -64,9 +69,32 @@ export class UserParamComponent implements OnInit {
 
       this.userParameters.removeControl(this.userParameters.value.password);
       this.userParametersBeforeEdit = this.userParameters.value;
-
     }
+  }
 
+  getUserEdit() {
+    this.currentUserId = this.storage.get(currentUserToken);
+
+    if (!this.socketService.socket) this.socketService.initSocket();
+
+    if (this.currentUserId) this.socketService.sendRequestForUserById(this.currentUserId);
+
+    this.socketService.onUserById(this.currentUserId).subscribe((user: User) => {
+      if (user) this.userBeforeEdit = user;
+      this.getUserParamAfterEdit();
+    });
+
+
+    this.socketService.onUser().subscribe((user: User) => {
+      if (user.id === this.currentUserId) {
+        this.userBeforeEdit = user;
+      } else {
+        this.userBeforeEdit = user;
+        this.currentUserId = user.id;
+        this.storage.set(currentUserToken, this.currentUserId);
+      }
+      this.getUserParamAfterEdit();
+    });
   }
 
   isEnabledSubmit() {
@@ -87,14 +115,10 @@ export class UserParamComponent implements OnInit {
     if (!this.socketService.socket) this.socketService.initSocket();
     this.socketService.sendUser(this.user);
 
-    console.log(this.userIsAuthorized);
-
     this.socketService.onUserSignUp().subscribe((user) => {
       if (user) {
         this.userIsAuthorized = true;
         this.storage.set(currentUserToken, user.id);
-        this.userToken = getUserStorageToken(user.id);
-        this.storage.set(this.userToken, JSON.stringify(user));
       }
       this.router.navigateByUrl('/chat').then(e => {
         if (e) {
@@ -125,13 +149,12 @@ export class UserParamComponent implements OnInit {
       }
     }
 
-    if (this.userParametersBeforeEdit.gender !== this.user.gender) {
+    if (this.user && this.userBeforeEdit && this.userParametersBeforeEdit.gender !== this.user.gender) {
       this.user.avatar = `src/app/images/avatars/${this.user.gender}/${UserParamComponent.getRandomInt(3)}.png`;
     }
 
     this.user.action = this.currentAction;
     this.user.action.edit = true;
-    this.userToken = getUserStorageToken(this.user.id);
 
 
     const param: object = {
@@ -139,17 +162,16 @@ export class UserParamComponent implements OnInit {
       paramAfter: this.user
     };
 
-
     if (!this.socketService.socket) this.socketService.initSocket();
 
     this.socketService.sendUser(this.user);
+
     if (this.user.action.joined) this.socketService.sendMainChatUser(this.user);
     this.sharedService.editUser(param);
-    this.storage.set(this.userToken, JSON.stringify(this.user));
   }
 
   isChecked(gender: string) {
-    if (this.isEdit) return (this.userBeforeEdit.gender === gender);
+    if (this.isEdit && this.userBeforeEdit) return (this.userBeforeEdit.gender === gender);
     else return false;
   }
 
@@ -168,8 +190,9 @@ export class UserParamComponent implements OnInit {
       if (!this.socketService.socket) this.socketService.initSocket();
 
       this.socketService.sendUser(this.user);
+
       if (this.user.action.joined) this.socketService.sendMainChatUser(this.user);
-      this.storage.set(this.userToken, JSON.stringify(this.user));
+
       this.sharedService.editUser(this.user);
     };
   }
@@ -178,7 +201,6 @@ export class UserParamComponent implements OnInit {
     const dialogRef = this.dialog.open(ChooseAvatarComponent);
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('chooseAvatar result: ', result);
       console.log('chooseAvatar result: ', result);
     });
   }
