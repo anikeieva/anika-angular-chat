@@ -12,10 +12,10 @@ import {currentUserToken, getUserStorageToken} from "../shared/model/getStorageT
   styleUrls: ['./choose-avatar.component.css']
 })
 export class ChooseAvatarComponent implements OnInit {
-  public user: User;
-  public avatars: Array<string> = [];
+  user: User;
+  avatars: Array<string> = [];
   private maxAvatarsNumbers = 2;
-  public userToken: string;
+  userToken: string;
   private currentUserId: string;
 
   constructor(private sharedService: SharedService,

@@ -7,11 +7,11 @@ import {SESSION_STORAGE, StorageService} from "ngx-webstorage-service";
   styleUrls: ['./welcome-page.component.css']
 })
 export class WelcomePageComponent implements OnInit {
-  public isSignUp: boolean = true;
-  public activeButtonColor: string = '#8a2ae2';
-  public passiveButtonColor: string = '#767676';
-  public signUpButtonColor: string = this.activeButtonColor;
-  public signInButtonColor: string = this.passiveButtonColor;
+  isSignUp: boolean = true;
+  activeButtonColor: string = '#8a2ae2';
+  passiveButtonColor: string = '#767676';
+  signUpButtonColor: string = this.activeButtonColor;
+  signInButtonColor: string = this.passiveButtonColor;
 
   constructor(@Inject(SESSION_STORAGE) private storage: StorageService) {}
 

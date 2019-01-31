@@ -544,7 +544,7 @@ export class ChatServer {
                             await UserModel.findOneAndUpdate({id: userId}, {
                                 online: false,
                                 lastSeen: dateNow
-                            }, (err, user) => {
+                            }, (err) => {
                                 if (err) throw  err;
                             });
                         }

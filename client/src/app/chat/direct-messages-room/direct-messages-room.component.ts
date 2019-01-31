@@ -33,7 +33,6 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
   directRoomUserToken: string;
   private currentUserId: string;
   private directMessagesRoomId: string;
-  public directRoomUserSubscribe: any;
 
   @ViewChild('messageList') messageList: ElementRef;
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;
@@ -107,7 +106,7 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
 
     this.socketService.sendRequestForUserById(directUserId);
 
-    this.directRoomUserSubscribe = this.socketService.onUserById(directUserId).pipe(take(1)).subscribe((user: User) => {
+    this.socketService.onUserById(directUserId).pipe(take(1)).subscribe((user: User) => {
       if (user) {
         this.directRoomUser = user;
         console.log('direct room user: ',this.directRoomUser);

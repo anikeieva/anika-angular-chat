@@ -16,14 +16,13 @@ import {take} from "rxjs/operators";
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent implements OnInit {
-  public user: User;
-  public userToken: string;
-  public rooms: ChatRoom[];
-  public roomsToken: string;
-  public currentUserId: string;
-  public isChatRoomActive: boolean;
-  public isMobile: boolean;
-  public userRoomsSubscribe: any;
+  user: User;
+  userToken: string;
+  rooms: ChatRoom[];
+  roomsToken: string;
+  currentUserId: string;
+  isChatRoomActive: boolean;
+  isMobile: boolean;
 
   constructor(private sharedService: SharedService,
               @Inject(SESSION_STORAGE) private storage: StorageService,
@@ -123,7 +122,7 @@ export class ChatComponent implements OnInit {
 
       this.socketService.sendRequestForAllChatRooms(this.currentUserId);
 
-      this.userRoomsSubscribe = this.socketService.onGetAllChatRooms(this.currentUserId).pipe(take(1)).subscribe((rooms) => {
+      this.socketService.onGetAllChatRooms(this.currentUserId).pipe(take(1)).subscribe((rooms) => {
         this.rooms = rooms;
         console.log('rooms: ',rooms);
         this.storage.set(this.roomsToken, JSON.stringify(this.rooms));

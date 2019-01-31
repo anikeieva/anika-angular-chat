@@ -26,16 +26,16 @@ import {Router} from "@angular/router";
 })
 export class MainChatComponent implements OnInit, AfterViewInit {
 
-  public messageContent: string;
-  public messages: Message[];
+  messageContent: string;
+  messages: Message[];
   private message: Message;
-  public user: User;
-  public timeNow: Date;
-  public mainChatRoom: ChatRoom;
-  public mainChatRoomToken: string;
-  public userToken: string;
-  public currentUserId: string;
-  public isChatRoomActive: boolean;
+  user: User;
+  timeNow: Date;
+  mainChatRoom: ChatRoom;
+  mainChatRoomToken: string;
+  userToken: string;
+  currentUserId: string;
+  isChatRoomActive: boolean;
 
   @ViewChild('messageList') messageList: ElementRef;
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;

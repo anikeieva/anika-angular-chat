@@ -10,9 +10,9 @@ import {ActivatedRoute, Router} from "@angular/router";
   styleUrls: ['./user-log-in.component.css']
 })
 export class UserLogInComponent implements OnInit {
-  public userLogInFormParam: FormGroup;
-  public userLogInParam: UserLogInParam;
-  public userIsAuthorized: boolean;
+  userLogInFormParam: FormGroup;
+  userLogInParam: UserLogInParam;
+  userIsAuthorized: boolean;
 
   constructor(private  socketService: SocketService,
               private router: Router,

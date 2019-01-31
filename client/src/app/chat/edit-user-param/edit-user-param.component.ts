@@ -11,8 +11,8 @@ import {currentUserToken, getUserStorageToken} from "../../shared/model/getStora
 })
 
 export class EditUserParamComponent implements OnInit {
-  public user: User;
-  public userToken: string;
+  user: User;
+  userToken: string;
   private currentUserId: string;
 
   constructor(@Inject(SESSION_STORAGE) private storage: StorageService,

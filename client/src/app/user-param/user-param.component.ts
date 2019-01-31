@@ -16,18 +16,18 @@ import {Router} from "@angular/router";
   styleUrls: ['./user-param.component.css']
 })
 export class UserParamComponent implements OnInit {
-  public user: User;
-  public userParameters: FormGroup;
-  public genders: Array<string>;
+  user: User;
+  userParameters: FormGroup;
+  genders: Array<string>;
   @Input() title: string;
   @Input() submitTitle: string;
   @Input() isEdit: boolean;
   @Input() userBeforeEdit: User;
   private currentAction: UserAction;
-  public selectedAvatar: string | ArrayBuffer;
+  selectedAvatar: string | ArrayBuffer;
   private userParametersBeforeEdit: User;
-  public userToken: string;
-  public userIsAuthorized: boolean;
+  userToken: string;
+  userIsAuthorized: boolean;
 
   constructor(private sharedService: SharedService,
               private dialog: MatDialog,

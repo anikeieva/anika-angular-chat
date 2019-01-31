@@ -19,13 +19,13 @@ import {
 })
 export class UserProfileComponent implements OnInit {
 
-  public directRoomUser: User;
-  public directRoomUserToken: string;
-  public user: User;
-  public currentUserId: string;
-  public userToken: string;
+  directRoomUser: User;
+  directRoomUserToken: string;
+  user: User;
+  currentUserId: string;
+  userToken: string;
   private directRoomId: string;
-  public directRoomIdToken: string
+  directRoomIdToken: string
 
   constructor(private route: ActivatedRoute,
               private socketService: SocketService,
