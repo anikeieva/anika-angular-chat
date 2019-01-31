@@ -31,7 +31,7 @@ export class UserLogInComponent implements OnInit {
     this.socketService.onUserLogIn().subscribe((user) => {
       this.userIsAuthorized = true;
       this.router.navigate(['/chat'], { relativeTo: this.route });
-      console.log('user is authorized');
+      // console.log('user is authorized');
     });
 
     this.socketService.onUserNotLogIn().subscribe((userNotLogIn) => {
@@ -40,7 +40,7 @@ export class UserLogInComponent implements OnInit {
         login: null,
         password: null
       });
-      console.log('user is not authorized');
+      // console.log('user is not authorized');
     });
 
   }

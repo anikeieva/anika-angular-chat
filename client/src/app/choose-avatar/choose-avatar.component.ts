@@ -4,7 +4,7 @@ import {User} from "../shared/model/user";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 import {SESSION_STORAGE, StorageService} from 'ngx-webstorage-service';
 import {SocketService} from "../shared/servises/socket.service";
-import {currentUserToken, getUserStorageToken} from "../shared/model/getStorageToken";
+import {currentUserToken} from "../shared/model/getStorageToken";
 
 @Component({
   selector: 'app-choose-avatar',
@@ -15,7 +15,6 @@ export class ChooseAvatarComponent implements OnInit {
   user: User;
   avatars: Array<string> = [];
   private maxAvatarsNumbers = 2;
-  userToken: string;
   private currentUserId: string;
 
   constructor(private sharedService: SharedService,
@@ -29,7 +28,6 @@ export class ChooseAvatarComponent implements OnInit {
       if (param) {
         if (param.paramAfter) {
           this.user = param.paramAfter;
-          console.log('user', this.user);
         }
       } else {
         this.getUser();
@@ -37,45 +35,39 @@ export class ChooseAvatarComponent implements OnInit {
     });
 
     this.getUser();
+  }
 
-    for (let n = 0; n <= this.maxAvatarsNumbers; n++) {
-      this.avatars.push(`src/app/images/avatars/${this.user.gender}/${n}.png`);
+  getAvatars() {
+    if (this.avatars.length < 1) {
+      for (let n = 0; n <= this.maxAvatarsNumbers; n++) {
+        this.avatars.push(`src/app/images/avatars/${this.user.gender}/${n}.png`);
+      }
     }
   }
   
   getUser() {
-    if (!this.user) {
-      this.currentUserId = this.storage.get(currentUserToken);
-      this.userToken = getUserStorageToken(this.currentUserId);
-      this.user = JSON.parse(this.storage.get(this.userToken));
-      console.log('user storage: ', this.user);
-    }
+    this.currentUserId = this.storage.get(currentUserToken);
+
+    if (!this.socketService.socket) this.socketService.initSocket();
+
+    if (this.currentUserId) this.socketService.sendRequestForUserById(this.currentUserId);
+
+    this.socketService.onUserById(this.currentUserId).subscribe((user: User) => {
+      if (user) this.user = user;
+      this.getAvatars();
+    });
+
 
     this.socketService.onUser().subscribe((user: User) => {
-      if (user && this.storage.has(currentUserToken)) {
-        this.currentUserId = this.storage.get(currentUserToken);
-        console.log('currentUserId',this.currentUserId);
-
-        if (user.id === this.currentUserId) {
-          this.user = user;
-          console.log('user on: ', this.user);
-          this.storage.set(this.userToken, JSON.stringify(this.user));
-        }
+      if (user.id === this.currentUserId) {
+        this.user = user;
       } else {
         this.user = user;
-        console.log('user on: ', this.user);
         this.currentUserId = user.id;
-        this.userToken = getUserStorageToken(user.id);
         this.storage.set(currentUserToken, this.currentUserId);
-        this.storage.set(this.userToken, JSON.stringify(this.user));
       }
-    }, (err) => {
-      if (err) {
-        this.user = JSON.parse(this.storage.get(this.userToken));
-        console.log('user err: ', this.user);
-      }
+      this.getAvatars();
     });
-    console.log('user: ', this.user);
   }
 
   changeAvatar(avatar) {
@@ -90,7 +82,6 @@ export class ChooseAvatarComponent implements OnInit {
         this.socketService.sendMainChatUser(this.user);
       }
       this.sharedService.editUser(this.user);
-      this.storage.set(this.userToken, JSON.stringify(this.user));
     }
    }
 
