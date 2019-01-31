@@ -144,9 +144,15 @@ export class SocketService {
     });
   }
 
-  public onDirectMessagesRoomMessageNotification(): Observable<string> {
-    return new Observable<string>(observer => {
-      this.socket.on('directMessagesRoomMessageNotification', (data: string) => observer.next(data));
+  public onDirectRoomMessages(): Observable<Message[]> {
+    return new Observable<Message[]>(observer => {
+      this.socket.on('directRoomMessages', (data: Message[]) => observer.next(data));
+    });
+  }
+
+  public onDirectRoomMessage(): Observable<Message> {
+    return new Observable<Message>(observer => {
+      this.socket.on('directRoomMessage', (data: Message) => observer.next(data));
     });
   }
 

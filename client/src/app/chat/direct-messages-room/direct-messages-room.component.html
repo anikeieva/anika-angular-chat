@@ -12,7 +12,7 @@
 
       <div class="message-list-content">
 
-        <div #messageListItem class="message-item" *ngFor="let message of directMessagesRoom?.messages"
+        <div #messageListItem class="message-item" *ngFor="let message of messages"
              [ngClass]="[(message.from.id === user.id)? 'message-item__currentUser' : '']">
 
           <p class="mat-list-item-message">

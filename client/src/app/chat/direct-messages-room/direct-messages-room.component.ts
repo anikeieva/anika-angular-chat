@@ -21,16 +21,16 @@ import {take} from "rxjs/operators";
 })
 export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  public directRoomUser: User;
-  public user: User;
-  public messageContent: string;
-  public messages: Message[];
-  private message: Message;
-  public timeNow: Date;
-  public directMessagesRoom: ChatRoom;
-  public chatRoomToken: string;
-  public userToken: string;
-  public directRoomUserToken: string;
+  directRoomUser: User;
+  user: User;
+  messageContent: string;
+  messages: Message[];
+  message: Message;
+  timeNow: Date;
+  directMessagesRoom: ChatRoom;
+  chatRoomToken: string;
+  userToken: string;
+  directRoomUserToken: string;
   private currentUserId: string;
   private directMessagesRoomId: string;
   public directRoomUserSubscribe: any;
@@ -45,12 +45,18 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, OnDes
               private sharedService: SharedService) {}
 
   ngOnInit() {
+    // if (!this.socketService.socket) this.socketService.initSocket();
+
     this.getUser();
 
     this.route.queryParams.subscribe(param => {
 
       this.directMessagesRoomId = param.id;
       this.getDirectRoom();
+    });
+
+    this.socketService.onDirectRoomMessages().subscribe(messages => {
+      if (messages) this.messages = messages;
     });
   }
 
@@ -158,12 +164,13 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, OnDes
     }
     this.timeNow = new Date();
     this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage', this.directRoomUser);
+    if (!this.socketService.socket) this.socketService.initSocket();
     this.socketService.sendDirectMessagesRoomMessage(this.message, this.directMessagesRoom.id);
-    this.getDirectRoom();
+    // this.getDirectRoom();
     this.messageContent = null;
   }
 
   ngOnDestroy(): void {
-    this.directRoomUserSubscribe.unsubscribe();
+    // this.directRoomUserSubscribe.unsubscribe();
   }
 }

@@ -56,11 +56,15 @@ export class ChatComponent implements OnInit, OnDestroy {
 
     this.getUser();
 
-    this.socketService.onDirectMessagesRoomMessageNotification().subscribe(message => {
+    if (!this.socketService.socket) this.socketService.initSocket();
+
+    this.socketService.onDirectRoomMessage().subscribe(message => {
+      console.log(message);
       if (message) this.getUserDirects();
     });
 
     this.socketService.onDirectMessagesRoomNotification().subscribe(message => {
+      console.log(message);
       if (message) this.getUserDirects();
     });
 
@@ -165,6 +169,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.userRoomsSubscribe.unsubscribe();
+    // this.userRoomsSubscribe.unsubscribe();
   }
 }
