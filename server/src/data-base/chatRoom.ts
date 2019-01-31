@@ -18,46 +18,12 @@ export const chatRoomSchema = new mongoose.Schema({
 }, {versionKey: false});
 
 chatRoomSchema.methods.getActiveUsers = function() {
+
     if (this.users.length > 0) {
+
         this.activeUsers = this.users.filter(item => item.online);
     }
 };
-
-// chatRoomSchema.pre('save', function() {
-//     const update = this.getUpdate();
-//     if (update.__v != null) {
-//         delete update.__v;
-//     }
-//     const keys = ['$set', '$setOnInsert'];
-//     for (const key of keys) {
-//         if (update[key] != null && update[key].__v != null) {
-//             delete update[key].__v;
-//             if (Object.keys(update[key]).length === 0) {
-//                 delete update[key];
-//             }
-//         }
-//     }
-//     update.$inc = update.$inc || {};
-//     update.$inc.__v = 1;
-// });
-//
-// chatRoomSchema.pre('findOneAndUpdate', function() {
-//     const update = this.getUpdate();
-//     if (update.__v != null) {
-//         delete update.__v;
-//     }
-//     const keys = ['$set', '$setOnInsert'];
-//     for (const key of keys) {
-//         if (update[key] != null && update[key].__v != null) {
-//             delete update[key].__v;
-//             if (Object.keys(update[key]).length === 0) {
-//                 delete update[key];
-//             }
-//         }
-//     }
-//     update.$inc = update.$inc || {};
-//     update.$inc.__v = 1;
-// });
 
 export const ChatRoomModel = mongoose.model('ChatRoomModel', chatRoomSchema);
 

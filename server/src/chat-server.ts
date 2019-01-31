@@ -403,19 +403,20 @@ export class ChatServer {
             });
 
 
-            socket.on('mainChatMessage', async (m: Message) => {
+            socket.on('mainChatMessage', async (message: Message) => {
 
                 await ChatRoomModel.findOne({id: 'main-chat'}, async (err, room) => {
 
                     if (err) console.log('main chat message err: ',err);
 
-                    room.messages.push(m);
+                    room.messages.push(message);
+                    room.lastMessage = message.messageContent;
 
                     await room.save((err) => {
                         if (err) throw err;
                     });
 
-                    this.io.emit('mainChatMessage', m);
+                    this.io.emit('mainChatMessage', message);
                     this.io.emit('mainChatMessageNotification', 'message');
                 });
             });
@@ -442,18 +443,28 @@ export class ChatServer {
                     }
                 });
 
+
                 await ChatRoomModel.findOne({id: 'main-chat'}, (err, mainChatRoom) => {
                     if (err) throw  err;
 
                     let rooms = [];
                     rooms.push(mainChatRoom);
-                    UserModel.findOne({id: message.from.id}, (err, item) => {
+
+                    UserModel.findOne({id: message.from.id}, async (err, item) => {
                         if (err) throw  err;
 
                         for (let i = 0; i < item.direct.length; i++) {
                             rooms.push(item.direct[i]);
 
-                            if (item.direct[i].id === roomId) this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.from.id}`, item.direct[i]);
+                            if (item.direct[i].id === roomId) {
+
+                                item.direct[i].lastMessage = message.messageContent;
+                                await item.save((err) => {
+                                    if (err) throw err;
+                                });
+
+                                this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.from.id}`, item.direct[i]);
+                            }
                         }
 
                         socket.join(message.from.id);
@@ -468,13 +479,22 @@ export class ChatServer {
                     let rooms = [];
                     rooms.push(mainChatRoom);
 
-                    UserModel.findOne({id: message.to.id}, (err, item) => {
+                    UserModel.findOne({id: message.to.id}, async (err, item) => {
                         if (err) throw  err;
 
                         for (let i = 0; i < item.direct.length; i++) {
                             rooms.push(item.direct[i]);
 
-                            if (item.direct[i].id === roomId) this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.to.id}`, item.direct[i]);
+                            if (item.direct[i].id === roomId) {
+
+                                item.direct[i].lastMessage = message.messageContent;
+
+                                await item.save((err) => {
+                                    if (err) throw err;
+                                });
+
+                                this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.to.id}`, item.direct[i]);
+                            }
                         }
 
                         socket.join(message.to.id);

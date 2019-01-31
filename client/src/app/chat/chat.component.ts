@@ -164,23 +164,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     return this.router.url.includes('direct');
   }
 
-  getLastMessage(room, userId) {
-    if (room && room.messages) {
-      if (room.type === 'chat') {
-        return room.messages[room.messages.length - 1].messageContent;
-      } else if(room.type === 'direct') {
-        const userMessages = room.messages.filter(message => message.to.id === userId);
-        if (userMessages[userMessages.length - 1]) {
-         if (userMessages.length > 0) {
-           return userMessages[userMessages.length - 1].messageContent;
-         } else {
-           return room.type;
-         }
-        }
-      }
-    }
-  }
-
   ngOnDestroy() {
     this.userRoomsSubscribe.unsubscribe();
   }
