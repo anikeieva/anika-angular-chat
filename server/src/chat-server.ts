@@ -13,6 +13,7 @@ import {UserModel} from "./data-base/user";
 import {ChatRoomModel} from "./data-base/chatRoom";
 import {TypeChatRooms} from "./model/type-chat-rooms";
 import {ClientUser} from "./model/clientUser";
+import {ClientChatRoom} from "./model/client-chat-room";
 
 
 export class ChatServer {
@@ -86,7 +87,9 @@ export class ChatServer {
                 await ChatRoomModel.findOne({id: 'main-chat'}, (err, room) => {
                     if (err) throw  err;
 
-                    this.io.emit('mainChatRoom', room);
+                    const clientRoom = new ClientChatRoom(room);
+
+                    this.io.emit('mainChatRoom', clientRoom);
                 });
 
             }));
@@ -186,8 +189,10 @@ export class ChatServer {
                                     directRoom = room.direct[i];
                                 }
                             }
+
+                            const clientRoom = new ClientChatRoom(directRoom);
                             socket.join(roomId);
-                            this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${fromId}`, directRoom);
+                            this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${fromId}`, clientRoom);
                         }
                     }
                 });
@@ -209,18 +214,20 @@ export class ChatServer {
                     if (err) throw  err;
 
                     let rooms = [];
-                    rooms.push(mainChatRoom);
+                    const clientMainChatRoom = new ClientChatRoom(mainChatRoom);
+
+                    rooms.push(clientMainChatRoom);
 
                     await UserModel.findOne({id: userId}, (err, item) => {
                         if (err) throw  err;
 
                         if (item) {
                             for (let i = 0; i < item.direct.length; i++) {
-                                rooms.push(item.direct[i]);
+                                const clientRoom = new ClientChatRoom(item.direct[i]);
+                                rooms.push(clientRoom);
                             }
 
                             socket.join(userId);
-                            console.log('requestforallchatrooms rooms', rooms);
                             this.io.to(userId).emit(`get=${userId}AllChatRooms`, rooms);
                         }
                     });
@@ -228,25 +235,10 @@ export class ChatServer {
             }));
 
             socket.on('directMessagesRoomNotification', (async (userId: string) => {
-                await ChatRoomModel.findOne({id: 'main-chat'}, async (err, mainChatRoom) => {
-                    if (err) throw  err;
 
-                    let rooms = [];
-                    rooms.push(mainChatRoom);
+                socket.join(userId);
+                this.io.to(userId).emit('directMessagesRoomNotification', 'message');
 
-                    await UserModel.findOne({id: userId}, (err, item) => {
-                        if (err) throw  err;
-
-                        if (item) {
-                            for (let i = 0; i < item.direct.length; i++) {
-                                rooms.push(item.direct[i]);
-                            }
-
-                            socket.join(userId);
-                            this.io.to(userId).emit('directMessagesRoomNotification', 'message');
-                        }
-                    });
-                });
             }));
 
             socket.on('userLogInParam', async (userLogInParam: UserLogInParam) => {
@@ -411,7 +403,9 @@ export class ChatServer {
                         });
                     }
 
-                    this.io.emit('mainChatRoom', room);
+                    const clientRoom = new ClientChatRoom(room);
+
+                    this.io.emit('mainChatRoom', clientRoom);
                 });
             });
 
@@ -466,22 +460,22 @@ export class ChatServer {
                     if (err) throw  err;
 
                     let rooms = [];
-                    rooms.push(mainChatRoom);
+                    const clientMainChatRoom = new ClientChatRoom(mainChatRoom);
+
+                    rooms.push(clientMainChatRoom);
 
                     await UserModel.findOne({id: message.from.id}, async (err, item) => {
                         if (err) throw  err;
 
                         for (let i = 0; i < item.direct.length; i++) {
-                            rooms.push(item.direct[i]);
+                            const clientRoom = new ClientChatRoom(item.direct[i]);
+                            rooms.push(clientRoom);
 
                             if (item.direct[i].id === roomId) {
-
-                                this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.from.id}`, item.direct[i]);
+                                this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.from.id}`, clientRoom);
                                 this.io.to(roomId).emit('directRoomMessages', item.direct[i].messages);
                             }
                         }
-
-                        console.log('rooms' ,rooms);
 
                         socket.join(message.from.id);
                         this.io.to(message.from.id).emit('directRoomMessage', message);
@@ -493,17 +487,19 @@ export class ChatServer {
                     if (err) throw  err;
 
                     let rooms = [];
-                    rooms.push(mainChatRoom);
+                    const clientMainChatRoom = new ClientChatRoom(mainChatRoom);
+
+                    rooms.push(clientMainChatRoom);
 
                     await UserModel.findOne({id: message.to.id}, async (err, item) => {
                         if (err) throw  err;
 
                         for (let i = 0; i < item.direct.length; i++) {
-                            rooms.push(item.direct[i]);
+                            const clientRoom = new ClientChatRoom(item.direct[i]);
+                            rooms.push(clientRoom);
 
                             if (item.direct[i].id === roomId) {
-
-                                this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.to.id}`, item.direct[i]);
+                                this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.to.id}`, clientRoom);
                                 this.io.to(roomId).emit('directRoomMessages', item.direct[i].messages);
                             }
                         }
@@ -513,6 +509,25 @@ export class ChatServer {
                         this.io.to(message.to.id).emit(`get=${message.to.id}AllChatRooms`, rooms);
                     });
                 });
+            });
+
+            socket.on('directRoomMessages', async (roomId: string) => {
+
+
+                await UserModel.findOne({direct: {$elemMatch: {id: roomId}}}, async (err, user) => {
+                    if (err) throw  err;
+
+                    for (let i = 0; i < user.direct.length; i++) {
+
+                        if (user.direct[i].id === roomId) {
+
+                            socket.join(roomId);
+
+                            this.io.to(roomId).emit('directRoomMessages', user.direct[i].messages);
+                        }
+                    }
+                });
+
             });
 
 
@@ -557,6 +572,9 @@ export class ChatServer {
                                 await room.save((err) => {
                                     if (err) throw err;
                                 });
+
+                                const clientRoom = new ClientChatRoom(room);
+                                this.io.emit('mainChatRoom', clientRoom);
                             });
 
                         }

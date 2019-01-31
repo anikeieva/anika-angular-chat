@@ -1,4 +1,4 @@
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {User} from '../shared/model/user';
 import {SharedService} from '../shared/servises/shared.service';
 import {SESSION_STORAGE, StorageService} from 'ngx-webstorage-service';
@@ -15,7 +15,7 @@ import {take} from "rxjs/operators";
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css']
 })
-export class ChatComponent implements OnInit, OnDestroy {
+export class ChatComponent implements OnInit {
   public user: User;
   public userToken: string;
   public rooms: ChatRoom[];
@@ -130,7 +130,6 @@ export class ChatComponent implements OnInit, OnDestroy {
       }, (err) => {
         if (err) {
           this.rooms = JSON.parse(this.storage.get(this.roomsToken));
-          console.log('rooms err: ',this.rooms);
         }
       });
 
@@ -166,9 +165,5 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   getDirectRoomButtonBack() {
     return this.router.url.includes('direct');
-  }
-
-  ngOnDestroy() {
-    // this.userRoomsSubscribe.unsubscribe();
   }
 }

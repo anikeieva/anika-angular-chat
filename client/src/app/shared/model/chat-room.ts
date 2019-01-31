@@ -1,6 +1,3 @@
-import {User} from "./user";
-import {Message} from "./message";
-
 export interface IChatRoomOptions {
   id: string;
   name: string;
@@ -9,7 +6,6 @@ export interface IChatRoomOptions {
   lastMessage: string;
   users: Array<User>;
   activeUsers: Array<User>;
-  messages: Array<Message>;
   from: string;
   to: string;
 }
@@ -22,7 +18,6 @@ export class ChatRoom {
   lastMessage: string;
   users: Array<User>;
   activeUsers: Array<User>;
-  messages: Array<Message>;
   from: string;
   to: string;
 
@@ -34,7 +29,6 @@ export class ChatRoom {
     this.lastMessage = options.lastMessage;
     this.users = options.users;
     this.activeUsers = options.activeUsers;
-    this.messages = options.messages;
     this.from = options.from;
     this.to = options.to;
   }

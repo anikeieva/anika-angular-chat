@@ -1,7 +1,7 @@
 import {
   AfterViewInit,
   Component,
-  ElementRef, Inject, OnDestroy,
+  ElementRef, Inject,
   OnInit,
   QueryList,
   ViewChild,
@@ -24,7 +24,7 @@ import {Router} from "@angular/router";
   templateUrl: './main-chat.component.html',
   styleUrls: ['./main-chat.component.css']
 })
-export class MainChatComponent implements OnInit, AfterViewInit, OnDestroy {
+export class MainChatComponent implements OnInit, AfterViewInit {
 
   public messageContent: string;
   public messages: Message[];
@@ -36,7 +36,6 @@ export class MainChatComponent implements OnInit, AfterViewInit, OnDestroy {
   public userToken: string;
   public currentUserId: string;
   public isChatRoomActive: boolean;
-  private mainChatRoomSubscribe: any;
 
   @ViewChild('messageList') messageList: ElementRef;
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;
@@ -71,7 +70,15 @@ export class MainChatComponent implements OnInit, AfterViewInit, OnDestroy {
     this.getUser();
     this.getChatRoom();
     this.initIoConnection();
-    this.socketService.onMainChatMessages().subscribe((messages) => this.messages = messages);
+
+    this.socketService.onMainChatMessages().subscribe((messages) => {
+      this.messages = messages;
+    });
+
+    this.socketService.onMainChatRoom().subscribe(mainChatRoom => {
+      this.mainChatRoom = mainChatRoom;
+      this.storage.set(this.mainChatRoomToken, JSON.stringify(this.mainChatRoom));
+    });
   }
 
   ngAfterViewInit(): void {
@@ -90,30 +97,26 @@ export class MainChatComponent implements OnInit, AfterViewInit, OnDestroy {
   private initIoConnection(): void {
     this.socketService.initSocket();
 
-    this.socketService.onMainChatMessage()
-      .subscribe((message: Message) => {
+    this.socketService.onMainChatMessage().subscribe((message: Message) => {
         this.messages.push(message);
-      });
+    });
   }
 
   getChatRoom() {
-    console.log('main-chat room', this.mainChatRoom);
     this.mainChatRoomToken = getChatRoomStorageToken('main-chat');
 
     if (this.socketService.socket) this.socketService.sendRequestForMainChatRoom();
 
-    this.mainChatRoomSubscribe = this.socketService.onMainChatRoom().pipe(take(1)).subscribe(mainChatRoom => {
+    this.socketService.onMainChatRoom().pipe(take(1)).subscribe(mainChatRoom => {
       this.mainChatRoom = mainChatRoom;
 
       this.storage.set(this.mainChatRoomToken, JSON.stringify(this.mainChatRoom));
-      console.log(this.mainChatRoom);
+      console.log('main-chat-room: ', this.mainChatRoom);
     }, (err) => {
       if (err) {
         this.mainChatRoom = JSON.parse(this.storage.get(this.mainChatRoomToken));
       }
     });
-
-    console.log('main-chat-room: ',this.mainChatRoom);
   }
 
   private getUser() {
@@ -165,8 +168,6 @@ export class MainChatComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sharedService.editUser(null);
 
     this.messageContent = null;
-
-    console.log('sentMessage messages: ', this.messages);
   }
 
   onJoin(): void {
@@ -219,9 +220,5 @@ export class MainChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
   activeChatRoom() {
     this.isChatRoomActive = true;
-  }
-
-  ngOnDestroy(): void {
-    this.mainChatRoomSubscribe.unsubscribe();
   }
 }

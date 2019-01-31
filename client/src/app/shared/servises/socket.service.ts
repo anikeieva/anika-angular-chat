@@ -167,4 +167,8 @@ export class SocketService {
       this.socket.on('userSignUp', (user: User) => observer.next(user));
     })
   }
+
+  public sendRequestForDirectRoomMessages(roomId: string): void {
+    this.socket.emit('directRoomMessages', roomId);
+  }
 }

@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  Component, ElementRef, Inject, OnDestroy,
+  Component, ElementRef, Inject,
   OnInit, QueryList, ViewChild, ViewChildren,
 } from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
@@ -19,7 +19,7 @@ import {take} from "rxjs/operators";
   templateUrl: './direct-messages-room.component.html',
   styleUrls: ['./direct-messages-room.component.css']
 })
-export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, OnDestroy {
+export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
 
   directRoomUser: User;
   user: User;
@@ -45,8 +45,6 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, OnDes
               private sharedService: SharedService) {}
 
   ngOnInit() {
-    // if (!this.socketService.socket) this.socketService.initSocket();
-
     this.getUser();
 
     this.route.queryParams.subscribe(param => {
@@ -55,7 +53,11 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, OnDes
       this.getDirectRoom();
     });
 
-    this.socketService.onDirectRoomMessages().subscribe(messages => {
+    if (!this.socketService.socket) this.socketService.initSocket();
+
+    this.socketService.sendRequestForDirectRoomMessages(this.directMessagesRoomId);
+
+    this.socketService.onDirectRoomMessages().subscribe((messages: Message[]) => {
       if (messages) this.messages = messages;
     });
   }
@@ -131,7 +133,6 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, OnDes
     this.socketService.onDirectMessagesRoomById(this.user.id, this.directMessagesRoomId).subscribe(room => {
 
       this.directMessagesRoom = room;
-      this.messages = room.messages;
       console.log('room', room);
       this.storage.set(this.chatRoomToken, JSON.stringify(this.directMessagesRoom));
       this.getDirectRoomUser(room.to);
@@ -166,11 +167,6 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, OnDes
     this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage', this.directRoomUser);
     if (!this.socketService.socket) this.socketService.initSocket();
     this.socketService.sendDirectMessagesRoomMessage(this.message, this.directMessagesRoom.id);
-    // this.getDirectRoom();
     this.messageContent = null;
-  }
-
-  ngOnDestroy(): void {
-    // this.directRoomUserSubscribe.unsubscribe();
   }
 }
