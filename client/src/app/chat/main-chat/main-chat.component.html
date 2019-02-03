@@ -1,4 +1,4 @@
-<mat-card class="main-chat-container" layot="column" *ngIf="user?.action.joined">
+<mat-card class="main-chat-container" layot="column" *ngIf="user.action.joined">
   <mat-card-header class="main-chat__header">
     <span class="main-chat__header-text">Chat has {{mainChatRoom?.users.length}} users, online {{mainChatRoom?.activeUsers.length}}</span>
   </mat-card-header>
@@ -19,13 +19,13 @@
           </p>
 
           <img mat-card-avatar [src]="message.from.avatar"
-               *ngIf="message.action === 'sentMessage' && message.from.id !== user?.id"
+               *ngIf="message.action === 'sentMessage' && message.from.id !== user.id"
                class="message-list-item__avatar" routerLink="../user-profile"
                [queryParams]="{id: message.from.id}" (click)="activeChatRoom()">
 
 
           <h3 mat-line class="message-item-user-name"
-              *ngIf="message.action === 'sentMessage' && message.from.id !== user?.id" class="message-list-item-title">
+              *ngIf="message.action === 'sentMessage' && message.from.id !== user.id" class="message-list-item-title">
             {{message.from.firstName}} {{message.from.lastName}}
           </h3>
 
@@ -50,6 +50,6 @@
     </mat-form-field>
   </mat-card-footer>
 </mat-card>
-<mat-card class="main-chat-container" layot="column" *ngIf="!user?.action.joined">
+<mat-card class="main-chat-container" layot="column" *ngIf="!user.action.joined">
   <button mat-button class="join-button" (click)="onJoin()">Join</button>
 </mat-card>

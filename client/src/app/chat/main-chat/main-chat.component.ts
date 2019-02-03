@@ -14,6 +14,7 @@ import {SocketService} from "../../shared/servises/socket.service";
 import {MatListItem} from "@angular/material";
 import {SESSION_STORAGE, StorageService} from 'ngx-webstorage-service';
 import {ChatRoom} from "../../shared/model/chat-room";
+import {getChatRoomStorageToken, getUserStorageToken} from "../../shared/model/getStorageToken";
 import {currentUserToken} from "../../shared/model/getStorageToken";
 import {take} from "rxjs/operators";
 import {Router} from "@angular/router";
@@ -31,6 +32,8 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   user: User;
   timeNow: Date;
   mainChatRoom: ChatRoom;
+  mainChatRoomToken: string;
+  userToken: string;
   currentUserId: string;
   isChatRoomActive: boolean;
 
@@ -74,6 +77,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
     this.socketService.onMainChatRoom().subscribe(mainChatRoom => {
       this.mainChatRoom = mainChatRoom;
+      this.storage.set(this.mainChatRoomToken, JSON.stringify(this.mainChatRoom));
     });
   }
 
@@ -99,35 +103,58 @@ export class MainChatComponent implements OnInit, AfterViewInit {
   }
 
   getChatRoom() {
+    this.mainChatRoomToken = getChatRoomStorageToken('main-chat');
+
     if (this.socketService.socket) this.socketService.sendRequestForMainChatRoom();
 
     this.socketService.onMainChatRoom().pipe(take(1)).subscribe(mainChatRoom => {
       this.mainChatRoom = mainChatRoom;
+
+      this.storage.set(this.mainChatRoomToken, JSON.stringify(this.mainChatRoom));
+      console.log('main-chat-room: ', this.mainChatRoom);
+    }, (err) => {
+      if (err) {
+        this.mainChatRoom = JSON.parse(this.storage.get(this.mainChatRoomToken));
+      }
     });
   }
 
   private getUser() {
-    this.currentUserId = this.storage.get(currentUserToken);
+    if (!this.user && this.storage.has(currentUserToken)) {
 
-    if (!this.socketService.socket) this.socketService.initSocket();
+      this.currentUserId = this.storage.get(currentUserToken);
+      this.userToken = getUserStorageToken(this.currentUserId);
 
-    if (this.currentUserId) this.socketService.sendRequestForUserById(this.currentUserId);
-
-    this.socketService.onUserById(this.currentUserId).subscribe((user: User) => {
-      if (user) this.user = user;
-    });
-
+      if (this.storage.has(this.userToken)) {
+        this.user = JSON.parse(this.storage.get(this.userToken));
+        console.log('user storage: ', this.user);
+      }
+    }
 
     this.socketService.onUser().subscribe((user: User) => {
-      if (user.id === this.currentUserId) {
-        this.user = user;
+      if (user && this.storage.has(currentUserToken)) {
+        this.currentUserId = this.storage.get(currentUserToken);
+
+        if (user.id === this.currentUserId) {
+          this.user = user;
+          console.log('user on: ', this.user);
+          this.storage.set(this.userToken, JSON.stringify(this.user));
+        }
       } else {
         this.user = user;
+        console.log('user on: ', this.user);
         this.currentUserId = user.id;
+        this.userToken = getUserStorageToken(user.id);
         this.storage.set(currentUserToken, this.currentUserId);
+        this.storage.set(this.userToken, JSON.stringify(this.user));
+        this.sharedService.editUser(this.user);
       }
-
+    }, (err) => {
+      if (err) {
+        this.user = JSON.parse(this.storage.get(this.userToken));
+      }
     });
+    console.log('user: ', this.user);
   }
 
   sendMessage(messageContent: string): void {
@@ -145,6 +172,7 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
   onJoin(): void {
     this.user.action.joined = true;
+    this.storage.set(this.userToken, JSON.stringify(this.user));
     this.socketService.initSocket();
     this.socketService.sendUser(this.user);
     this.socketService.sendMainChatUser(this.user);
