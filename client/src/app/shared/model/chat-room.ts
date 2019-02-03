@@ -1,3 +1,5 @@
+import {User} from "./user";
+
 export interface IChatRoomOptions {
   id: string;
   name: string;
