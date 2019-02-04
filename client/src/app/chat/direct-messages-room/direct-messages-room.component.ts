@@ -56,22 +56,23 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
       this.directRoomUserToken = getUserStorageToken(this.directRoomUserId);
       this.directRoomUser = JSON.parse(this.storage.get(this.directRoomUserToken));
     }
-
     this.getUser();
 
     this.route.queryParams.subscribe(param => {
 
       this.directMessagesRoomId = param.id;
+
+      if (!this.socketService.socket) this.socketService.initSocket();
+
+      this.socketService.sendRequestForDirectRoomMessages(this.directMessagesRoomId);
+
+      this.socketService.onDirectRoomMessages().subscribe((messages: Message[]) => {
+        if (messages) this.messages = messages;
+      });
+
       this.getDirectRoom();
     });
 
-    if (!this.socketService.socket) this.socketService.initSocket();
-
-    this.socketService.sendRequestForDirectRoomMessages(this.directMessagesRoomId);
-
-    this.socketService.onDirectRoomMessages().subscribe((messages: Message[]) => {
-      if (messages) this.messages = messages;
-    });
   }
 
   getUser() {
