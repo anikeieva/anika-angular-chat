@@ -10,12 +10,16 @@
 .main-chat__header {
   width: 100%;
   height: 40px;
-  position: absolute;
-  top: 0;
-  left: 0;
   padding: 0 35px;
   background-color: #0d06138a;
   color: #fbf8f8;
+}
+
+.main-chat-container__content {
+  margin: 0;
+  /*height: calc(100% + 40px - 79px);*/
+  position: relative;
+  top: 0!important;
 }
 
 .main-chat__header-text {
@@ -54,12 +58,14 @@
 .message-list {
   overflow-y: auto;
   position: absolute;
-  top: 40px;
-  left: 40px;
+  top: 15px;
+  left: 20px;
   bottom: 230px;
-  right: 40px;
+  right: 10px;
   visibility: hidden;
-  padding-top: 15px;
+  display: flex;
+  flex-direction: column;
+  flex-flow: column-reverse;
 }
 
 .message-list-content, .message-list:hover {

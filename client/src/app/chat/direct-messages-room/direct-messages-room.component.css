@@ -9,13 +9,17 @@
 
 .chat-room__header {
   width: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
   padding: 14px 14px 16px;
   background-color: #0d06138a;
   color: #fbf8f8;
   clear: both;
+}
+
+.chat-room-container__content {
+  margin: 0;
+  /*height: calc(100% + 40px - 79px);*/
+  position: relative;
+  top: 0!important;
 }
 
 .direct-messages-room__user-activity {
@@ -65,12 +69,14 @@
 .message-list {
   overflow-y: auto;
   position: absolute;
-  top: 68px;
+  top: 15px;
   left: 40px;
   bottom: 230px;
   right: 40px;
   visibility: hidden;
-  padding-top: 15px;
+  display: flex;
+  flex-direction: column;
+  flex-flow: column-reverse;
 }
 
 .message-list-content, .message-list:hover {

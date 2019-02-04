@@ -47,6 +47,7 @@
   padding: 20px 15px;
   cursor: pointer;
   transition: background-color 1s ease;
+  outline: none;
 }
 
 .chat-item:hover, .chat-item__active {
