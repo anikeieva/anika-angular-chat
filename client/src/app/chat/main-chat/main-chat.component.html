@@ -2,7 +2,7 @@
   <mat-card-header class="main-chat__header">
     <span class="main-chat__header-text">Chat has {{mainChatRoom?.users.length}} users, online {{mainChatRoom?.activeUsers.length}}</span>
   </mat-card-header>
-  <mat-card-content class="main-chat-container__content">
+  <mat-card-content class="main-chat-container__content" #chat_room_content>
     <div #messageList class="message-list">
 
       <div class="message-list-content">
@@ -41,7 +41,7 @@
 
     </div>
   </mat-card-content>
-  <mat-card-footer class="main-chat-container-footer">
+  <mat-card-footer class="main-chat-container-footer" #chat_room_footer>
     <mat-icon>create</mat-icon>
     <mat-form-field class="message-input">
       <mat-label>Type a message</mat-label>

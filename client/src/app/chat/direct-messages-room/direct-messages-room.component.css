@@ -1,7 +1,7 @@
 .chat-room-container {
   position: relative;
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 79px);
   background: url("../../images/backgrounds/img65.jpeg") no-repeat;
   background-size: cover;
   padding: 0!important;
@@ -17,9 +17,11 @@
 
 .chat-room-container__content {
   margin: 0;
-  /*height: calc(100% + 40px - 79px);*/
+  height: calc(100% - 70px - 76px);
   position: relative;
   top: 0!important;
+  bottom: auto;
+  display: block;
 }
 
 .direct-messages-room__user-activity {
@@ -51,10 +53,11 @@
 }
 
 .chat-room-container-footer {
-  position: fixed;
-  bottom: 40px;
-  left: 410px;
-  right: 60px;
+  bottom: 0;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 20px 10px 20px;
 }
 .mat-icon {
   vertical-align: middle;
@@ -70,9 +73,9 @@
   overflow-y: auto;
   position: absolute;
   top: 15px;
-  left: 40px;
-  bottom: 230px;
-  right: 40px;
+  left: 20px;
+  bottom: 0;
+  right: 10px;
   visibility: hidden;
   display: flex;
   flex-direction: column;
@@ -93,6 +96,10 @@
   margin-right: 15px;
   margin-left: 60px;
   word-break: break-word;
+}
+
+.message-item:last-child {
+  margin-bottom: 0;
 }
 
 .message-item__currentUser {

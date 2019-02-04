@@ -7,7 +7,7 @@
     <mat-card-subtitle class="direct-messages-room__user-activity"
                        *ngIf="!directRoomUser?.online">last seen at {{directRoomUser?.lastSeen | date: 'h:mma' | lowercase}}</mat-card-subtitle>
   </mat-card-header>
-  <mat-card-content class="chat-room-container__content">
+  <mat-card-content class="chat-room-container__content" #chat_room_content>
     <div #messageList class="message-list">
 
       <div class="message-list-content">
@@ -16,7 +16,7 @@
              [ngClass]="[(message.from.id === user.id)? 'message-item__currentUser' : '']">
 
           <p class="mat-list-item-message">
-            {{message.messageContent}}
+            {{message.messageContent}} {{chat_room_footer.clientWidth}}
           </p>
 
           <span class="message-item-time">{{message.sendingTime | date: 'h:mma' | lowercase}}</span>
@@ -27,7 +27,7 @@
 
     </div>
   </mat-card-content>
-  <mat-card-footer class="chat-room-container-footer">
+  <mat-card-footer class="chat-room-container-footer" #chat_room_footer>
     <mat-icon>create</mat-icon>
     <mat-form-field class="message-input">
       <mat-label>Type a message</mat-label>

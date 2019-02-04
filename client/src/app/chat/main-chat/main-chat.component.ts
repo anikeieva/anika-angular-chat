@@ -1,9 +1,10 @@
 import {
+  AfterViewChecked,
   AfterViewInit,
   Component,
   ElementRef, Inject,
   OnInit,
-  QueryList,
+  QueryList, Renderer2,
   ViewChild,
   ViewChildren
 } from '@angular/core';
@@ -18,13 +19,14 @@ import {getChatRoomStorageToken, getUserStorageToken} from "../../shared/model/g
 import {currentUserToken} from "../../shared/model/getStorageToken";
 import {take} from "rxjs/operators";
 import {Router} from "@angular/router";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-main-chat',
   templateUrl: './main-chat.component.html',
   styleUrls: ['./main-chat.component.css']
 })
-export class MainChatComponent implements OnInit, AfterViewInit {
+export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
   messageContent: string;
   messages: Message[];
@@ -39,11 +41,15 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
   @ViewChild('messageList') messageList: ElementRef;
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;
+  @ViewChild('chat_room_footer') chatRoomFooter: ElementRef;
+  @ViewChild('chat_room_content') chatRoomContent: ElementRef;
+
 
   constructor(private sharedService: SharedService,
               private socketService: SocketService,
               @Inject(SESSION_STORAGE) private storage: StorageService,
-              private router: Router) {
+              private router: Router,
+              private renderer: Renderer2) {
   }
 
   ngOnInit(): void {
@@ -84,6 +90,12 @@ export class MainChatComponent implements OnInit, AfterViewInit {
     this.messageListItem.changes.subscribe(elements => {
       this.scrollToBottom();
     });
+  }
+
+  ngAfterViewChecked() {
+    const chatRoomFooterHeight = this.chatRoomFooter.nativeElement.offsetHeight + 10;
+    const chatRoomContentHeight = `calc(100% - 40px - ${chatRoomFooterHeight}px)`;
+    this.renderer.setStyle(this.chatRoomContent.nativeElement, 'height', chatRoomContentHeight);
   }
 
   private scrollToBottom(): void {
