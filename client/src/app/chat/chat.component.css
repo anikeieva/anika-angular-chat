@@ -49,7 +49,7 @@
   transition: background-color 1s ease;
 }
 
-.chat-item:hover {
+.chat-item:hover, .chat-item__active {
   background-color: #35459221;
 }
 
