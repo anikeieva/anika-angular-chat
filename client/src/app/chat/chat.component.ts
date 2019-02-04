@@ -19,7 +19,6 @@ export class ChatComponent implements OnInit {
   user: User;
   userToken: string;
   rooms: ChatRoom[];
-  roomsToken: string;
   currentUserId: string;
   isChatRoomActive: boolean;
   isMobile: boolean;
@@ -124,21 +123,14 @@ export class ChatComponent implements OnInit {
 
       this.socketService.onGetAllChatRooms(this.currentUserId).pipe(take(1)).subscribe((rooms) => {
         this.rooms = rooms;
-        console.log('rooms: ',rooms);
-        this.storage.set(this.roomsToken, JSON.stringify(this.rooms));
-      }, (err) => {
-        if (err) {
-          this.rooms = JSON.parse(this.storage.get(this.roomsToken));
-        }
       });
-
     }
   }
 
   exit() {
-    this.storage.clear();
     this.socketService.initSocket();
-    this.socketService.sendUserLogOut(this.user.id);
+    this.socketService.sendUserLogOut(this.currentUserId);
+    this.storage.clear();
   }
 
   getQueryParams(room) {

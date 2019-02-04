@@ -77,7 +77,6 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
     this.socketService.onMainChatRoom().subscribe(mainChatRoom => {
       this.mainChatRoom = mainChatRoom;
-      this.storage.set(this.mainChatRoomToken, JSON.stringify(this.mainChatRoom));
     });
   }
 

@@ -80,7 +80,7 @@ export class ChatServer {
             console.log('Connected client on port %s.', this.port);
 
 
-            this.clearMongooseData();
+            // this.clearMongooseData();
 
             socket.on('requestForMainChatRoom', (async () => {
 
@@ -388,24 +388,24 @@ export class ChatServer {
                                 if (err) console.log('main chat activeUsers update error ', err)
                             });
 
-                    } else {
-
-                        await UserModel.findOne({id: user.id}, async (err, item) => {
-                            if (err) throw  err;
-
-                            room.users.push(item);
+                        await ChatRoomModel.findOne({'id': 'main-chat'}, (err, room) => {
+                            this.io.emit('mainChatRoom', room);
                         });
 
+                    } else {
+
+                        room.users.push(user);
                         room.getActiveUsers();
 
                         await room.save((err) => {
                             if (err) throw err;
                         });
+
+                        console.log('room',room);
+
+                        const clientRoom = new ClientChatRoom(room);
+                        this.io.emit('mainChatRoom', clientRoom);
                     }
-
-                    const clientRoom = new ClientChatRoom(room);
-
-                    this.io.emit('mainChatRoom', clientRoom);
                 });
             });
 

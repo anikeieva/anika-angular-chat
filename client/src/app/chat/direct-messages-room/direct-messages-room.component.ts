@@ -102,6 +102,13 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
   }
 
   private getDirectRoomUser(directUserId): void {
+    // this.directRoomUserToken = getUserStorageToken(directUserId);
+
+    // if (this.storage.has(this.directRoomUserToken)) {
+    //   this.directRoomUser = JSON.parse(this.storage.get(this.directRoomUserToken));
+    //   console.log('directRoomUser', this.directRoomUser);
+    // }
+
     if (!this.socketService.socket) this.socketService.initSocket();
 
     this.socketService.sendRequestForUserById(directUserId);
@@ -109,13 +116,7 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
     this.socketService.onUserById(directUserId).pipe(take(1)).subscribe((user: User) => {
       if (user) {
         this.directRoomUser = user;
-        console.log('direct room user: ',this.directRoomUser);
-        this.storage.set(this.directRoomUserToken, JSON.stringify(this.directRoomUser));
-      }
-    }, (err) => {
-      if (err) {
-        this.directRoomUser = JSON.parse(this.storage.get(this.directRoomUserToken));
-        console.log('direct room user err: ',this.directRoomUser);
+        // this.storage.set(this.directRoomUserToken, JSON.stringify(user));
       }
     });
     console.log('direct room user: ',this.directRoomUser);
@@ -135,7 +136,6 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
       console.log('room', room);
       this.storage.set(this.chatRoomToken, JSON.stringify(this.directMessagesRoom));
       this.getDirectRoomUser(room.to);
-
     }, (err) => {
       if (err) {
         this.directMessagesRoom = JSON.parse(this.storage.get(this.chatRoomToken));

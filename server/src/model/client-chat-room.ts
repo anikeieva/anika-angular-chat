@@ -1,4 +1,4 @@
-import {User} from "./user";
+import {ClientUser} from "./clientUser";
 
 export interface IClientChatRoomOptions {
     id: string;
@@ -6,8 +6,8 @@ export interface IClientChatRoomOptions {
     avatar: string;
     type: string;
     lastMessage: string;
-    users: Array<User>;
-    activeUsers: Array<User>;
+    users: Array<ClientUser>;
+    activeUsers: Array<ClientUser>;
     from: string;
     to: string;
 }
@@ -18,8 +18,8 @@ export class ClientChatRoom {
   avatar: string;
   type: string;
   lastMessage: string;
-  users: Array<User>;
-  activeUsers: Array<User>;
+  users: Array<ClientUser>;
+  activeUsers: Array<ClientUser>;
   from: string;
   to: string;
 
@@ -33,5 +33,11 @@ export class ClientChatRoom {
     this.activeUsers = options.activeUsers;
     this.from = options.from;
     this.to = options.to;
+  }
+
+  getActiveUsers(): ClientUser[] {
+    if (this.users.length > 0) {
+        return this.users.filter(item => item.online);
+    }
   }
 }
