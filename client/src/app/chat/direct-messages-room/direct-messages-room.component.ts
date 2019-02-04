@@ -10,7 +10,11 @@ import {SESSION_STORAGE, StorageService} from "ngx-webstorage-service";
 import {Message} from "../../shared/model/message";
 import {ChatRoom} from "../../shared/model/chat-room";
 import {MatListItem} from "@angular/material";
-import {currentUserToken, getChatRoomStorageToken, getUserStorageToken} from "../../shared/model/getStorageToken";
+import {
+  currentDirectUserToken,
+  currentUserToken,
+  getUserStorageToken
+} from "../../shared/model/getStorageToken";
 import {SharedService} from "../../shared/servises/shared.service";
 import {take} from "rxjs/operators";
 
@@ -28,11 +32,12 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
   message: Message;
   timeNow: Date;
   directMessagesRoom: ChatRoom;
-  chatRoomToken: string;
   userToken: string;
   directRoomUserToken: string;
   private currentUserId: string;
   private directMessagesRoomId: string;
+  directRoomUserId: string;
+  directRoomUserIdToken: string;
 
   @ViewChild('messageList') messageList: ElementRef;
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;
@@ -44,6 +49,14 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
               private sharedService: SharedService) {}
 
   ngOnInit() {
+    this.directRoomUserIdToken = currentDirectUserToken;
+
+    if (this.storage.has(this.directRoomUserIdToken)) {
+      this.directRoomUserId = this.storage.get(this.directRoomUserIdToken);
+      this.directRoomUserToken = getUserStorageToken(this.directRoomUserId);
+      this.directRoomUser = JSON.parse(this.storage.get(this.directRoomUserToken));
+    }
+
     this.getUser();
 
     this.route.queryParams.subscribe(param => {
@@ -68,7 +81,6 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
 
       if (!this.user && this.storage.has(this.userToken)) {
         this.user = JSON.parse(this.storage.get(this.userToken));
-        console.log('user storage: ', this.user);
       }
     }
 
@@ -79,35 +91,25 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
 
         if (user.id === this.currentUserId) {
           this.user = user;
-          console.log('user on: ', this.user);
           this.storage.set(this.userToken, JSON.stringify(this.user));
           this.sharedService.editUser(this.user);
         }
       } else {
         this.user = user;
-        console.log('user on: ', this.user);
         this.currentUserId = user.id;
         this.userToken = getUserStorageToken(user.id);
         this.storage.set(currentUserToken, this.currentUserId);
         this.storage.set(this.userToken, JSON.stringify(this.user));
         this.sharedService.editUser(this.user);
       }
-    }, (err) => {
-      if (err) {
-        this.userToken = getUserStorageToken(this.currentUserId);
-        this.user = JSON.parse(this.storage.get(this.userToken));
-      }
     });
-    console.log('user: ', this.user);
   }
 
   private getDirectRoomUser(directUserId): void {
-    // this.directRoomUserToken = getUserStorageToken(directUserId);
-
-    // if (this.storage.has(this.directRoomUserToken)) {
-    //   this.directRoomUser = JSON.parse(this.storage.get(this.directRoomUserToken));
-    //   console.log('directRoomUser', this.directRoomUser);
-    // }
+    this.directRoomUserIdToken = currentDirectUserToken;
+    this.directRoomUserId = directUserId;
+    this.storage.set(this.directRoomUserIdToken, this.directRoomUserId);
+    this.directRoomUserToken = getUserStorageToken(directUserId);
 
     if (!this.socketService.socket) this.socketService.initSocket();
 
@@ -116,32 +118,23 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit {
     this.socketService.onUserById(directUserId).pipe(take(1)).subscribe((user: User) => {
       if (user) {
         this.directRoomUser = user;
-        // this.storage.set(this.directRoomUserToken, JSON.stringify(user));
+        this.storage.set(this.directRoomUserToken, JSON.stringify(user));
       }
     });
-    console.log('direct room user: ',this.directRoomUser);
   }
 
   getDirectRoom() {
-    this.chatRoomToken = getChatRoomStorageToken(this.directMessagesRoomId);
 
     if (!this.socketService.socket) this.socketService.initSocket();
-    console.log(this.socketService.socket);
 
     this.socketService.sendRequestForDirectMessagesRoomById(this.user.id, this.directMessagesRoomId);
 
     this.socketService.onDirectMessagesRoomById(this.user.id, this.directMessagesRoomId).subscribe(room => {
 
       this.directMessagesRoom = room;
-      console.log('room', room);
-      this.storage.set(this.chatRoomToken, JSON.stringify(this.directMessagesRoom));
       this.getDirectRoomUser(room.to);
-    }, (err) => {
-      if (err) {
-        this.directMessagesRoom = JSON.parse(this.storage.get(this.chatRoomToken));
-      }
     });
-    console.log('directRoom', this.directMessagesRoom);
+
   }
 
   ngAfterViewInit(): void {

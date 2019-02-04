@@ -110,7 +110,6 @@ export class MainChatComponent implements OnInit, AfterViewInit {
       this.mainChatRoom = mainChatRoom;
 
       this.storage.set(this.mainChatRoomToken, JSON.stringify(this.mainChatRoom));
-      console.log('main-chat-room: ', this.mainChatRoom);
     }, (err) => {
       if (err) {
         this.mainChatRoom = JSON.parse(this.storage.get(this.mainChatRoomToken));
@@ -126,7 +125,6 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
       if (this.storage.has(this.userToken)) {
         this.user = JSON.parse(this.storage.get(this.userToken));
-        console.log('user storage: ', this.user);
       }
     }
 
@@ -136,24 +134,17 @@ export class MainChatComponent implements OnInit, AfterViewInit {
 
         if (user.id === this.currentUserId) {
           this.user = user;
-          console.log('user on: ', this.user);
           this.storage.set(this.userToken, JSON.stringify(this.user));
         }
       } else {
         this.user = user;
-        console.log('user on: ', this.user);
         this.currentUserId = user.id;
         this.userToken = getUserStorageToken(user.id);
         this.storage.set(currentUserToken, this.currentUserId);
         this.storage.set(this.userToken, JSON.stringify(this.user));
         this.sharedService.editUser(this.user);
       }
-    }, (err) => {
-      if (err) {
-        this.user = JSON.parse(this.storage.get(this.userToken));
-      }
     });
-    console.log('user: ', this.user);
   }
 
   sendMessage(messageContent: string): void {

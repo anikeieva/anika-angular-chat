@@ -11,3 +11,4 @@ export function getUserStorageToken (id) {
 }
 
 export const currentUserToken = 'CURRENT_USER_id_TOKEN';
+export const currentDirectUserToken = 'CURRENT_DIRECT_USER_id_TOKEN';

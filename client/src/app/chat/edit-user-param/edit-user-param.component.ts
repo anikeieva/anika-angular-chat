@@ -29,7 +29,6 @@ export class EditUserParamComponent implements OnInit {
 
       if (!this.user && this.storage.has(this.userToken)) {
         this.user = JSON.parse(this.storage.get(this.userToken));
-        console.log('user storage: ', this.user);
       }
     }
 
@@ -39,23 +38,15 @@ export class EditUserParamComponent implements OnInit {
 
         if (user.id === this.currentUserId) {
           this.user = user;
-          console.log('user on: ', this.user);
           this.storage.set(this.userToken, JSON.stringify(this.user));
         }
       } else {
         this.user = user;
-        console.log('user on: ', this.user);
         this.currentUserId = user.id;
         this.userToken = getUserStorageToken(user.id);
         this.storage.set(currentUserToken, this.currentUserId);
         this.storage.set(this.userToken, JSON.stringify(this.user));
       }
-    }, (err) => {
-      if (err && this.storage.has(this.userToken)) {
-        this.user = JSON.parse(this.storage.get(this.userToken));
-        console.log('user err: ', this.user);
-      }
     });
-    console.log('user: ', this.user);
   }
 }

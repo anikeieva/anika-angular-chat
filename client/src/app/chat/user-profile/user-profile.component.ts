@@ -43,7 +43,6 @@ export class UserProfileComponent implements OnInit {
 
       if (!this.user && this.storage.has(this.userToken)) {
         this.user = JSON.parse(this.storage.get(this.userToken));
-        console.log('user: ', this.user);
       }
     }
 
@@ -55,24 +54,16 @@ export class UserProfileComponent implements OnInit {
 
         if (user.id === this.currentUserId) {
           this.user = user;
-          console.log('user on: ', this.user);
           this.storage.set(this.userToken, JSON.stringify(this.user));
         }
       } else {
         this.user = user;
-        console.log('user on: ', this.user);
         this.currentUserId = user.id;
         this.userToken = getUserStorageToken(user.id);
         this.storage.set(currentUserToken, this.currentUserId);
         this.storage.set(this.userToken, JSON.stringify(this.user));
       }
-    }, (err) => {
-      if (err && this.storage.has(this.userToken)) {
-        this.user = JSON.parse(this.storage.get(this.userToken));
-        console.log('user: ', this.user);
-      }
     });
-    console.log('user: ', this.user);
   }
 
   getDirectRoomUser() {
@@ -88,19 +79,10 @@ export class UserProfileComponent implements OnInit {
         if (user) {
           this.directRoomUser = user;
           this.storage.set(this.directRoomUserToken, JSON.stringify(user));
-          console.log('directRoomUser on', this.directRoomUser);
-          this.getDirectRoomId();
-        }
-      }, (err) => {
-        if (err && this.storage.has(this.directRoomUserToken)) {
-          this.directRoomUser = JSON.parse(this.storage.get(this.directRoomUserToken));
-          console.log('directRoomUser on err', this.directRoomUser);
           this.getDirectRoomId();
         }
       });
     });
-
-    console.log('direct user: ',this.directRoomUser);
   }
 
   getDirectRoomId() {
@@ -117,10 +99,6 @@ export class UserProfileComponent implements OnInit {
     this.socketService.onDirectMessagesRoomId().subscribe((roomId: string) => {
       this.directRoomId = roomId;
       this.storage.set(this.directRoomIdToken, this.directRoomId);
-    }, (err) => {
-      if(err && !this.directRoomId && this.storage.has(this.directRoomIdToken)) {
-        this.directRoomId = this.storage.get(this.directRoomIdToken);
-      }
     });
   }
 

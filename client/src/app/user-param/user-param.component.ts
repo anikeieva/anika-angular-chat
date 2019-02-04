@@ -96,17 +96,12 @@ export class UserParamComponent implements OnInit {
         this.userToken = getUserStorageToken(user.id);
         this.storage.set(this.userToken, JSON.stringify(user));
       }
-      this.router.navigateByUrl('/chat').then(e => {
-        if (e) {
-          console.log('user sign up err');
-        }
-      });
+      this.router.navigateByUrl('/chat');
     });
 
     this.socketService.onUserNotSignUp().subscribe((userNotSignUp) => {
       if (userNotSignUp) {
         this.userIsAuthorized = false;
-        console.log('user not sign up');
       }
     });
   }
@@ -177,9 +172,6 @@ export class UserParamComponent implements OnInit {
   chooseAvatar() {
     const dialogRef = this.dialog.open(ChooseAvatarComponent);
 
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('chooseAvatar result: ', result);
-      console.log('chooseAvatar result: ', result);
-    });
+    dialogRef.afterClosed().subscribe(result => {});
   }
 }

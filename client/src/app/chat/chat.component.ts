@@ -57,12 +57,10 @@ export class ChatComponent implements OnInit {
     if (!this.socketService.socket) this.socketService.initSocket();
 
     this.socketService.onDirectRoomMessage().subscribe(message => {
-      console.log(message);
       if (message) this.getUserDirects();
     });
 
     this.socketService.onDirectMessagesRoomNotification().subscribe(message => {
-      console.log(message);
       if (message) this.getUserDirects();
     });
 
@@ -77,7 +75,6 @@ export class ChatComponent implements OnInit {
 
     if (!this.user && this.storage.has(this.userToken)) {
       this.user = JSON.parse(this.storage.get(this.userToken));
-      console.log('user storage: ', this.user);
     }
 
     if (!this.socketService.socket) this.socketService.initSocket();
@@ -88,27 +85,18 @@ export class ChatComponent implements OnInit {
 
         if (user.id === this.currentUserId) {
           this.user = user;
-          console.log('user on: ', this.user);
           this.storage.set(this.userToken, JSON.stringify(this.user));
         }
       } else {
         this.user = user;
-        console.log('user on: ', this.user);
         this.currentUserId = user.id;
         this.userToken = getUserStorageToken(user.id);
         this.storage.set(currentUserToken, this.currentUserId);
         this.storage.set(this.userToken, JSON.stringify(this.user));
       }
 
-    }, (err) => {
-      if (err) {
-        this.currentUserId = this.storage.get(currentUserToken);
-        this.userToken = getUserStorageToken(this.currentUserId);
-        this.user = JSON.parse(this.storage.get(this.userToken));
-      }
     });
 
-    console.log('user after: ', this.user);
     this.getUserDirects();
   }
 
