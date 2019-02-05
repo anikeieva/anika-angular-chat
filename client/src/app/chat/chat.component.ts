@@ -57,14 +57,17 @@ export class ChatComponent implements OnInit {
     if (!this.socketService.socket) this.socketService.initSocket();
 
     this.socketService.onDirectRoomMessage().subscribe(message => {
+      console.log(message);
       if (message) this.getUserDirects();
     });
 
     this.socketService.onDirectMessagesRoomNotification().subscribe(message => {
+      console.log(message);
       if (message) this.getUserDirects();
     });
 
     this.socketService.onMainChatMessageNotification().subscribe(message => {
+      console.log(message);
       if (message) this.getUserDirects();
     });
   }
@@ -95,6 +98,8 @@ export class ChatComponent implements OnInit {
         this.storage.set(this.userToken, JSON.stringify(this.user));
       }
 
+      this.getUserDirects();
+
     });
 
     this.getUserDirects();
@@ -110,7 +115,10 @@ export class ChatComponent implements OnInit {
       this.socketService.sendRequestForAllChatRooms(this.currentUserId);
 
       this.socketService.onGetAllChatRooms(this.currentUserId).pipe(take(1)).subscribe((rooms) => {
+        console.log(rooms);
         this.rooms = rooms;
+      }, (err) => {
+        console.log(err);
       });
     }
   }

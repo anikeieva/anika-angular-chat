@@ -16,7 +16,7 @@
              [ngClass]="[(message.from.id === user.id)? 'message-item__currentUser' : '']">
 
           <p class="mat-list-item-message">
-            {{message.messageContent}} {{chat_room_footer.clientWidth}}
+            {{message.messageContent}}
           </p>
 
           <span class="message-item-time">{{message.sendingTime | date: 'h:mma' | lowercase}}</span>

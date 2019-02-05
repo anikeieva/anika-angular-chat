@@ -139,6 +139,10 @@
   margin: 0 20px 10px 20px;
 }
 
+.join-button {
+  bottom: 0;
+}
+
 /*.avatar-block {*/
   /*position: absolute;*/
   /*bottom: 0;*/
@@ -212,9 +216,5 @@
 @media only screen and (max-width: 600px) {
   .main-chat-container {
     height: 100%;
-  }
-
-  .join-button {
-    bottom: 0;
   }
 }

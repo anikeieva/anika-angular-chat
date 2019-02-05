@@ -50,8 +50,12 @@
   outline: none;
 }
 
-.chat-item:hover, .chat-item__active {
-  background-color: #35459221;
+.chat-item:hover {
+  background-color: #8e62a92e;
+}
+
+.chat-item__active {
+  background-color: #8e62a9e6!important;
 }
 
 .chat-item-avatar {
@@ -66,6 +70,10 @@
 .chat-item-title {
   font-size: 20px;
   color: blueviolet;
+}
+
+.chat-item__active .chat-item-title {
+  color: white!important;
 }
 
 .mat-card-avatar {
@@ -109,6 +117,10 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.chat-item__active .mat-card-subtitle.chat-item__last-message {
+  color: bisque!important;
 }
 
 ::ng-deep .mat-card-header-text {

@@ -30,7 +30,7 @@ export class UserLogInComponent implements OnInit {
 
     this.socketService.onUserLogIn().subscribe((user) => {
       this.userIsAuthorized = true;
-      this.router.navigate(['/chat'], { relativeTo: this.route });
+      this.router.navigate(['/chat']);
     });
 
     this.socketService.onUserNotLogIn().subscribe((userNotLogIn) => {
