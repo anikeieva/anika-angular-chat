@@ -1,0 +1,15 @@
+<mat-card class="choose-message-manipulating__container">
+  <mat-card-header class="choose-message-manipulating__header">
+    <mat-card-title class="choose-message-manipulating__title">
+      Message
+    </mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content class="choose-message-manipulating__content">
+    <ul class="choose-message-manipulating__list">
+      <li class="choose-message-manipulating__list-item" (click)="copy(data.message)">Copy</li>
+      <li class="choose-message-manipulating__list-item">Edit</li>
+      <li class="choose-message-manipulating__list-item" (click)="delete(data.message, data.roomId)">Delete</li>
+    </ul>
+  </mat-card-content>
+</mat-card>

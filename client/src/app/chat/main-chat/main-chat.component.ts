@@ -228,9 +228,9 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
   }
 
   getMessageManipulatingComponent(message) {
+    console.log(this.mainChatRoom);
     if (message.action === 'sentMessage') {
-      const dialogRef = this.dialog.open(ChooseMessageManipulatingComponent);
-      // const dialogRef = this.dialog.open(ChooseAvatarComponent);
+      const dialogRef = this.dialog.open(ChooseMessageManipulatingComponent, {data: {message: message, roomId: 'main-chat'}});
 
       dialogRef.afterClosed().subscribe(result => {});
     }
