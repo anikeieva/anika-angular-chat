@@ -14,7 +14,7 @@
                 [routerLink]="[(room?.type === 'chat')? room?.id : 'direct-messages-room']"
                 [queryParams]="getQueryParams(room)"
                 (click)="activeChatRoom()"
-                [routerLinkActive]="'chat-item__active'">
+                [class.chat-item__active]="isCurrentChatRoomActive(room.id)">
         <mat-card-header class="chat-item__container">
           <img mat-card-avatar class="chat-item-avatar" [src]="room?.avatar || ''">
           <mat-card-title class="chat-item-title">{{room?.name}}</mat-card-title>
