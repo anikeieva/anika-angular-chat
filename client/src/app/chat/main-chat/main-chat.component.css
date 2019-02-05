@@ -17,7 +17,7 @@
 
 .main-chat-container__content {
   margin: 0;
-  height: calc(100% - 40px - 76px);
+  height: calc(100% - 40px - 65px - 30px);
   position: relative;
   top: 0!important;
   bottom: auto;
@@ -198,16 +198,7 @@
 }
 
 @media only screen and (max-width: 900px) {
-  .main-chat-container-footer {
-    left: 300px;
-    right: 50px;
-    bottom: 30px;
-  }
-
   .message-list {
-    left: 20px;
-    right: 10px;
-    bottom: 220px;
     padding-right: 10px;
   }
 
@@ -219,13 +210,8 @@
 }
 
 @media only screen and (max-width: 600px) {
-  .main-chat-container-footer {
-    left: 30px;
-    right: 30px;
-  }
-
-  .message-list {
-    bottom: 140px;
+  .main-chat-container {
+    height: 100%;
   }
 
   .join-button {

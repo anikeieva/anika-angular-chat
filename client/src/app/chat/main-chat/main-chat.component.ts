@@ -93,9 +93,11 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
   }
 
   ngAfterViewChecked() {
-    const chatRoomFooterHeight = this.chatRoomFooter.nativeElement.offsetHeight + 10;
-    const chatRoomContentHeight = `calc(100% - 40px - ${chatRoomFooterHeight}px)`;
-    this.renderer.setStyle(this.chatRoomContent.nativeElement, 'height', chatRoomContentHeight);
+    if (this.chatRoomFooter && this.chatRoomContent) {
+      const chatRoomFooterHeight = this.chatRoomFooter.nativeElement.offsetHeight + 30;
+      const chatRoomContentHeight = `calc(100% - 40px - ${chatRoomFooterHeight}px)`;
+      this.renderer.setStyle(this.chatRoomContent.nativeElement, 'height', chatRoomContentHeight);
+    }
   }
 
   private scrollToBottom(): void {

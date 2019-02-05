@@ -80,7 +80,7 @@ export class ChatServer {
             console.log('Connected client on port %s.', this.port);
 
 
-            this.clearMongooseData();
+            // this.clearMongooseData();
 
             socket.on('requestForMainChatRoom', (async () => {
 
@@ -401,7 +401,7 @@ export class ChatServer {
                             if (err) throw err;
                         });
 
-                        console.log('room',room);
+                        // console.log('room',room);
 
                         const clientRoom = new ClientChatRoom(room);
                         this.io.emit('mainChatRoom', clientRoom);

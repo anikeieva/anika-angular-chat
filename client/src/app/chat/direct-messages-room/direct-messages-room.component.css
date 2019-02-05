@@ -17,7 +17,7 @@
 
 .chat-room-container__content {
   margin: 0;
-  height: calc(100% - 70px - 76px);
+  height: calc(100% - 70px - 65px - 30px);
   position: relative;
   top: 0!important;
   bottom: auto;
@@ -181,16 +181,7 @@
 }
 
 @media only screen and (max-width: 900px) {
-  .chat-room-container-footer {
-    left: 300px!important;
-    right: 50px;
-    bottom: 30px;
-  }
-
   .message-list {
-    left: 20px!important;
-    right: 10px!important;
-    bottom: 220px;
     padding-right: 10px;
   }
 
@@ -201,16 +192,11 @@
 }
 
 @media only screen and (max-width: 600px) {
-  .chat-room-container-footer {
-    left: 30px!important;
-    right: 30px!important;
+  .chat-room-container {
+    height: 100%;
   }
 
   .chat-room__header {
     padding: 14px 40px;
-  }
-
-  .message-list {
-    bottom: 140px;
   }
 }

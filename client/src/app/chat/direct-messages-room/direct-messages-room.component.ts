@@ -156,9 +156,11 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
   }
 
   ngAfterViewChecked() {
-    const chatRoomFooterHeight = this.chatRoomFooter.nativeElement.offsetHeight + 10;
-    const chatRoomContentHeight = `calc(100% - 70px - ${chatRoomFooterHeight}px)`;
-    this.renderer.setStyle(this.chatRoomContent.nativeElement, 'height', chatRoomContentHeight);
+    if (this.chatRoomFooter && this.chatRoomContent) {
+      const chatRoomFooterHeight = this.chatRoomFooter.nativeElement.offsetHeight + 30;
+      const chatRoomContentHeight = `calc(100% - 70px - ${chatRoomFooterHeight}px)`;
+      this.renderer.setStyle(this.chatRoomContent.nativeElement, 'height', chatRoomContentHeight);
+    }
   }
 
   sendMessage(messageContent: string): void {
