@@ -83,8 +83,4 @@ export class ChooseAvatarComponent implements OnInit {
       this.storage.set(this.userToken, JSON.stringify(this.user));
     }
    }
-
-   closeDialog() {
-      this.dialogRef.close();
-   }
 }

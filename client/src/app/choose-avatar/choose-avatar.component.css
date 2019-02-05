@@ -1,8 +1,21 @@
-.avatar-item {
+.choose-avatar__item {
   float: left;
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   cursor: pointer;
+  margin-right: 10px;
+}
+
+.choose-avatar__item:last-child {
+  margin-right: 0;
+}
+
+.choose-avatar__container {
+  padding: 0;
+}
+
+.choose-avatar__content {
+  padding: 30px 20px;
 }
 
 ::ng-deep .mat-dialog-container {

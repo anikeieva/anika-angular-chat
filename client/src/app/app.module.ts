@@ -17,6 +17,7 @@ import {StorageServiceModule} from  "ngx-webstorage-service";
 import {UserLogInComponent} from './user-log-in/user-log-in.component';
 import {UserProfileComponent} from "./chat/user-profile/user-profile.component";
 import {DirectMessagesRoomComponent} from "./chat/direct-messages-room/direct-messages-room.component";
+import {ChooseMessageManipulatingComponent} from "./choose-message-manipulating/choose-message-manipulating.component";
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import {DirectMessagesRoomComponent} from "./chat/direct-messages-room/direct-me
     ChooseAvatarComponent,
     UserLogInComponent,
     UserProfileComponent,
-    DirectMessagesRoomComponent
+    DirectMessagesRoomComponent,
+    ChooseMessageManipulatingComponent
   ],
   imports: [
     BrowserModule,
@@ -42,7 +44,8 @@ import {DirectMessagesRoomComponent} from "./chat/direct-messages-room/direct-me
     StorageServiceModule
   ],
   entryComponents: [
-    ChooseAvatarComponent
+    ChooseAvatarComponent,
+    ChooseMessageManipulatingComponent
   ],
   bootstrap: [AppComponent]
 })

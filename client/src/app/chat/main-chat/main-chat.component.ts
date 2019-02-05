@@ -12,14 +12,14 @@ import {User} from '../../shared/model/user';
 import {SharedService} from '../../shared/servises/shared.service';
 import {Message} from '../../shared/model/message';
 import {SocketService} from "../../shared/servises/socket.service";
-import {MatListItem} from "@angular/material";
+import {MatDialog, MatListItem} from "@angular/material";
 import {SESSION_STORAGE, StorageService} from 'ngx-webstorage-service';
 import {ChatRoom} from "../../shared/model/chat-room";
 import {getChatRoomStorageToken, getUserStorageToken} from "../../shared/model/getStorageToken";
 import {currentUserToken} from "../../shared/model/getStorageToken";
 import {take} from "rxjs/operators";
 import {Router} from "@angular/router";
-import {DomSanitizer} from "@angular/platform-browser";
+import {ChooseMessageManipulatingComponent} from "../../choose-message-manipulating/choose-message-manipulating.component";
 
 @Component({
   selector: 'app-main-chat',
@@ -49,7 +49,8 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
               private socketService: SocketService,
               @Inject(SESSION_STORAGE) private storage: StorageService,
               private router: Router,
-              private renderer: Renderer2) {
+              private renderer: Renderer2,
+              private dialog: MatDialog) {
   }
 
   ngOnInit(): void {
@@ -224,5 +225,14 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
 
   activeChatRoom() {
     this.isChatRoomActive = true;
+  }
+
+  getMessageManipulatingComponent(message) {
+    if (message.action === 'sentMessage') {
+      const dialogRef = this.dialog.open(ChooseMessageManipulatingComponent);
+      // const dialogRef = this.dialog.open(ChooseAvatarComponent);
+
+      dialogRef.afterClosed().subscribe(result => {});
+    }
   }
 }

@@ -123,6 +123,10 @@
   clear: both;
 }
 
+.message-list-item_message {
+  cursor: pointer;
+}
+
 .message-list-item__avatar {
   position: absolute;
   bottom: 0;
