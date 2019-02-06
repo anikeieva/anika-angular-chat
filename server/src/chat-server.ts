@@ -441,9 +441,18 @@ export class ChatServer {
                         }
                 });
 
-                await ChatRoomModel.findOne({id: 'main-chat'}, (err, room) => {
+                await ChatRoomModel.findOne({id: 'main-chat'}, async (err, room) => {
                     if (err) throw  err;
-                    if (room) this.io.emit('mainChatMessages', room.messages);
+
+                    if (room) {
+                        room.lastMessage = room.messages[room.messages.length - 1].messageContent;
+                        await room.save((err) => {
+                            if (err) throw err;
+                        });
+                        console.log(room);
+                        this.io.emit('mainChatMessages', room.messages);
+                        this.io.emit('mainChatMessageNotification', 'message');
+                    }
                 });
             }));
 
