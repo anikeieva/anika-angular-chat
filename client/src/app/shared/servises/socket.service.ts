@@ -176,7 +176,7 @@ export class SocketService {
     this.socket.emit('deleteMessage', message_id, roomId);
   }
 
-  deleteMessageDirect(fromId: string, toId: string, message_id): void {
-    this.socket.emit('deleteMessageDirect', fromId, toId, message_id);
+  deleteMessageDirect(fromId: string, toId: string, message_id: string, roomId: string): void {
+    this.socket.emit('deleteMessageDirect', fromId, toId, message_id, roomId);
   }
 }

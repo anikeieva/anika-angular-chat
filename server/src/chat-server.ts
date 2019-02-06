@@ -430,10 +430,7 @@ export class ChatServer {
 
             await ChatRoomModel.findOne({id: 'main-chat'}, (err, room) => {
                 if (err) throw  err;
-
-                if (room) {
-                    this.io.emit('mainChatMessages', room.messages);
-                }
+                if (room) this.io.emit('mainChatMessages', room.messages);
             });
 
             socket.on('deleteMessage', (async (message_id: string, roomId: string) => {
@@ -450,28 +447,25 @@ export class ChatServer {
                 });
             }));
 
-            socket.on('deleteMessageDirect', (async (fromId: string, toId: string, message_id: string) => {
-
-                await UserModel.update({id: fromId, 'direct.messages': {$elemMatch:{_id: message_id}}}, {
-                    $pull: {
-                        'direct.messages.$._id': message_id
-                    }
-                });
-
-                socket.join(fromId);
-                this.io.to(fromId).emit('directMessagesRoomNotification', 'message');
-
-                if (toId) {
-                    await UserModel.update({id: toId, 'direct.messages': {$elemMatch:{_id: message_id}}}, {
-                        $pull: {
-                            'direct.messages.$._id': message_id
-                        }
-                    });
-
-                    socket.join(toId);
-                    this.io.to(toId).emit('directMessagesRoomNotification', 'message');
-                }
-            }));
+            // socket.on('deleteMessage', (async (fromId: string, toId: string, message_id: string, roomId: string) => {
+            //
+            //     await ChatRoomModel.update({id: roomId, 'messages._id': message_id}, {
+            //         $pull: {
+            //             'messages': {'_id': message_id}
+            //         }
+            //     });
+            //
+            //     await UserModel.update({id: fromId, 'direct.id': roomId}, {
+            //         $pull: {
+            //             'direct.messages': {'_id': message_id}
+            //         }
+            //     });
+            //
+            //     await ChatRoomModel.findOne({id: 'main-chat'}, (err, room) => {
+            //         if (err) throw  err;
+            //         if (room) this.io.emit('mainChatMessages', room.messages);
+            //     });
+            // }));
 
             socket.on('directMessagesRoomMessage', async (message: Message, roomId: string) => {
 
