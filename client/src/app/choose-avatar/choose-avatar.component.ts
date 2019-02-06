@@ -81,6 +81,12 @@ export class ChooseAvatarComponent implements OnInit {
       }
       this.sharedService.editUser(this.user);
       this.storage.set(this.userToken, JSON.stringify(this.user));
+
+      this.closeDialog();
     }
    }
+
+  private closeDialog() {
+    this.dialogRef.close();
+  }
 }
