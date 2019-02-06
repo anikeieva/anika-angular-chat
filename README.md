@@ -2,7 +2,7 @@
 Online chat based on Angular, Soket.IO, Node.js, Express, MongoDB and Mongoose (not finished yet).
 
 ## Gif
-![anika-angular-chat](https://user-images.githubusercontent.com/33197158/52271843-88737780-294d-11e9-9eea-3c8e72902f55.gif)
+![anika-angular-chat](https://user-images.githubusercontent.com/33197158/52374951-358de300-2a67-11e9-974d-3d847a64086e.gif)
 
 ## How to install MongoDB on Ubuntu 18.04(from official site https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
 

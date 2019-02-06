@@ -1,5 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {SESSION_STORAGE, StorageService} from "ngx-webstorage-service";
+import {currentUserToken} from "../shared/model/getStorageToken";
 
 @Component({
   selector: 'app-welcome-page',

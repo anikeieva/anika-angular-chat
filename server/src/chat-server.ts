@@ -456,26 +456,6 @@ export class ChatServer {
                 });
             }));
 
-            // socket.on('deleteMessage', (async (fromId: string, toId: string, message_id: string, roomId: string) => {
-            //
-            //     await ChatRoomModel.update({id: roomId, 'messages._id': message_id}, {
-            //         $pull: {
-            //             'messages': {'_id': message_id}
-            //         }
-            //     });
-            //
-            //     await UserModel.update({id: fromId, 'direct.id': roomId}, {
-            //         $pull: {
-            //             'direct.messages': {'_id': message_id}
-            //         }
-            //     });
-            //
-            //     await ChatRoomModel.findOne({id: 'main-chat'}, (err, room) => {
-            //         if (err) throw  err;
-            //         if (room) this.io.emit('mainChatMessages', room.messages);
-            //     });
-            // }));
-
             socket.on('directMessagesRoomMessage', async (message: Message, roomId: string) => {
 
                 await UserModel.update({id: message.from.id, direct: {$elemMatch: {id: roomId}}}, {
