@@ -10,7 +10,7 @@ import {SocketService} from "../../shared/servises/socket.service";
 import {SESSION_STORAGE, StorageService} from "ngx-webstorage-service";
 import {Message} from "../../shared/model/message";
 import {ChatRoom} from "../../shared/model/chat-room";
-import {MatListItem} from "@angular/material";
+import {MatDialog, MatListItem} from "@angular/material";
 import {
   currentDirectUserToken,
   currentUserToken,
@@ -18,6 +18,7 @@ import {
 } from "../../shared/model/getStorageToken";
 import {SharedService} from "../../shared/servises/shared.service";
 import {take} from "rxjs/operators";
+import {ChooseMessageManipulatingComponent} from "../../choose-message-manipulating/choose-message-manipulating.component";
 
 @Component({
   selector: 'app-direct-messages-room',
@@ -50,7 +51,8 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
               private socketService: SocketService,
               @Inject(SESSION_STORAGE) private storage: StorageService,
               private sharedService: SharedService,
-              private renderer: Renderer2) {}
+              private renderer: Renderer2,
+              private dialog: MatDialog) {}
 
   ngOnInit() {
     this.directRoomUserIdToken = currentDirectUserToken;
@@ -173,5 +175,14 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
     if (!this.socketService.socket) this.socketService.initSocket();
     this.socketService.sendDirectMessagesRoomMessage(this.message, this.directMessagesRoom.id);
     this.messageContent = null;
+  }
+
+  getMessageManipulatingComponent(message) {
+
+    if (message.action === 'sentMessage') {
+      const dialogRef = this.dialog.open(ChooseMessageManipulatingComponent, {data: {message: message, roomId: this.directMessagesRoomId}});
+
+      dialogRef.afterClosed().subscribe(result => {});
+    }
   }
 }

@@ -13,7 +13,8 @@
       <div class="message-list-content">
 
         <div #messageListItem class="message-item" *ngFor="let message of messages"
-             [ngClass]="[(message.from.id === user.id)? 'message-item__currentUser' : '']">
+             [ngClass]="[(message.from.id === user.id)? 'message-item__currentUser' : '']"
+             (click)="getMessageManipulatingComponent(message)">
 
           <p class="mat-list-item-message">
             {{message.messageContent}}
