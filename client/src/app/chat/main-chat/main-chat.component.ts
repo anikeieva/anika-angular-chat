@@ -187,7 +187,7 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
     } else {
       this.timeNow = new Date();
       this.user.action.sentMessage = true;
-      this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage', null);
+      this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage', null, false);
       this.socketService.sendMainChatMessage(this.message);
       this.sharedService.editUser(null);
 
@@ -203,7 +203,7 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
     this.socketService.sendMainChatUser(this.user);
 
     this.timeNow = new Date();
-    this.message = new Message(this.user, `${this.user.firstName} ${this.user.lastName} joined to conversation`, this.timeNow, 'joined', null);
+    this.message = new Message(this.user, `${this.user.firstName} ${this.user.lastName} joined to conversation`, this.timeNow, 'joined', null, false);
     this.sendNotification(this.message);
 
     this.getChatRoom();
@@ -221,7 +221,7 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
         param.paramBefore.lastName !== this.user.lastName) {
 
         const messageContent = `${param.paramBefore.firstName} ${param.paramBefore.lastName} already is ${this.user.firstName} ${this.user.lastName}`;
-        this.message = new Message(this.user, messageContent, this.timeNow, 'edit', null);
+        this.message = new Message(this.user, messageContent, this.timeNow, 'edit', null, false);
         this.sendNotification(this.message);
       }
 

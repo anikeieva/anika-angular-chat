@@ -443,6 +443,7 @@ export class ChatServer {
                 await ChatRoomModel.update({id: roomId, 'messages._id': message_id}, {
                     $set: {
                         'messages.$.messageContent': messageContent,
+                        'messages.$.edited': true,
                         'messages.$.sendingTime': dateNow
                     }
                 }, {multi: true});

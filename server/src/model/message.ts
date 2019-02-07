@@ -6,12 +6,14 @@ export class Message {
     sendingTime: Date;
     action: string;
     to: User;
+    edited: boolean;
 
-    constructor(from, messageContent, sendingTime, action, to) {
+    constructor(from, messageContent, sendingTime, action, to, edited) {
         this.from = from;
         this.messageContent = messageContent;
         this.sendingTime = sendingTime;
         this.action = action;
         this.to = to;
+        this.edited = edited;
     }
 }

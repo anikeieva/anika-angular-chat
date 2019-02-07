@@ -171,7 +171,7 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
       return;
     }
     this.timeNow = new Date();
-    this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage', this.directRoomUser);
+    this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage', this.directRoomUser, false);
     if (!this.socketService.socket) this.socketService.initSocket();
     this.socketService.sendDirectMessagesRoomMessage(this.message, this.directMessagesRoom.id);
     this.messageContent = null;

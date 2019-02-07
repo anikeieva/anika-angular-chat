@@ -6,7 +6,8 @@ const messagesSchema = new mongoose.Schema({
     messageContent: String,
     sendingTime: Date,
     action: String,
-    to: userSchema
+    to: userSchema,
+    edited: Boolean
 });
 
 export default messagesSchema;

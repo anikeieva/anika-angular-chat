@@ -9,7 +9,8 @@
 
         <div #messageListItem class="message-list-item" *ngFor="let message of messages"
              [ngClass]="getClassOfMessageList(message, user)" (click)="getMessageManipulatingComponent(message)"
-              [class.message-list-item_message]="message.action === 'sentMessage'">
+              [class.message-list-item_message]="message.action === 'sentMessage'"
+              [class.message-is-edited]="message.edited">
 
           <p mat-line class="action-line" *ngIf="message.action === 'joined'">
             {{message.messageContent}}
@@ -34,7 +35,8 @@
             {{message.messageContent}}
           </p>
 
-          <span class="message-item-time" *ngIf="message.action === 'sentMessage'">{{message.sendingTime | date: 'h:mma' | lowercase}}</span>
+          <span class="message-item-time" *ngIf="message.action === 'sentMessage' && !message.edited">{{message.sendingTime | date: 'h:mma' | lowercase}}</span>
+          <span class="message-item-time" *ngIf="message.action === 'sentMessage' && message.edited">edited {{message.sendingTime | date: 'h:mma' | lowercase}}</span>
 
         </div>
 

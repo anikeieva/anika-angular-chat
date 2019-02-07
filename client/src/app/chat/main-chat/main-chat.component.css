@@ -184,6 +184,10 @@
   margin: 0 0 10px;
 }
 
+.message-is-edited {
+  min-width: 70px;
+}
+
 /*.avatar-block {*/
   /*position: absolute;*/
   /*bottom: 0;*/
