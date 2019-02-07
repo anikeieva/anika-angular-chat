@@ -43,11 +43,11 @@
     </div>
   </mat-card-content>
   <mat-card-footer class="main-chat-container-footer" #chat_room_footer>
-    <mat-icon>create</mat-icon>
-    <mat-form-field class="message-input">
-      <mat-label>Type a message</mat-label>
+    <mat-icon class="main-chat-container-footer__icon">create</mat-icon>
+    <mat-form-field class="message-input" [floatLabel]="'never'">
+      <mat-label>Type a message...</mat-label>
       <textarea matInput mat-autosize (keyup.enter)="sendMessage(messageContent)" [(ngModel)]="messageContent"
-                autofocus autocomplete="off"></textarea>
+                autofocus autocomplete="off" matAutosizeMinRows="2"></textarea>
     </mat-form-field>
   </mat-card-footer>
 </mat-card>

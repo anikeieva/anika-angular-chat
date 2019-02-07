@@ -8,7 +8,7 @@
   <mat-card-content class="choose-message-manipulating__content">
     <ul class="choose-message-manipulating__list">
       <li class="choose-message-manipulating__list-item" (click)="copy(data.message)">Copy</li>
-      <li class="choose-message-manipulating__list-item">Edit</li>
+      <li class="choose-message-manipulating__list-item" (click)="edit(data.message, data.roomId)">Edit</li>
       <li class="choose-message-manipulating__list-item" (click)="delete(data.message, data.roomId)">Delete</li>
     </ul>
   </mat-card-content>

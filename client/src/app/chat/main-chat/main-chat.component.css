@@ -147,6 +147,19 @@
   bottom: 0;
 }
 
+::ng-deep .mat-form-field-label-wrapper {
+  font-size: 13px!important;
+}
+
+::ng-deep .mat-form-field-infix {
+  border-top: 0;
+}
+
+.main-chat-container-footer__icon {
+  vertical-align: top;
+  margin-top: 5px;
+}
+
 /*.avatar-block {*/
   /*position: absolute;*/
   /*bottom: 0;*/

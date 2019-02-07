@@ -38,6 +38,7 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
   userToken: string;
   currentUserId: string;
   isChatRoomActive: boolean;
+  isMessageRequestEdit: boolean;
 
   @ViewChild('messageList') messageList: ElementRef;
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;
@@ -232,7 +233,12 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
     if (message.action === 'sentMessage') {
       const dialogRef = this.dialog.open(ChooseMessageManipulatingComponent, {data: {message: message, roomId: this.mainChatRoom.id}});
 
-      dialogRef.afterClosed().subscribe(result => {});
+      dialogRef.afterClosed().subscribe(result => {
+        console.log(result);
+        if (result === 'edit') {
+          this.isMessageRequestEdit = true;
+        }
+      });
     }
   }
 }

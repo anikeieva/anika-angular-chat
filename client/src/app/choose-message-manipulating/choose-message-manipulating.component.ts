@@ -41,6 +41,10 @@ export class ChooseMessageManipulatingComponent implements OnInit {
     this.closeDialog();
   }
 
+  edit(message, roomId) {
+    this.dialogRef.close('edit');
+  }
+
   private closeDialog() {
     this.dialogRef.close();
   }
