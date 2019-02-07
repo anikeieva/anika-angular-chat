@@ -61,6 +61,7 @@ export class ChatComponent implements OnInit {
     });
 
     this.socketService.onDirectMessagesRoomNotification().subscribe(message => {
+      console.log(message);
       if (message) this.getUserDirects();
     });
 
@@ -112,6 +113,7 @@ export class ChatComponent implements OnInit {
       this.socketService.sendRequestForAllChatRooms(this.currentUserId);
 
       this.socketService.onGetAllChatRooms(this.currentUserId).pipe(take(1)).subscribe((rooms) => {
+        console.log(rooms);
         this.rooms = rooms;
       });
     }

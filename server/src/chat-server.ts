@@ -429,9 +429,22 @@ export class ChatServer {
                             this.io.to(roomId).emit('directRoomMessages', room.messages);
                             socket.join(room.from);
                             this.io.to(room.from).emit('directMessagesRoomNotification', 'message');
-                            socket.join(room.to);
-                            this.io.to(room.to).emit('directMessagesRoomNotification', 'message');
                         }
+
+                        await ChatRoomModel.findOne({id: roomId, from: {$in: [room.to, null]}}, async (err, room) => {
+                            if (err) throw  err;
+
+                            if (room) {
+                                room.lastMessage = room.messages[room.messages.length - 1].messageContent;
+                                await room.save((err) => {
+                                    if (err) throw err;
+                                });
+                                this.io.to(roomId).emit('directRoomMessages', room.messages);
+                                socket.join(room.to);
+                                this.io.to(room.to).emit('directMessagesRoomNotification', 'message');
+
+                            }
+                        });
                     }
                 });
             }));
@@ -466,9 +479,22 @@ export class ChatServer {
                             this.io.to(roomId).emit('directRoomMessages', room.messages);
                             socket.join(room.from);
                             this.io.to(room.from).emit('directMessagesRoomNotification', 'message');
-                            socket.join(room.to);
-                            this.io.to(room.to).emit('directMessagesRoomNotification', 'message');
                         }
+
+                        await ChatRoomModel.findOne({id: roomId, from: {$in: [room.to, null]}}, async (err, room) => {
+                            if (err) throw  err;
+
+                            if (room) {
+                                room.lastMessage = room.messages[room.messages.length - 1].messageContent;
+                                await room.save((err) => {
+                                    if (err) throw err;
+                                });
+                                this.io.to(roomId).emit('directRoomMessages', room.messages);
+                                socket.join(room.to);
+                                this.io.to(room.to).emit('directMessagesRoomNotification', 'message');
+
+                            }
+                        });
                     }
                 });
             }));

@@ -166,15 +166,10 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
   }
 
   sendMessage(messageContent: string): void {
-    console.log(messageContent);
-    console.log(!messageContent || /^\s*$/.test(messageContent);
     if (!messageContent || /^\s*$/.test(messageContent)) {
       return;
     }
 
-    console.log(this.currentMessageEdit);
-    console.log(this.currentMessageEdit);
-    console.log(messageContent);
     if (this.isMessageRequestEdit && this.currentMessageEdit) {
       console.log('this.currentMessageEdit._id', this.currentMessageEdit._id);
       console.log('this.mainChatRoom.id', this.mainChatRoom.id);

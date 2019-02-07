@@ -14,13 +14,15 @@
 
         <div #messageListItem class="message-item" *ngFor="let message of messages"
              [ngClass]="[(message.from.id === user.id)? 'message-item__currentUser' : '']"
-             (click)="getMessageManipulatingComponent(message)">
+             (click)="getMessageManipulatingComponent(message)"
+             [class.message-is-edited]="message.edited">
 
           <p class="mat-list-item-message">
             {{message.messageContent}}
           </p>
 
-          <span class="message-item-time">{{message.sendingTime | date: 'h:mma' | lowercase}}</span>
+          <span class="message-item-time" *ngIf="message.action === 'sentMessage' && !message.edited">{{message.sendingTime | date: 'h:mma' | lowercase}}</span>
+          <span class="message-item-time" *ngIf="message.action === 'sentMessage' && message.edited">edited {{message.sendingTime | date: 'h:mma' | lowercase}}</span>
 
         </div>
 
@@ -29,11 +31,18 @@
     </div>
   </mat-card-content>
   <mat-card-footer class="chat-room-container-footer" #chat_room_footer>
-    <mat-icon>create</mat-icon>
-    <mat-form-field class="message-input">
-      <mat-label>Type a message</mat-label>
+    <div class="edit-message__container" *ngIf="isMessageRequestEdit && currentMessageEdit">
+      <div class="edit-message__content">
+        <mat-icon class="edit-message__cancel-button" (click)="cancelEditMessage()">cancel</mat-icon>
+        <h4 class="edit-message__header">Edit message</h4>
+        <p class="edit-message__message">{{currentMessageEdit.messageContent}}</p>
+      </div>
+    </div>
+    <mat-icon class="chat-room-container-footer__icon">create</mat-icon>
+    <mat-form-field class="message-input" [floatLabel]="'never'">
+      <mat-label>Type a message...</mat-label>
       <textarea matInput mat-autosize (keyup.enter)="sendMessage(messageContent)" [(ngModel)]="messageContent"
-                autofocus autocomplete="off"></textarea>
+                autofocus autocomplete="off" matAutosizeMinRows="2"></textarea>
     </mat-form-field>
   </mat-card-footer>
 </mat-card>

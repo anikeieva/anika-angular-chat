@@ -40,6 +40,8 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
   private directMessagesRoomId: string;
   directRoomUserId: string;
   directRoomUserIdToken: string;
+  isMessageRequestEdit: boolean;
+  currentMessageEdit: Message;
 
   @ViewChild('messageList') messageList: ElementRef;
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;
@@ -170,11 +172,23 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
     if (!messageContent || /^\s*$/.test(messageContent)) {
       return;
     }
-    this.timeNow = new Date();
-    this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage', this.directRoomUser, false);
-    if (!this.socketService.socket) this.socketService.initSocket();
-    this.socketService.sendDirectMessagesRoomMessage(this.message, this.directMessagesRoom.id);
-    this.messageContent = null;
+
+    if (this.isMessageRequestEdit && this.currentMessageEdit) {
+      console.log('this.currentMessageEdit._id', this.currentMessageEdit._id);
+      console.log('this.mainChatRoom.id', this.directMessagesRoomId);
+      if (!this.socketService.socket) this.socketService.initSocket();
+      this.socketService.editMessage(messageContent, this.currentMessageEdit._id, this.directMessagesRoomId, this.currentMessageEdit.from.id);
+
+      this.isMessageRequestEdit = false;
+      this.messageContent = null;
+      this.currentMessageEdit = null;
+    } else {
+      this.timeNow = new Date();
+      this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage', this.directRoomUser, false);
+      if (!this.socketService.socket) this.socketService.initSocket();
+      this.socketService.sendDirectMessagesRoomMessage(this.message, this.directMessagesRoom.id);
+      this.messageContent = null;
+    }
   }
 
   getMessageManipulatingComponent(message) {
@@ -182,7 +196,19 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
     if (message.action === 'sentMessage') {
       const dialogRef = this.dialog.open(ChooseMessageManipulatingComponent, {data: {message: message, roomId: this.directMessagesRoomId}});
 
-      dialogRef.afterClosed().subscribe(result => {});
+      dialogRef.afterClosed().subscribe(result => {
+        if (result === 'edit') {
+          this.isMessageRequestEdit = true;
+          this.currentMessageEdit = message;
+          this.messageContent = message.messageContent;
+        }
+      });
     }
+  }
+
+  cancelEditMessage() {
+    this.isMessageRequestEdit = false;
+    this.messageContent = null;
+    this.currentMessageEdit = null;
   }
 }

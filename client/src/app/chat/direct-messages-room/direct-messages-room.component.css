@@ -180,6 +180,47 @@
   clear: both;
 }
 
+::ng-deep .mat-form-field-label-wrapper {
+  font-size: 13px!important;
+}
+
+::ng-deep .mat-form-field-infix {
+  border-top: 0;
+}
+
+.chat-room-container-footer__icon {
+  vertical-align: top;
+  margin-top: 5px;
+}
+
+.edit-message__container {
+  position: relative;
+  left: 34px;
+  width: calc(100% - 34px);
+  border-left: 2px solid black;
+  margin-bottom: 5px;
+}
+
+.edit-message__content {
+  position: relative;
+  padding: 10px;
+}
+
+.edit-message__cancel-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  cursor: pointer;
+}
+
+.edit-message__header {
+  margin: 0 0 10px;
+}
+
+.message-is-edited {
+  min-width: 70px;
+}
+
 @media only screen and (max-width: 900px) {
   .message-list {
     padding-right: 10px;
