@@ -1,5 +1,3 @@
-import {ChatRoom} from "./chat-room";
-
 export interface User {
     firstName: string;
     lastName: string;
@@ -10,6 +8,5 @@ export interface User {
     action: object;
     id: string;
     online: boolean;
-    direct: [ChatRoom];
     lastSeen: Date;
 }

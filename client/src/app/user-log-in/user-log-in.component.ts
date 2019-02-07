@@ -28,17 +28,21 @@ export class UserLogInComponent implements OnInit {
   ngOnInit() {
     if (!this.socketService.socket) this.socketService.initSocket();
 
-    this.socketService.onUserLogIn().subscribe((user) => {
-      this.userIsAuthorized = true;
-      this.router.navigate(['/chat']);
+    this.socketService.onUserLogIn().subscribe((userLogIn) => {
+      if (userLogIn) {
+        this.userIsAuthorized = true;
+        this.router.navigate(['/chat']);
+      }
     });
 
     this.socketService.onUserNotLogIn().subscribe((userNotLogIn) => {
-      this.userIsAuthorized = false;
-      this.userLogInFormParam.setValue({
-        login: null,
-        password: null
-      });
+      if (userNotLogIn) {
+        this.userIsAuthorized = false;
+        this.userLogInFormParam.setValue({
+          login: null,
+          password: null
+        });
+      }
     });
 
   }

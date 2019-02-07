@@ -98,6 +98,7 @@ export class UserProfileComponent implements OnInit {
 
     this.socketService.onDirectMessagesRoomId().subscribe((roomId: string) => {
       this.directRoomId = roomId;
+      console.log(roomId);
       this.storage.set(this.directRoomIdToken, this.directRoomId);
     });
   }

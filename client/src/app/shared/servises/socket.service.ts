@@ -64,9 +64,9 @@ export class SocketService {
     this.socket.emit('userLogInParam', userLogInParam);
   }
 
-  public onUserLogIn(): Observable<User> {
-    return new Observable<User>(observer => {
-      this.socket.on('userLogIn', (user: User) => observer.next(user));
+  public onUserLogIn(): Observable<string> {
+    return new Observable<string>(observer => {
+      this.socket.on('userLogIn', (userLogIn: string) => observer.next(userLogIn));
     })
   }
 
@@ -172,11 +172,7 @@ export class SocketService {
     this.socket.emit('directRoomMessages', roomId);
   }
 
-  deleteMessage(message_id: string, roomId: string): void {
-    this.socket.emit('deleteMessage', message_id, roomId);
-  }
-
-  deleteMessageDirect(fromId: string, toId: string, message_id: string, roomId: string): void {
-    this.socket.emit('deleteMessageDirect', fromId, toId, message_id, roomId);
+  deleteMessage(message_id: string, roomId: string, fromId: string): void {
+    this.socket.emit('deleteMessage', message_id, roomId, fromId);
   }
 }

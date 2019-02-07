@@ -36,8 +36,7 @@ export class ChooseMessageManipulatingComponent implements OnInit {
     console.log(message);
     if (!this.socketService.socket) this.socketService.initSocket();
 
-    if (message.to) this.socketService.deleteMessageDirect(message.from.id, message.to.id, message._id, roomId);
-    else this.socketService.deleteMessage(message._id, roomId);
+    this.socketService.deleteMessage(message._id, roomId, message.from.id);
 
     this.closeDialog();
   }

@@ -11,8 +11,7 @@ export const userSchema = new mongoose.Schema({
     action: Object,
     id: String,
     online: Boolean,
-    lastSeen: Date,
-    direct: [mongoose.Schema.Types.Mixed]
+    lastSeen: Date
 }, {versionKey: false});
 
 

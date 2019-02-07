@@ -84,155 +84,126 @@ export class ChatServer {
 
             socket.on('requestForMainChatRoom', (async () => {
 
-                await ChatRoomModel.findOne({id: 'main-chat'}, (err, room) => {
+                await ChatRoomModel.findOne({id: 'main-chat'}, {messages: 0}, (err, room) => {
                     if (err) throw  err;
 
-                    const clientRoom = new ClientChatRoom(room);
-
-                    this.io.emit('mainChatRoom', clientRoom);
+                    if (room) this.io.emit('mainChatRoom', room);
                 });
 
             }));
 
             socket.on('requestForDirectMessagesRoomId', async (fromId, toId) => {
 
-                await UserModel.findOne({
-                    id: fromId,
-                    direct: {$elemMatch: {from: fromId, to: toId}}
-                }, async (err, room) => {
-                    if (err) throw  err;
+                    await ChatRoomModel.findOne({
+                        from: fromId, to: toId
+                    }, async (err, room) => {
+                        if (err) throw  err;
 
-                    socket.join(fromId);
+                        socket.join(fromId);
 
-                    if (room) {
+                        if (room) {
 
-                        if (room.id && room.direct) {
-                            let directRoom;
-                            for (let i = 0; i < room.direct.length; i++) {
-                                if (room.direct[i].from === fromId && room.direct[i].to === toId) {
-                                    directRoom = room.direct[i];
+                            if (room.id) this.io.to(fromId).emit('directMessagesRoomId', room.id);
+
+                        } else {
+
+                            const roomId = fromId * toId * Date.now();
+                            console.log(roomId);
+
+                            await UserModel.findOne({id: toId},{messages: 0, password: 0}, async (err, to) => {
+                                if (err) throw  err;
+
+                                if (to) {
+                                    const roomFrom = new ChatRoomModel({
+                                        _id: new mongoose.Types.ObjectId(),
+                                        id: roomId,
+                                        name: `${to.firstName} ${to.lastName}`,
+                                        avatar: to.avatar,
+                                        type: TypeChatRooms.direct,
+                                        lastMessage: 'direct',
+                                        to: to.id,
+                                    });
+
+
+                                    await UserModel.findOne({id: fromId}, {messages: 0, password: 0}, async (err, from) => {
+                                        if (err) throw  err;
+
+                                        if (from) {
+                                            roomFrom.users.push(from, to);
+                                            roomFrom.from = from.id;
+
+                                            this.io.to(fromId).emit('directMessagesRoomId', roomFrom.id);
+
+                                            const chatOptions = {
+                                                new: true,
+                                                upsert: true,
+                                                setDefaultsOnInsert: true
+                                            };
+
+                                            await ChatRoomModel.findOneAndUpdate({id: roomId, from: from.id}, roomFrom, chatOptions, (err) => {
+                                                if (err) throw  err;
+                                            });
+
+                                            const roomTo = new ChatRoomModel({
+                                                _id: new mongoose.Types.ObjectId(),
+                                                id: roomId,
+                                                name: `${from.firstName} ${from.lastName}`,
+                                                avatar: from.avatar,
+                                                type: TypeChatRooms.direct,
+                                                lastMessage: 'direct',
+                                                to: from.id,
+                                                from: to.id
+                                            });
+
+                                            roomTo.users.push(to, from);
+
+                                            await ChatRoomModel.findOneAndUpdate({id: roomId, from: to.id}, roomTo, chatOptions, (err) => {
+                                                if (err) throw  err;
+                                            });
+                                        }
+                                    });
                                 }
-                            }
-                            this.io.to(fromId).emit('directMessagesRoomId', directRoom.id);
+                            });
+
                         }
-
-                    } else {
-
-                        const roomId = fromId * toId * Date.now();
-
-                        await UserModel.findOne({id: toId}, async (err, to) => {
-                            if (err) throw  err;
-
-                            if (to) {
-                                const roomFrom = new ChatRoomModel({
-                                    _id: new mongoose.Types.ObjectId(),
-                                    id: roomId,
-                                    name: `${to.firstName} ${to.lastName}`,
-                                    avatar: to.avatar,
-                                    type: TypeChatRooms.direct,
-                                    lastMessage: 'direct',
-                                    to: to.id,
-                                });
-
-
-                                await UserModel.findOne({id: fromId}, async (err, from) => {
-                                    if (err) throw  err;
-
-                                    if (from) {
-                                        roomFrom.users.push(from, to);
-                                        roomFrom.from = from.id;
-                                        from.direct.push(roomFrom);
-
-                                        this.io.to(fromId).emit('directMessagesRoomId', roomFrom.id);
-
-                                        await from.save((err) => {
-                                            if (err) throw  err;
-                                        });
-
-                                        const roomTo = new ChatRoomModel({
-                                            _id: new mongoose.Types.ObjectId(),
-                                            id: roomId,
-                                            name: `${from.firstName} ${from.lastName}`,
-                                            avatar: from.avatar,
-                                            type: TypeChatRooms.direct,
-                                            lastMessage: 'direct',
-                                            to: from.id,
-                                            from: to.id
-                                        });
-
-                                        roomTo.users.push(to, from);
-
-                                        to.direct.push(roomTo);
-
-                                        await to.save((err) => {
-                                            if (err) throw  err;
-                                        });
-                                    }
-                                });
-                            }
-                        });
-
-                    }
-                });
+                    });
             });
 
             socket.on('requestForDirectMessagesRoomById', (async (fromId, roomId) => {
 
-                await UserModel.findOne({id: fromId, direct: {$elemMatch: {id: roomId}}}, async (err, room) => {
+                await ChatRoomModel.findOne({id: roomId, from: fromId}, {messages: 0}, async (err, room) => {
                     if (err) throw  err;
 
                     if (room) {
-                        if (room.direct) {
-                            let directRoom;
-                            for (let i = 0; i < room.direct.length; i++) {
-                                if (room.direct[i].id === roomId) {
-                                    directRoom = room.direct[i];
-                                }
-                            }
-
-                            const clientRoom = new ClientChatRoom(directRoom);
-                            socket.join(roomId);
-                            this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${fromId}`, clientRoom);
-                        }
+                        socket.join(roomId);
+                        this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${fromId}`, room);
                     }
                 });
             }));
 
             socket.on('requestForUserById', (async (id) => {
 
-                await UserModel.findOne({id: id}, (err, user) => {
+                await UserModel.findOne({id: id}, {password: 0}, (err, user) => {
                     if (err) throw  err;
 
-                    const clientUser = new ClientUser(user);
-                    this.io.emit(`userById=${id}`, clientUser);
+                    if (user) this.io.emit(`userById=${id}`, user);
                 });
             }));
 
             socket.on('requestForAllChatRooms', (async (userId: string) => {
 
-                await ChatRoomModel.findOne({id: 'main-chat'}, async (err, mainChatRoom) => {
+                await ChatRoomModel.find({$or: [{id: 'main-chat'},{from: userId}]}, {messages: 0}, async (err, rooms) => {
                     if (err) throw  err;
 
-                    let rooms = [];
-                    const clientMainChatRoom = new ClientChatRoom(mainChatRoom);
-
-                    rooms.push(clientMainChatRoom);
-
-                    await UserModel.findOne({id: userId}, (err, item) => {
-                        if (err) throw  err;
-
-                        if (item) {
-                            for (let i = 0; i < item.direct.length; i++) {
-                                const clientRoom = new ClientChatRoom(item.direct[i]);
-                                rooms.push(clientRoom);
-                            }
-
-                            socket.join(userId);
-                            this.io.to(userId).emit(`get=${userId}AllChatRooms`, rooms);
-                        }
-                    });
+                    if (rooms) {
+                        console.log('all rooms', rooms);
+                        socket.join(userId);
+                        this.io.to(userId).emit(`get=${userId}AllChatRooms`, rooms);
+                    }
                 });
+
             }));
+
 
             socket.on('directMessagesRoomNotification', (async (userId: string) => {
 
@@ -246,7 +217,7 @@ export class ChatServer {
                 await UserModel.findOne({
                     login: userLogInParam.login,
                     password: userLogInParam.password
-                }, async (err, user) => {
+                }, {password: 0}, async (err, user) => {
                     if (err) throw  err;
 
                     if (user) {
@@ -257,30 +228,29 @@ export class ChatServer {
                             if (err) throw  err;
                         });
 
-                        const clientUser = new ClientUser(user);
+                        socket.join(user.id);
+                        this.io.emit('userLogIn', 'userLogIn');
+                        this.io.to(user.id).emit('user', user);
 
-                        socket.join(clientUser.id);
-                        this.io.emit('userLogIn', clientUser);
-                        this.io.to(clientUser.id).emit('user', clientUser);
-
-                        await ChatRoomModel.findOneAndUpdate({
-                                id: 'main-chat',
-                                users: {$elemMatch: {id: user.id}}
-                            },
+                        await ChatRoomModel.update({users: {$elemMatch: {id: user.id}}},
                             {
-                                $set: {'users.$.online': user.online}
-                            }, (err) => {
+                                $set: {
+                                    'users.$.online': user.online
+                                }
+                            },
+                            {multi: true},
+                            (err) => {
                                 if (err) throw  err;
                             });
 
-                        await ChatRoomModel.findOne({id: 'main-chat'}, async (err, room) => {
-                            if (err) throw  err;
+                        await ChatRoomModel.find({$or: [{id: 'main-chat'},{from: user.id}]}).cursor().eachAsync(async (room) => {
+                           if (room) {
+                               room.getActiveUsers();
 
-                            room.getActiveUsers();
-
-                            await room.save((err) => {
-                                if (err) throw err;
-                            });
+                               await room.save((err) => {
+                                   if (err) throw err;
+                               });
+                           }
                         });
 
                     } else {
@@ -397,11 +367,11 @@ export class ChatServer {
                         room.users.push(user);
                         room.getActiveUsers();
 
+                        console.log('room main-chat act', room);
+
                         await room.save((err) => {
                             if (err) throw err;
                         });
-
-                        // console.log('room',room);
 
                         const clientRoom = new ClientChatRoom(room);
                         this.io.emit('mainChatRoom', clientRoom);
@@ -433,15 +403,16 @@ export class ChatServer {
                 if (room) this.io.emit('mainChatMessages', room.messages);
             });
 
-            socket.on('deleteMessage', (async (message_id: string, roomId: string) => {
+            socket.on('deleteMessage', (async (message_id: string, roomId: string, fromId: string) => {
 
                 await ChatRoomModel.update({id: roomId, 'messages._id': message_id}, {
                         $pull: {
                             'messages': {'_id': message_id}
                         }
-                });
+                }, {multi: true});
 
-                await ChatRoomModel.findOne({id: 'main-chat'}, async (err, room) => {
+
+                await ChatRoomModel.findOne({id: roomId, from: {$in: [fromId, null]}}, async (err, room) => {
                     if (err) throw  err;
 
                     if (room) {
@@ -452,102 +423,74 @@ export class ChatServer {
                         console.log(room);
                         this.io.emit('mainChatMessages', room.messages);
                         this.io.emit('mainChatMessageNotification', 'message');
+                        this.io.to(roomId).emit('directRoomMessages', room.messages);
+                        socket.join(room.from);
+                        this.io.to(room.from).emit('directMessagesRoomNotification', 'message');
+                        socket.join(room.to);
+                        this.io.to(room.to).emit('directMessagesRoomNotification', 'message');
                     }
                 });
             }));
 
             socket.on('directMessagesRoomMessage', async (message: Message, roomId: string) => {
 
-                await UserModel.update({id: message.from.id, direct: {$elemMatch: {id: roomId}}}, {
-                    $push: {
-                        'direct.$.messages': message
-                    },
+                await ChatRoomModel.update({id: roomId}, {
+                   $push: {
+                       messages: message
+                   },
                     $set: {
-                        'direct.$.lastMessage': message.messageContent
+                        lastMessage: message.messageContent
                     }
-                });
+                }, {multi: true});
 
-                await UserModel.update({id: message.to.id, direct: {$elemMatch: {id: roomId}}}, {
-                    $push: {
-                        'direct.$.messages': message
-                    },
-                    $set: {
-                        'direct.$.lastMessage': message.messageContent
-                    }
-                });
 
-                await ChatRoomModel.findOne({id: 'main-chat'}, async (err, mainChatRoom) => {
+                await ChatRoomModel.findOne({id: roomId, from: message.from.id}, async (err, room) => {
                     if (err) throw  err;
 
-                    let rooms = [];
-                    const clientMainChatRoom = new ClientChatRoom(mainChatRoom);
+                    if (room) {
+                        this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.from.id}`, new ClientChatRoom(room));
+                        this.io.to(roomId).emit('directRoomMessages', room.messages);
+                    }
 
-                    rooms.push(clientMainChatRoom);
+                    socket.join(message.from.id);
+                    this.io.to(message.from.id).emit('directRoomMessage', message);
 
-                    await UserModel.findOne({id: message.from.id}, async (err, item) => {
+                    await ChatRoomModel.find({$or: [{id: 'main-chat'},{from: message.from.id}]}, {messages: 0}, async (err, rooms) => {
                         if (err) throw  err;
-
-                        for (let i = 0; i < item.direct.length; i++) {
-                            const clientRoom = new ClientChatRoom(item.direct[i]);
-                            rooms.push(clientRoom);
-
-                            if (item.direct[i].id === roomId) {
-                                this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.from.id}`, clientRoom);
-                                this.io.to(roomId).emit('directRoomMessages', item.direct[i].messages);
-                            }
-                        }
-
-                        socket.join(message.from.id);
-                        this.io.to(message.from.id).emit('directRoomMessage', message);
-                        this.io.to(message.from.id).emit(`get=${message.from.id}AllChatRooms`, rooms);
+                        if (rooms) this.io.to(message.from.id).emit(`get=${message.from.id}AllChatRooms`, rooms);
                     });
+
                 });
 
-                await ChatRoomModel.findOne({id: 'main-chat'}, async (err, mainChatRoom) => {
+                await ChatRoomModel.findOne({id: roomId, from: message.to.id}, async (err, room) => {
                     if (err) throw  err;
 
-                    let rooms = [];
-                    const clientMainChatRoom = new ClientChatRoom(mainChatRoom);
+                    if (room) {
+                        this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.to.id}`, new ClientChatRoom(room));
+                        this.io.to(roomId).emit('directRoomMessages', room.messages);
+                    }
 
-                    rooms.push(clientMainChatRoom);
+                    socket.join(message.to.id);
+                    this.io.to(message.to.id).emit('directRoomMessage', message);
 
-                    await UserModel.findOne({id: message.to.id}, async (err, item) => {
+                    await ChatRoomModel.find({$or: [{id: 'main-chat'},{from: message.to.id}]}, {messages: 0}, async (err, rooms) => {
                         if (err) throw  err;
-
-                        for (let i = 0; i < item.direct.length; i++) {
-                            const clientRoom = new ClientChatRoom(item.direct[i]);
-                            rooms.push(clientRoom);
-
-                            if (item.direct[i].id === roomId) {
-                                this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.to.id}`, clientRoom);
-                                this.io.to(roomId).emit('directRoomMessages', item.direct[i].messages);
-                            }
-                        }
-
-                        socket.join(message.to.id);
-                        this.io.to(message.to.id).emit('directRoomMessage', message);
-                        this.io.to(message.to.id).emit(`get=${message.to.id}AllChatRooms`, rooms);
+                        if (rooms) this.io.to(message.to.id).emit(`get=${message.to.id}AllChatRooms`, rooms);
                     });
+
                 });
             });
 
             socket.on('directRoomMessages', async (roomId: string) => {
 
-
-                await UserModel.findOne({direct: {$elemMatch: {id: roomId}}}, async (err, user) => {
+                await ChatRoomModel.findOne({id: roomId}, async (err, room) => {
                     if (err) throw  err;
 
-                    for (let i = 0; i < user.direct.length; i++) {
-
-                        if (user.direct[i].id === roomId) {
-
-                            socket.join(roomId);
-
-                            this.io.to(roomId).emit('directRoomMessages', user.direct[i].messages);
-                        }
+                    if (room) {
+                        socket.join(roomId);
+                        this.io.to(roomId).emit('directRoomMessages', room.messages);
                     }
                 });
-
             });
 
 
@@ -571,33 +514,35 @@ export class ChatServer {
 
                     });
 
+                    await ChatRoomModel.update({'users.id': userId},
+                        {
+                            $set: {
+                                'users.$.online': false,
+                                'user.$.lastSeen': dateNow
+                            }
+                        },
+                        {multi: true},
+                        (err) => {
+                            if (err) throw  err;
+                        });
+
+                    await ChatRoomModel.find({$or: [{id: 'main-chat'},{from: userId}]}).cursor().eachAsync(async (room) => {
+                        if (room) {
+                            room.getActiveUsers();
+
+                            console.log('room get active users', room);
+
+                            await room.save((err) => {
+                                if (err) throw err;
+                            });
+                        }
+                    });
 
                     await ChatRoomModel.findOne({id: 'main-chat'}, async (err, room) => {
-                        if (err) throw err;
+                        if (err) throw  err;
 
-                        if (room.users) {
-
-                            await ChatRoomModel.findOneAndUpdate({'id': 'main-chat', users: {$elemMatch: {id: userId}}},
-                                {
-                                    $set: {'users.$.online': false, 'users.$.lastSeen': dateNow}
-                                }, (err) => {
-                                    if (err) throw err;
-                                });
-
-                            await ChatRoomModel.findOne({id: 'main-chat'}, async (err, room) => {
-                                if (err) throw  err;
-
-                                room.getActiveUsers();
-
-                                await room.save((err) => {
-                                    if (err) throw err;
-                                });
-
-                                const clientRoom = new ClientChatRoom(room);
-                                this.io.emit('mainChatRoom', clientRoom);
-                            });
-
-                        }
+                        const clientRoom = new ClientChatRoom(room);
+                        this.io.emit('mainChatRoom', clientRoom);
                     });
 
                     socket.leave(userId);
