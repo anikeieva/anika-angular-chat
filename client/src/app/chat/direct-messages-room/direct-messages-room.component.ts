@@ -174,8 +174,6 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
     }
 
     if (this.isMessageRequestEdit && this.currentMessageEdit) {
-      console.log('this.currentMessageEdit._id', this.currentMessageEdit._id);
-      console.log('this.mainChatRoom.id', this.directMessagesRoomId);
       if (!this.socketService.socket) this.socketService.initSocket();
       this.socketService.editMessage(messageContent, this.currentMessageEdit._id, this.directMessagesRoomId, this.currentMessageEdit.from.id);
 

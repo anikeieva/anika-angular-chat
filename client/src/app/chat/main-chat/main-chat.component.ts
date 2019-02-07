@@ -57,6 +57,8 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
 
   ngOnInit(): void {
 
+    this.socketService.initSocket();
+
     this.isChatRoomActive = this.router.url.includes('main-chat') ||
       this.router.url.includes('room') ||
       this.router.url.includes('profile');
@@ -82,7 +84,6 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
 
     this.socketService.onMainChatMessages().subscribe((messages) => {
       this.messages = messages;
-      console.log(messages);
     });
 
     this.socketService.onMainChatRoom().subscribe(mainChatRoom => {
@@ -114,9 +115,10 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
   private initIoConnection(): void {
     this.socketService.initSocket();
 
-    this.socketService.onMainChatMessage().subscribe((message: Message) => {
-        this.messages.push(message);
+    this.socketService.onMainChatMessage().subscribe((messages: Message<>) => {
+      this.messages = messages;
     });
+
   }
 
   getChatRoom() {
@@ -171,9 +173,6 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
     }
 
     if (this.isMessageRequestEdit && this.currentMessageEdit) {
-      console.log('this.currentMessageEdit._id', this.currentMessageEdit._id);
-      console.log('this.mainChatRoom.id', this.mainChatRoom.id);
-      if (!this.socketService.socket) this.socketService.initSocket();
       this.socketService.editMessage(messageContent, this.currentMessageEdit._id, this.mainChatRoom.id, this.currentMessageEdit.from.id);
 
       this.isMessageRequestEdit = false;
@@ -243,18 +242,18 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
   }
 
   getMessageManipulatingComponent(message) {
-    console.log(this.mainChatRoom);
-    console.log(message);
+
+    if (!message._id) {
+      this.socketService.initSocket();
+    }
 
     if (message.action === 'sentMessage') {
       const dialogRef = this.dialog.open(ChooseMessageManipulatingComponent, {data: {message: message, roomId: this.mainChatRoom.id}});
 
       dialogRef.afterClosed().subscribe(result => {
-        console.log(result);
         if (result === 'edit') {
           this.isMessageRequestEdit = true;
           this.currentMessageEdit = message;
-          console.log(this.currentMessageEdit);
           this.messageContent = message.messageContent;
         }
       });

@@ -367,8 +367,6 @@ export class ChatServer {
                         room.users.push(user);
                         room.getActiveUsers();
 
-                        console.log('room main-chat act', room);
-
                         await room.save((err) => {
                             if (err) throw err;
                         });
@@ -393,7 +391,7 @@ export class ChatServer {
                         if (err) throw err;
                     });
 
-                    this.io.emit('mainChatMessage', message);
+                    this.io.emit('mainChatMessage', room.messages);
                     this.io.emit('mainChatMessageNotification', 'message');
                 });
             });

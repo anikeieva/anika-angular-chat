@@ -26,9 +26,9 @@ export class SocketService {
     this.socket.emit('mainChatMessage', message);
   }
 
-  public onMainChatMessage(): Observable<Message> {
-    return new Observable<Message>(observer => {
-      this.socket.on('mainChatMessage', (data: Message) => observer.next(data));
+  public onMainChatMessage(): Observable<Message[]> {
+    return new Observable<Message[]>(observer => {
+      this.socket.on('mainChatMessage', (data: Message[]) => observer.next(data));
     });
   }
 
@@ -171,6 +171,7 @@ export class SocketService {
   public sendRequestForDirectRoomMessages(roomId: string): void {
     this.socket.emit('directRoomMessages', roomId);
   }
+
 
   deleteMessage(message_id: string, roomId: string, fromId: string): void {
     this.socket.emit('deleteMessage', message_id, roomId, fromId);
