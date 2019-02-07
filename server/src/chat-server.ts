@@ -421,13 +421,53 @@ export class ChatServer {
                             if (err) throw err;
                         });
                         console.log(room);
-                        this.io.emit('mainChatMessages', room.messages);
-                        this.io.emit('mainChatMessageNotification', 'message');
-                        this.io.to(roomId).emit('directRoomMessages', room.messages);
-                        socket.join(room.from);
-                        this.io.to(room.from).emit('directMessagesRoomNotification', 'message');
-                        socket.join(room.to);
-                        this.io.to(room.to).emit('directMessagesRoomNotification', 'message');
+
+                        if (room.type === 'chat') {
+                            this.io.emit('mainChatMessages', room.messages);
+                            this.io.emit('mainChatMessageNotification', 'message');
+                        } else {
+                            this.io.to(roomId).emit('directRoomMessages', room.messages);
+                            socket.join(room.from);
+                            this.io.to(room.from).emit('directMessagesRoomNotification', 'message');
+                            socket.join(room.to);
+                            this.io.to(room.to).emit('directMessagesRoomNotification', 'message');
+                        }
+                    }
+                });
+            }));
+
+            socket.on('editMessage', (async (messageContent: string, message_id: string, roomId: string, fromId: string) => {
+
+                const dateNow = new Date();
+
+                await ChatRoomModel.update({id: roomId, 'messages._id': message_id}, {
+                    $set: {
+                        'messages.$.messageContent': messageContent,
+                        'messages.$.sendingTime': dateNow
+                    }
+                }, {multi: true});
+
+
+                await ChatRoomModel.findOne({id: roomId, from: {$in: [fromId, null]}}, async (err, room) => {
+                    if (err) throw  err;
+
+                    if (room) {
+                        room.lastMessage = room.messages[room.messages.length - 1].messageContent;
+                        await room.save((err) => {
+                            if (err) throw err;
+                        });
+                        console.log('edit message room',room);
+
+                        if (room.type === 'chat') {
+                            this.io.emit('mainChatMessages', room.messages);
+                            this.io.emit('mainChatMessageNotification', 'message');
+                        } else {
+                            this.io.to(roomId).emit('directRoomMessages', room.messages);
+                            socket.join(room.from);
+                            this.io.to(room.from).emit('directMessagesRoomNotification', 'message');
+                            socket.join(room.to);
+                            this.io.to(room.to).emit('directMessagesRoomNotification', 'message');
+                        }
                     }
                 });
             }));

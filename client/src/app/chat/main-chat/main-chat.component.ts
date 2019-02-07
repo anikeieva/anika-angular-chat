@@ -39,6 +39,7 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
   currentUserId: string;
   isChatRoomActive: boolean;
   isMessageRequestEdit: boolean;
+  currentMessageEdit: Message;
 
   @ViewChild('messageList') messageList: ElementRef;
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;
@@ -81,6 +82,7 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
 
     this.socketService.onMainChatMessages().subscribe((messages) => {
       this.messages = messages;
+      console.log(messages);
     });
 
     this.socketService.onMainChatRoom().subscribe(mainChatRoom => {
@@ -164,16 +166,33 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
   }
 
   sendMessage(messageContent: string): void {
+    console.log(messageContent);
+    console.log(!messageContent || /^\s*$/.test(messageContent);
     if (!messageContent || /^\s*$/.test(messageContent)) {
       return;
     }
-    this.timeNow = new Date();
-    this.user.action.sentMessage = true;
-    this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage', null);
-    this.socketService.sendMainChatMessage(this.message);
-    this.sharedService.editUser(null);
 
-    this.messageContent = null;
+    console.log(this.currentMessageEdit);
+    console.log(this.currentMessageEdit);
+    console.log(messageContent);
+    if (this.isMessageRequestEdit && this.currentMessageEdit) {
+      console.log('this.currentMessageEdit._id', this.currentMessageEdit._id);
+      console.log('this.mainChatRoom.id', this.mainChatRoom.id);
+      if (!this.socketService.socket) this.socketService.initSocket();
+      this.socketService.editMessage(messageContent, this.currentMessageEdit._id, this.mainChatRoom.id, this.currentMessageEdit.from.id);
+
+      this.isMessageRequestEdit = false;
+      this.messageContent = null;
+      this.currentMessageEdit = null;
+    } else {
+      this.timeNow = new Date();
+      this.user.action.sentMessage = true;
+      this.message = new Message(this.user, this.messageContent, this.timeNow, 'sentMessage', null);
+      this.socketService.sendMainChatMessage(this.message);
+      this.sharedService.editUser(null);
+
+      this.messageContent = null;
+    }
   }
 
   onJoin(): void {
@@ -229,6 +248,8 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
   }
 
   getMessageManipulatingComponent(message) {
+    console.log(this.mainChatRoom);
+    console.log(message);
 
     if (message.action === 'sentMessage') {
       const dialogRef = this.dialog.open(ChooseMessageManipulatingComponent, {data: {message: message, roomId: this.mainChatRoom.id}});
@@ -237,8 +258,17 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
         console.log(result);
         if (result === 'edit') {
           this.isMessageRequestEdit = true;
+          this.currentMessageEdit = message;
+          console.log(this.currentMessageEdit);
+          this.messageContent = message.messageContent;
         }
       });
     }
+  }
+
+  cancelEditMessage() {
+    this.isMessageRequestEdit = false;
+    this.messageContent = null;
+    this.currentMessageEdit = null;
   }
 }
