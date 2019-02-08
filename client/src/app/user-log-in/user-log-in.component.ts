@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {UserLogInParam} from "../shared/model/userLogInParam";
 import {SocketService} from "../shared/servises/socket.service";
 import {ActivatedRoute, Router} from "@angular/router";
+import {currentUserToken} from "../shared/model/getStorageToken";
+import {SESSION_STORAGE, StorageService} from "ngx-webstorage-service";
 
 @Component({
   selector: 'app-user-log-in',
@@ -16,7 +18,7 @@ export class UserLogInComponent implements OnInit {
 
   constructor(private  socketService: SocketService,
               private router: Router,
-              private route: ActivatedRoute) {
+              @Inject(SESSION_STORAGE) private storage: StorageService) {
     this.userLogInFormParam = new FormGroup({
       login: new FormControl('', Validators.required),
       password: new FormControl('', Validators.required)
@@ -31,6 +33,7 @@ export class UserLogInComponent implements OnInit {
     this.socketService.onUserLogIn().subscribe((userLogIn) => {
       if (userLogIn) {
         this.userIsAuthorized = true;
+        this.storage.set(currentUserToken, userLogIn);
         this.router.navigate(['/chat']);
       }
     });

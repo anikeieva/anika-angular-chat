@@ -229,7 +229,7 @@ export class ChatServer {
                         });
 
                         socket.join(user.id);
-                        this.io.emit('userLogIn', 'userLogIn');
+                        this.io.emit('userLogIn', user.id);
                         this.io.to(user.id).emit('user', user);
 
                         await ChatRoomModel.update({users: {$elemMatch: {id: user.id}}},

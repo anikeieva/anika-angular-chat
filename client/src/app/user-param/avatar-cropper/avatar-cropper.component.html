@@ -1,0 +1,16 @@
+<mat-card class="avatar-cropper__container">
+  <image-cropper class="avatar-cropper__image"
+                 [imageChangedEvent]="imageChangedEvent"
+                 [maintainAspectRatio]="true"
+                 [resizeToWidth]="100"
+                 [cropperMinWidth]="100"
+                 format="png"
+                 (imageCropped)="imageCropped($event)"
+                 [imageQuality]="30"
+                 [roundCropper]="true"
+  ></image-cropper>
+  <mat-card-actions class="avatar-cropper__actions">
+    <mat-icon class="avatar-cropper__action avatar-cropper__cancel" (click)="cancel()">close</mat-icon>
+    <mat-icon class="avatar-cropper__action avatar-cropper__done" (click)="avatarCropped()">done</mat-icon>
+  </mat-card-actions>
+</mat-card>

@@ -99,6 +99,8 @@ export class ChatComponent implements OnInit {
 
     });
 
+    if (!this.storage.has(currentUserToken)) this.router.navigateByUrl('/');
+
     this.getUserDirects();
   }
 
