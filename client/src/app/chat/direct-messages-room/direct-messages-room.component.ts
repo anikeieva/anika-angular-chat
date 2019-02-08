@@ -19,6 +19,7 @@ import {
 import {SharedService} from "../../shared/servises/shared.service";
 import {take} from "rxjs/operators";
 import {ChooseMessageManipulatingComponent} from "../../choose-message-manipulating/choose-message-manipulating.component";
+import {MessageDb} from "../../shared/model/messageDb";
 
 @Component({
   selector: 'app-direct-messages-room',
@@ -41,7 +42,7 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
   directRoomUserId: string;
   directRoomUserIdToken: string;
   isMessageRequestEdit: boolean;
-  currentMessageEdit: Message;
+  currentMessageEdit: MessageDb;
 
   @ViewChild('messageList') messageList: ElementRef;
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;

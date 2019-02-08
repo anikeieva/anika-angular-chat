@@ -9,6 +9,7 @@ import {SESSION_STORAGE, StorageService} from 'ngx-webstorage-service';
 import {SocketService} from "../shared/servises/socket.service";
 import {currentUserToken, getUserStorageToken} from "../shared/model/getStorageToken";
 import {Router} from "@angular/router";
+import {AvatarCropperComponent} from "./avatar-cropper/avatar-cropper.component";
 
 @Component({
   selector: 'app-user-param',
@@ -24,10 +25,10 @@ export class UserParamComponent implements OnInit {
   @Input() isEdit: boolean;
   @Input() userBeforeEdit: User;
   private currentAction: UserAction;
-  selectedAvatar: string | ArrayBuffer;
   private userParametersBeforeEdit: User;
   userToken: string;
   userIsAuthorized: boolean;
+  imageChangedEvent: any = '';
 
   constructor(private sharedService: SharedService,
               private dialog: MatDialog,
@@ -87,7 +88,6 @@ export class UserParamComponent implements OnInit {
     if (!this.socketService.socket) this.socketService.initSocket();
     this.socketService.sendUser(this.user);
 
-    console.log(this.userIsAuthorized);
 
     this.socketService.onUserSignUp().subscribe((user) => {
       if (user) {
@@ -128,12 +128,10 @@ export class UserParamComponent implements OnInit {
     this.user.action.edit = true;
     this.userToken = getUserStorageToken(this.user.id);
 
-
     const param: object = {
       paramBefore: this.userParametersBeforeEdit,
       paramAfter: this.user
     };
-
 
     if (!this.socketService.socket) this.socketService.initSocket();
 
@@ -149,29 +147,12 @@ export class UserParamComponent implements OnInit {
   }
 
   onSelectAvatar(event) {
-    const fileReader = new FileReader();
-    const file = event.target.files[0];
-    fileReader.readAsDataURL(file);
-
-    fileReader.onload = () => {
-      this.selectedAvatar = fileReader.result;
-
-      if (!this.user) this.user = this.userBeforeEdit;
-
-      this.user.avatar = this.selectedAvatar;
-
-      if (!this.socketService.socket) this.socketService.initSocket();
-
-      this.socketService.sendUser(this.user);
-      if (this.user.action.joined) this.socketService.sendMainChatUser(this.user);
-      this.storage.set(this.userToken, JSON.stringify(this.user));
-      this.sharedService.editUser(this.user);
-    };
+    this.imageChangedEvent = event;
+    if (!this.user) this.user = this.userBeforeEdit;
+    this.dialog.open(AvatarCropperComponent, {data: {user: this.user, event: event}});
   }
 
   chooseAvatar() {
-    const dialogRef = this.dialog.open(ChooseAvatarComponent);
-
-    dialogRef.afterClosed().subscribe(result => {});
+    this.dialog.open(ChooseAvatarComponent);
   }
 }

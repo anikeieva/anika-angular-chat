@@ -20,6 +20,7 @@ import {currentUserToken} from "../../shared/model/getStorageToken";
 import {take} from "rxjs/operators";
 import {Router} from "@angular/router";
 import {ChooseMessageManipulatingComponent} from "../../choose-message-manipulating/choose-message-manipulating.component";
+import {MessageDb} from "../../shared/model/messageDb";
 
 @Component({
   selector: 'app-main-chat',
@@ -39,7 +40,7 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
   currentUserId: string;
   isChatRoomActive: boolean;
   isMessageRequestEdit: boolean;
-  currentMessageEdit: Message;
+  currentMessageEdit: MessageDb;
 
   @ViewChild('messageList') messageList: ElementRef;
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;
@@ -115,7 +116,7 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
   private initIoConnection(): void {
     this.socketService.initSocket();
 
-    this.socketService.onMainChatMessage().subscribe((messages: Message<>) => {
+    this.socketService.onMainChatMessage().subscribe((messages: Message[]) => {
       this.messages = messages;
     });
 

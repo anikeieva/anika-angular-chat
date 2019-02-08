@@ -114,6 +114,12 @@
   font-size: 16px;
 }
 
+.change-avatar__button {
+  position: absolute;
+  right: 100px;
+  bottom: 100px;
+}
+
 @media only screen and (max-width: 1024px) and (min-width: 400px) {
   .welcome-component__title {
     font-size: 18px;

@@ -33,7 +33,6 @@ export class ChooseMessageManipulatingComponent implements OnInit {
   }
 
   delete(message, roomId) {
-    console.log(message);
     if (!this.socketService.socket) this.socketService.initSocket();
 
     this.socketService.deleteMessage(message._id, roomId, message.from.id);
@@ -41,7 +40,7 @@ export class ChooseMessageManipulatingComponent implements OnInit {
     this.closeDialog();
   }
 
-  edit(message, roomId) {
+  edit() {
     this.dialogRef.close('edit');
   }
 

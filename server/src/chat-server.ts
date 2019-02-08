@@ -280,6 +280,8 @@ export class ChatServer {
                             if (err) throw  err;
                         });
 
+                        this.io.to(user.id).emit('user', user);
+
                     } else {
 
                         await UserModel.findOne({login: user.login}, async (err, userWithItLogin) => {

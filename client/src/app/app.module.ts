@@ -18,6 +18,8 @@ import {UserLogInComponent} from './user-log-in/user-log-in.component';
 import {UserProfileComponent} from "./chat/user-profile/user-profile.component";
 import {DirectMessagesRoomComponent} from "./chat/direct-messages-room/direct-messages-room.component";
 import {ChooseMessageManipulatingComponent} from "./choose-message-manipulating/choose-message-manipulating.component";
+import {ImageCropperModule} from 'ngx-image-cropper';
+import {AvatarCropperComponent} from "./user-param/avatar-cropper/avatar-cropper.component";
 
 @NgModule({
   declarations: [
@@ -31,7 +33,8 @@ import {ChooseMessageManipulatingComponent} from "./choose-message-manipulating/
     UserLogInComponent,
     UserProfileComponent,
     DirectMessagesRoomComponent,
-    ChooseMessageManipulatingComponent
+    ChooseMessageManipulatingComponent,
+    AvatarCropperComponent
   ],
   imports: [
     BrowserModule,
@@ -41,11 +44,13 @@ import {ChooseMessageManipulatingComponent} from "./choose-message-manipulating/
     FormsModule,
     AppRoutingModule,
     HttpClientModule,
-    StorageServiceModule
+    StorageServiceModule,
+    ImageCropperModule
   ],
   entryComponents: [
     ChooseAvatarComponent,
-    ChooseMessageManipulatingComponent
+    ChooseMessageManipulatingComponent,
+    AvatarCropperComponent
   ],
   bootstrap: [AppComponent]
 })
