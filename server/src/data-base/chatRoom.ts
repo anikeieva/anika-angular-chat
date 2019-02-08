@@ -10,6 +10,7 @@ export const chatRoomSchema = new mongoose.Schema({
     avatar: String,
     type: String,
     lastMessage: String,
+    lastMessageFromCurrentUser: Boolean,
     users: [userSchema],
     activeUsers: [userSchema],
     messages: [messagesSchema],
@@ -38,7 +39,8 @@ const mainChatRoomDefault = {
     name: 'Main chat',
     avatar: 'src/app/images/chat/chat.png',
     type: TypeChatRooms.chat,
-    lastMessage: 'online chat'
+    lastMessage: 'online chat',
+    lastMessageFromCurrentUser: false
 };
 
 ChatRoomModel.findOneAndUpdate({id: 'main-chat'}, mainChatRoomDefault, chatOptions, (err) => {

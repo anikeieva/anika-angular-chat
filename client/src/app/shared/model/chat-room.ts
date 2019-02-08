@@ -6,6 +6,7 @@ export interface IChatRoomOptions {
   avatar: string;
   type: string;
   lastMessage: string;
+  lastMessageFromCurrentUser: boolean;
   users: Array<User>;
   activeUsers: Array<User>;
   from: string;
@@ -18,6 +19,7 @@ export class ChatRoom {
   avatar: string;
   type: string;
   lastMessage: string;
+  lastMessageFromCurrentUser: boolean;
   users: Array<User>;
   activeUsers: Array<User>;
   from: string;
@@ -29,6 +31,7 @@ export class ChatRoom {
     this.avatar = options.avatar;
     this.type = options.type;
     this.lastMessage = options.lastMessage;
+    this.lastMessage = options.lastMessageFromCurrentUser;
     this.users = options.users;
     this.activeUsers = options.activeUsers;
     this.from = options.from;

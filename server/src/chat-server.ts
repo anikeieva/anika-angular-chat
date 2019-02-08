@@ -14,6 +14,7 @@ import {ChatRoomModel} from "./data-base/chatRoom";
 import {TypeChatRooms} from "./model/type-chat-rooms";
 import {ClientUser} from "./model/clientUser";
 import {ClientChatRoom} from "./model/client-chat-room";
+import {ChatRoom} from "./model/chat-room";
 
 
 export class ChatServer {
@@ -417,6 +418,7 @@ export class ChatServer {
 
                     if (room) {
                         room.lastMessage = room.messages[room.messages.length - 1].messageContent;
+                        room.lastMessageFromCurrentUser = room.messages[room.messages.length - 1].from.id === room.from;
                         await room.save((err) => {
                             if (err) throw err;
                         });
@@ -436,6 +438,7 @@ export class ChatServer {
 
                             if (room) {
                                 room.lastMessage = room.messages[room.messages.length - 1].messageContent;
+                                room.lastMessageFromCurrentUser = room.messages[room.messages.length - 1].from.id === room.from;
                                 await room.save((err) => {
                                     if (err) throw err;
                                 });
@@ -467,6 +470,7 @@ export class ChatServer {
 
                     if (room) {
                         room.lastMessage = room.messages[room.messages.length - 1].messageContent;
+                        room.lastMessageFromCurrentUser = room.messages[room.messages.length - 1].from.id === room.from;
                         await room.save((err) => {
                             if (err) throw err;
                         });
@@ -486,6 +490,7 @@ export class ChatServer {
 
                             if (room) {
                                 room.lastMessage = room.messages[room.messages.length - 1].messageContent;
+                                room.lastMessageFromCurrentUser = room.messages[room.messages.length - 1].from.id === room.from;
                                 await room.save((err) => {
                                     if (err) throw err;
                                 });
@@ -515,6 +520,15 @@ export class ChatServer {
                     if (err) throw  err;
 
                     if (room) {
+                        room.lastMessageFromCurrentUser = room.messages[room.messages.length - 1].from.id === room.from;
+                        console.log(room.messages[room.messages.length - 1].from.id === room.from);
+                        console.log(room.lastMessageFromCurrentUser);
+                        console.log(room);
+                        await room.save((err) => {
+                            if (err) throw err;
+                        });
+                        console.log(new ClientChatRoom(room));
+
                         this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.from.id}`, new ClientChatRoom(room));
                         this.io.to(roomId).emit('directRoomMessages', room.messages);
                     }
@@ -533,18 +547,17 @@ export class ChatServer {
                     if (err) throw  err;
 
                     if (room) {
+                        room.lastMessageFromCurrentUser = room.messages[room.messages.length - 1].from.id === room.from;
+                        console.log(room.lastMessageFromCurrentUser);
+                        await room.save((err) => {
+                            if (err) throw err;
+                        });
                         this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.to.id}`, new ClientChatRoom(room));
                         this.io.to(roomId).emit('directRoomMessages', room.messages);
                     }
 
                     socket.join(message.to.id);
                     this.io.to(message.to.id).emit('directRoomMessage', message);
-
-                    await ChatRoomModel.find({$or: [{id: 'main-chat'},{from: message.to.id}]}, {messages: 0}, async (err, rooms) => {
-                        if (err) throw  err;
-                        if (rooms) this.io.to(message.to.id).emit(`get=${message.to.id}AllChatRooms`, rooms);
-                    });
-
                 });
             });
 

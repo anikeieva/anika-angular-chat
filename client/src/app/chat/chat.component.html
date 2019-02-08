@@ -18,8 +18,11 @@
         <mat-card-header class="chat-item__container">
           <img mat-card-avatar class="chat-item-avatar" [src]="room?.avatar || ''">
           <mat-card-title class="chat-item-title">{{room?.name}}</mat-card-title>
-          <mat-card-subtitle class="chat-item__last-message">
+          <mat-card-subtitle class="chat-item__last-message" *ngIf="!room.lastMessageFromCurrentUser || room.type === 'chat'">
             {{room?.lastMessage}}
+          </mat-card-subtitle>
+          <mat-card-subtitle class="chat-item__last-message" *ngIf="room.lastMessageFromCurrentUser && room.type === 'direct'">
+            You: {{room?.lastMessage}}
           </mat-card-subtitle>
         </mat-card-header>
       </mat-card>

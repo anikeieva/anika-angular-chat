@@ -115,6 +115,7 @@ export class ChatComponent implements OnInit {
 
       this.socketService.onGetAllChatRooms(this.currentUserId).pipe(take(1)).subscribe((rooms) => {
         this.rooms = rooms;
+        console.log(this.rooms);
       });
     }
   }
