@@ -24,6 +24,11 @@
   display: block;
 }
 
+.main-chat-container__content, .main-chat-container-footer {
+  width: 90%;
+  margin: 0 auto;
+}
+
 .main-chat__header-text {
   padding-top: 10px;
 }
@@ -140,7 +145,7 @@
   position: absolute;
   left: 0;
   right: 0;
-  margin: 0 20px 10px 20px;
+  margin-bottom: 10px;
 }
 
 .join-button {
