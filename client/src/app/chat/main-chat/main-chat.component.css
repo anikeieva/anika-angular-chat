@@ -34,7 +34,7 @@
 }
 
 .message-input {
-  width: calc(100% - 34px);
+  width: calc(100% - 34px - 70px);
 }
 
 .message-input textarea {
@@ -60,9 +60,9 @@
   overflow-y: auto;
   position: absolute;
   top: 15px;
-  left: 20px;
+  left: 0;
   bottom: 0;
-  right: 10px;
+  right: 0;
   visibility: hidden;
   display: flex;
   flex-direction: column;
@@ -163,6 +163,19 @@
 .main-chat-container-footer__icon {
   vertical-align: top;
   margin-top: 5px;
+}
+
+.message-send-button {
+  position: absolute;
+  right: 25px;
+  top: 5px;
+  border: 0;
+  background: transparent;
+  outline: none;
+  color: #8d63ad;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
 }
 
 .edit-message__container {

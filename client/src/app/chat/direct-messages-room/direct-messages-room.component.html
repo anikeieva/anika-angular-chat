@@ -44,5 +44,6 @@
       <textarea matInput mat-autosize (keyup.enter)="sendMessage(messageContent)" [(ngModel)]="messageContent"
                 autofocus autocomplete="off" matAutosizeMinRows="2"></textarea>
     </mat-form-field>
+    <button (click)="sendMessage(messageContent)" class="message-send-button">SEND</button>
   </mat-card-footer>
 </mat-card>
