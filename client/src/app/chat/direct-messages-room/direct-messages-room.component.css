@@ -110,6 +110,7 @@
 .message-item {
   width: fit-content;
   min-width: 50px;
+  max-width: 60%;
   position: relative;
   background-color: #4c62691a;
   border-radius: 5px;
@@ -117,6 +118,8 @@
   margin-right: 15px;
   margin-left: 60px;
   word-break: break-word;
+  padding: 7px 10px 20px 10px;
+  clear: both;
 }
 
 .message-item:last-child {
@@ -154,12 +157,6 @@
   font-size: 30px;
   color: white;
   background-color: blueviolet;
-}
-
-.message-item {
-  max-width: 40%;
-  padding: 7px 10px 20px 10px;
-  clear: both;
 }
 
 /* width */
