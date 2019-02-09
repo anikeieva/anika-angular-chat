@@ -96,7 +96,7 @@
   top: 15px;
   left: 0;
   bottom: 0;
-  right: 10;
+  right: 0;
   visibility: hidden;
   display: flex;
   flex-direction: column;
@@ -120,6 +120,15 @@
   word-break: break-word;
   padding: 7px 10px 20px 10px;
   clear: both;
+}
+
+.message-from-current-user {
+  background-color: #0d061370;
+  color: white;
+}
+
+.message-from-current-user .message-item-time {
+  color: white;
 }
 
 .message-item:last-child {

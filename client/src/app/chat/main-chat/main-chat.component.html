@@ -10,7 +10,8 @@
         <div #messageListItem class="message-list-item" *ngFor="let message of messages"
              [ngClass]="getClassOfMessageList(message, user)" (click)="getMessageManipulatingComponent(message)"
               [class.message-list-item_message]="message.action === 'sentMessage'"
-              [class.message-is-edited]="message.edited">
+              [class.message-is-edited]="message.edited"
+              [class.message-from-current-user]="message.from.id === user.id && message.action === 'sentMessage'">
 
           <p mat-line class="action-line" *ngIf="message.action === 'joined'">
             {{message.messageContent}}
