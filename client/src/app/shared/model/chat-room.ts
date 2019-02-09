@@ -31,7 +31,7 @@ export class ChatRoom {
     this.avatar = options.avatar;
     this.type = options.type;
     this.lastMessage = options.lastMessage;
-    this.lastMessage = options.lastMessageFromCurrentUser;
+    this.lastMessageFromCurrentUser = options.lastMessageFromCurrentUser;
     this.users = options.users;
     this.activeUsers = options.activeUsers;
     this.from = options.from;

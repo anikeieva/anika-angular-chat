@@ -12,9 +12,10 @@
 
       </mat-button-toggle-group>
 
-      <div class="sign-container__main-block">
-        <app-user-param [title]="'Is this your first time here? Sign up and join to chat'" [submitTitle]="'Sign up'" [isEdit]="false" *ngIf="isSignUp"></app-user-param>
-        <app-user-log-in *ngIf="!isSignUp"></app-user-log-in>
+      <div class="sign-container__main-block" #sign_container>
+        <app-user-param [title]="'Is this your first time here? Sign up and join to chat'"
+                        [submitTitle]="'Sign up'" [isEdit]="false" *ngIf="isSignUp" #sign_up_container></app-user-param>
+        <app-user-log-in *ngIf="!isSignUp" #log_in_container></app-user-log-in>
       </div>
     </div>
   </div>

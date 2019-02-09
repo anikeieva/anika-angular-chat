@@ -1,9 +1,10 @@
-<mat-card class="mat-card welcome-log-in">
-  <mat-card-header>
+<mat-card class="mat-card welcome-log-in" #main_container>
+  <img src="src/app/images/screens/message.jpg" class="welcome-log-in__img" alt="">
+  <mat-card-header #header>
     <mat-card-title>Did you already have you own account? Log in</mat-card-title>
   </mat-card-header>
 
-  <mat-card-content>
+  <mat-card-content #content>
     <form [formGroup]="userLogInFormParam">
       <mat-form-field>
         <input matInput placeholder="Login" name="login" formControlName="login" required>

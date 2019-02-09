@@ -1,8 +1,8 @@
 .welcome-log-in {
   max-width: 400px;
-  /*float: right;*/
   display: grid;
-  align-content: center;
+  /*align-content: end;*/
+  height: 100%;
 }
 
 .mat-form-field {
@@ -17,6 +17,7 @@
 .mat-card-title {
   color: dimgrey;
   font-size: 16px;
+  margin-top: 25px;
 }
 
 
@@ -26,3 +27,7 @@
   }
 }
 
+.welcome-log-in__img {
+  height: 156px;
+  margin: 0 auto;
+}

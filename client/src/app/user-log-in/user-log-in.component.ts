@@ -2,9 +2,9 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {UserLogInParam} from "../shared/model/userLogInParam";
 import {SocketService} from "../shared/servises/socket.service";
-import {ActivatedRoute, Router} from "@angular/router";
 import {currentUserToken} from "../shared/model/getStorageToken";
 import {SESSION_STORAGE, StorageService} from "ngx-webstorage-service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-user-log-in',
