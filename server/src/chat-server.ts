@@ -14,7 +14,6 @@ import {ChatRoomModel} from "./data-base/chatRoom";
 import {TypeChatRooms} from "./model/type-chat-rooms";
 import {ClientUser} from "./model/clientUser";
 import {ClientChatRoom} from "./model/client-chat-room";
-import {ChatRoom} from "./model/chat-room";
 
 
 export class ChatServer {
@@ -394,7 +393,7 @@ export class ChatServer {
                         if (err) throw err;
                     });
 
-                    this.io.emit('mainChatMessage', room.messages);
+                    this.io.emit('mainChatMessages', room.messages);
                     this.io.emit('mainChatMessageNotification', 'message');
                 });
             });

@@ -26,12 +26,6 @@ export class SocketService {
     this.socket.emit('mainChatMessage', message);
   }
 
-  public onMainChatMessage(): Observable<Message[]> {
-    return new Observable<Message[]>(observer => {
-      this.socket.on('mainChatMessage', (data: Message[]) => observer.next(data));
-    });
-  }
-
   public onMainChatMessageNotification(): Observable<string> {
     return new Observable<string>(observer => {
       this.socket.on('mainChatMessageNotification', (data: string) => observer.next(data));

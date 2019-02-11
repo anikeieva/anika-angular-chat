@@ -81,7 +81,7 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
 
     this.getUser();
     this.getChatRoom();
-    this.initIoConnection();
+    this.socketService.initSocket();
 
     this.socketService.onMainChatMessages().subscribe((messages) => {
       this.messages = messages;
@@ -111,15 +111,6 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
       this.messageList.nativeElement.scrollTop = this.messageList.nativeElement.scrollHeight;
     } catch (err) {
     }
-  }
-
-  private initIoConnection(): void {
-    this.socketService.initSocket();
-
-    this.socketService.onMainChatMessage().subscribe((messages: Message[]) => {
-      this.messages = messages;
-    });
-
   }
 
   getChatRoom() {
