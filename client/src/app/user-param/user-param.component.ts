@@ -136,7 +136,8 @@ export class UserParamComponent implements OnInit {
     if (!this.socketService.socket) this.socketService.initSocket();
 
     this.socketService.sendUser(this.user);
-    if (this.user.action.joined) this.socketService.sendMainChatUser(this.user);
+    // if (this.user.action.joined) this.socketService.sendMainChatUser(this.user);
+    if (this.user.action.joined) this.socketService.sendChatRoomUser(this.user);
     this.sharedService.editUser(param);
     this.storage.set(this.userToken, JSON.stringify(this.user));
   }

@@ -60,11 +60,7 @@ export class ChatComponent implements OnInit {
       if (message) this.getUserDirects();
     });
 
-    this.socketService.onDirectMessagesRoomNotification().subscribe(message => {
-      if (message) this.getUserDirects();
-    });
-
-    this.socketService.onMainChatMessageNotification().subscribe(message => {
+    this.socketService.onChatRoomNotification().subscribe(message => {
       if (message) this.getUserDirects();
     });
   }

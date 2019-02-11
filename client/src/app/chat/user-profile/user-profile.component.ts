@@ -109,7 +109,7 @@ export class UserProfileComponent implements OnInit {
 
       if (!this.socketService.socket) this.socketService.initSocket();
 
-      this.socketService.sendDirectMessagesRoomNotification(this.currentUserId);
+      this.socketService.sendChatRoomNotification(this.currentUserId);
     }
   }
 }

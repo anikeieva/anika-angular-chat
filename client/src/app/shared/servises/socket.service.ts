@@ -26,12 +26,6 @@ export class SocketService {
     this.socket.emit('mainChatMessage', message);
   }
 
-  public onMainChatMessageNotification(): Observable<string> {
-    return new Observable<string>(observer => {
-      this.socket.on('mainChatMessageNotification', (data: string) => observer.next(data));
-    });
-  }
-
   public onMainChatMessages(): Observable<Message[]> {
     return new Observable<Message[]>( observer => {
       this.socket.on('mainChatMessages', (messages: Array<Message>) => {
@@ -50,8 +44,8 @@ export class SocketService {
     })
   }
 
-  public sendMainChatUser(user: User): void {
-    this.socket.emit('mainChatUser', user);
+  public sendChatRoomUser(user: User): void {
+    this.socket.emit('chatRoomUser', user);
   }
 
   public sendUserLogInParam (userLogInParam: UserLogInParam): void {
@@ -70,13 +64,14 @@ export class SocketService {
     })
   }
 
-  public sendRequestForMainChatRoom(): void {
-    this.socket.emit('requestForMainChatRoom');
+  public sendRequestForChatRoom(roomId: string): void {
+    this.socket.emit('requestForChatRoom', roomId);
   }
 
-  public onMainChatRoom(): Observable<ChatRoom> {
+
+  public onChatRoom(roomId): Observable<ChatRoom> {
     return new Observable<ChatRoom>(observer => {
-      this.socket.on('mainChatRoom', (mainChatRoom: ChatRoom) => observer.next(mainChatRoom));
+      this.socket.on(`chatRoom_id=${roomId}`, (chatRoom: ChatRoom) => observer.next(chatRoom));
     })
   }
 
@@ -128,13 +123,13 @@ export class SocketService {
     this.socket.emit('directMessagesRoomMessage', message, roomId);
   }
 
-  public sendDirectMessagesRoomNotification(userId): void {
-    this.socket.emit('directMessagesRoomNotification',userId);
+  public sendChatRoomNotification(userId): void {
+    this.socket.emit('chatRoomNotification',userId);
   }
 
-  public onDirectMessagesRoomNotification(): Observable<string> {
+  public onChatRoomNotification(): Observable<string> {
     return new Observable<string>(observer => {
-      this.socket.on('directMessagesRoomNotification', (data: string) => observer.next(data));
+      this.socket.on('chatRoomNotification', (data: string) => observer.next(data));
     });
   }
 

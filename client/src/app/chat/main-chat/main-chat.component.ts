@@ -81,14 +81,16 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
 
     this.getUser();
     this.getChatRoom();
-    this.socketService.initSocket();
+    if (!this.socketService.socket) this.socketService.initSocket();
 
     this.socketService.onMainChatMessages().subscribe((messages) => {
+      console.log(this.messages);
       this.messages = messages;
     });
 
-    this.socketService.onMainChatRoom().subscribe(mainChatRoom => {
-      this.mainChatRoom = mainChatRoom;
+    this.socketService.onChatRoom('main-chat').subscribe(chatRoom => {
+      this.mainChatRoom = chatRoom;
+      console.log(this.mainChatRoom);
     });
   }
 
@@ -116,10 +118,11 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
   getChatRoom() {
     this.mainChatRoomToken = getChatRoomStorageToken('main-chat');
 
-    if (this.socketService.socket) this.socketService.sendRequestForMainChatRoom();
+    if (this.socketService.socket) this.socketService.sendRequestForChatRoom('main-chat');
 
-    this.socketService.onMainChatRoom().pipe(take(1)).subscribe(mainChatRoom => {
-      this.mainChatRoom = mainChatRoom;
+    this.socketService.onChatRoom('main-chat').pipe(take(1)).subscribe(chatRoom => {
+      this.mainChatRoom = chatRoom;
+      console.log(this.mainChatRoom);
 
       this.storage.set(this.mainChatRoomToken, JSON.stringify(this.mainChatRoom));
     }, (err) => {
@@ -186,7 +189,8 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
     this.storage.set(this.userToken, JSON.stringify(this.user));
     this.socketService.initSocket();
     this.socketService.sendUser(this.user);
-    this.socketService.sendMainChatUser(this.user);
+    // this.socketService.sendMainChatUser(this.user);
+    this.socketService.sendChatRoomUser(this.user);
 
     this.timeNow = new Date();
     this.message = new Message(this.user, `${this.user.firstName} ${this.user.lastName} joined to conversation`, this.timeNow, 'joined', null, false);
@@ -208,6 +212,7 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
 
         const messageContent = `${param.paramBefore.firstName} ${param.paramBefore.lastName} already is ${this.user.firstName} ${this.user.lastName}`;
         this.message = new Message(this.user, messageContent, this.timeNow, 'edit', null, false);
+        console.log(this.message);
         this.sendNotification(this.message);
       }
 

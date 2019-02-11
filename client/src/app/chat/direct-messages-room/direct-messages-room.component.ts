@@ -79,6 +79,10 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
         if (messages) this.messages = messages;
       });
 
+      this.socketService.onChatRoom(this.directMessagesRoomId).subscribe(chatRoom => {
+        this.directMessagesRoom = chatRoom;
+      });
+
       this.getDirectRoom();
     });
 

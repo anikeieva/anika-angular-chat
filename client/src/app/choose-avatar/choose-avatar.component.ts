@@ -77,7 +77,8 @@ export class ChooseAvatarComponent implements OnInit {
       }
       this.socketService.sendUser(this.user);
       if (this.user.action.joined) {
-        this.socketService.sendMainChatUser(this.user);
+        // this.socketService.sendMainChatUser(this.user);
+        this.socketService.sendChatRoomUser(this.user);
       }
       this.sharedService.editUser(this.user);
       this.storage.set(this.userToken, JSON.stringify(this.user));

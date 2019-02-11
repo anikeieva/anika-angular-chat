@@ -82,12 +82,12 @@ export class ChatServer {
 
             // this.clearMongooseData();
 
-            socket.on('requestForMainChatRoom', (async () => {
+            socket.on('requestForChatRoom', (async (roomId) => {
 
-                await ChatRoomModel.findOne({id: 'main-chat'}, {messages: 0}, (err, room) => {
+                await ChatRoomModel.findOne({id: roomId}, {messages: 0}, (err, room) => {
                     if (err) throw  err;
 
-                    if (room) this.io.emit('mainChatRoom', room);
+                    if (room) this.io.emit(`chatRoom_id=${roomId}`, room);
                 });
 
             }));
@@ -205,10 +205,10 @@ export class ChatServer {
             }));
 
 
-            socket.on('directMessagesRoomNotification', (async (userId: string) => {
+            socket.on('chatRoomNotification', (async (userId: string) => {
 
                 socket.join(userId);
-                this.io.to(userId).emit('directMessagesRoomNotification', 'message');
+                this.io.to(userId).emit('chatRoomNotification', 'message');
 
             }));
 
@@ -324,14 +324,25 @@ export class ChatServer {
                 });
             });
 
-            socket.on('mainChatUser', async (user) => {
+            socket.on('chatRoomUser', async (user) => {
 
-                await ChatRoomModel.findOne({id: 'main-chat'}, async (err, room) => {
-                    if (err) throw  err;
+                await ChatRoomModel.find({$or: [{id: 'main-chat'},{from: user.id},{to: user.id}]}).cursor().eachAsync(async (room) => {
+
+                    if (room.type === 'direct' && room.to === user.id) {
+                        await ChatRoomModel.update({type: 'direct', to: user.id},
+                            {
+                                $set: {
+                                    name: `${user.firstName} ${user.lastName}`,
+                                    avatar: user.avatar
+                                }
+                            }, {multi: true}, (err) => {
+                                if (err) console.log('main chat user update error ', err)
+                            });
+                    }
 
                     if (room.users.some(item => item.id === user.id)) {
 
-                        await ChatRoomModel.findOneAndUpdate({'id': 'main-chat', users: {$elemMatch: {id: user.id}}},
+                        await ChatRoomModel.update({$or: [{id: 'main-chat'},{from: user.id},{to: user.id}], users: {$elemMatch: {id: user.id}}},
                             {
                                 $set: {
                                     'users.$.firstName': user.firstName,
@@ -340,12 +351,12 @@ export class ChatServer {
                                     'users.$.avatar': user.avatar,
                                     'users.$.action': user.action
                                 }
-                            }, (err) => {
+                            }, {multi: true}, (err) => {
                                 if (err) console.log('main chat user update error ', err)
                             });
 
                         await ChatRoomModel.findOneAndUpdate({
-                                'id': 'main-chat',
+                                $or: [{id: 'main-chat'},{from: user.id},{to: user.id}],
                                 activeUsers: {$elemMatch: {id: user.id}}
                             },
                             {
@@ -356,15 +367,11 @@ export class ChatServer {
                                     'activeUsers.$.avatar': user.avatar,
                                     'activeUsers.$.action': user.action
                                 }
-                            }, (err) => {
+                            }, {multi: true}, (err) => {
                                 if (err) console.log('main chat activeUsers update error ', err)
                             });
 
-                        await ChatRoomModel.findOne({'id': 'main-chat'}, (err, room) => {
-                            this.io.emit('mainChatRoom', room);
-                        });
-
-                    } else {
+                    } else if (room.type === 'chat' && !room.users.some(item => item.id === user.id)) {
 
                         room.users.push(user);
                         room.getActiveUsers();
@@ -372,10 +379,17 @@ export class ChatServer {
                         await room.save((err) => {
                             if (err) throw err;
                         });
-
-                        const clientRoom = new ClientChatRoom(room);
-                        this.io.emit('mainChatRoom', clientRoom);
                     }
+
+                    socket.join(room.from);
+                    this.io.to(room.from).emit('chatRoomNotification', 'message');
+                    socket.join(room.to);
+                    this.io.to(room.to).emit('chatRoomNotification', 'message');
+
+                    await ChatRoomModel.find({$or: [{id: 'main-chat'},{from: user.id},{to: user.id}]}).cursor().eachAsync(async (room) => {
+                        const clientRoom = new ClientChatRoom(room);
+                        this.io.emit(`chatRoom_id=${room.id}`, clientRoom);
+                    });
                 });
             });
 
@@ -394,7 +408,7 @@ export class ChatServer {
                     });
 
                     this.io.emit('mainChatMessages', room.messages);
-                    this.io.emit('mainChatMessageNotification', 'message');
+                    this.io.emit('chatRoomNotification', 'message');
                 });
             });
 
@@ -425,11 +439,11 @@ export class ChatServer {
 
                         if (room.type === 'chat') {
                             this.io.emit('mainChatMessages', room.messages);
-                            this.io.emit('mainChatMessageNotification', 'message');
+                            this.io.emit('chatRoomNotification', 'message');
                         } else {
                             this.io.to(roomId).emit('directRoomMessages', room.messages);
                             socket.join(room.from);
-                            this.io.to(room.from).emit('directMessagesRoomNotification', 'message');
+                            this.io.to(room.from).emit('chatRoomNotification', 'message');
                         }
 
                         await ChatRoomModel.findOne({id: roomId, from: {$in: [room.to, null]}}, async (err, room) => {
@@ -443,7 +457,7 @@ export class ChatServer {
                                 });
                                 this.io.to(roomId).emit('directRoomMessages', room.messages);
                                 socket.join(room.to);
-                                this.io.to(room.to).emit('directMessagesRoomNotification', 'message');
+                                this.io.to(room.to).emit('chatRoomNotification', 'message');
 
                             }
                         });
@@ -477,11 +491,11 @@ export class ChatServer {
 
                         if (room.type === 'chat') {
                             this.io.emit('mainChatMessages', room.messages);
-                            this.io.emit('mainChatMessageNotification', 'message');
+                            this.io.emit('chatRoomNotification', 'message');
                         } else {
                             this.io.to(roomId).emit('directRoomMessages', room.messages);
                             socket.join(room.from);
-                            this.io.to(room.from).emit('directMessagesRoomNotification', 'message');
+                            this.io.to(room.from).emit('chatRoomNotification', 'message');
                         }
 
                         await ChatRoomModel.findOne({id: roomId, from: {$in: [room.to, null]}}, async (err, room) => {
@@ -495,7 +509,7 @@ export class ChatServer {
                                 });
                                 this.io.to(roomId).emit('directRoomMessages', room.messages);
                                 socket.join(room.to);
-                                this.io.to(room.to).emit('directMessagesRoomNotification', 'message');
+                                this.io.to(room.to).emit('chatRoomNotification', 'message');
 
                             }
                         });
