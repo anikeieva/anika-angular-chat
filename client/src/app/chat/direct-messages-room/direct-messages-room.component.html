@@ -60,7 +60,8 @@
     <div *ngIf="isManipulatingMessageDesktop" class="manipulating-message-desktop">
       <ul class="manipulating-message-desktop__container">
         <li class="manipulating-message-desktop__item" (click)="copyMessage(messageSelectedForManipulatingDesktop)">Copy</li>
-        <li class="manipulating-message-desktop__item" (click)="editMessage(messageSelectedForManipulatingDesktop)">Edit</li>
+        <li class="manipulating-message-desktop__item" (click)="editMessage(messageSelectedForManipulatingDesktop)"
+        *ngIf="messageSelectedForManipulatingDesktop.from.id === user.id">Edit</li>
         <li class="manipulating-message-desktop__item" (click)="deleteMessage(messageSelectedForManipulatingDesktop, directMessagesRoomId)">Delete</li>
         <li (click)="cancelManipulatingMessageDesktop()"
             class="manipulating-message-desktop__item manipulating-message-desktop__cancel-button">CANCEL</li>

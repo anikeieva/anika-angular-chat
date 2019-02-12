@@ -21,6 +21,7 @@ import {take} from "rxjs/operators";
 import {Router} from "@angular/router";
 import {ChooseMessageManipulatingComponent} from "../../choose-message-manipulating/choose-message-manipulating.component";
 import {MessageDb} from "../../shared/model/messageDb";
+import {BreakpointObserver, BreakpointState} from "@angular/cdk/layout";
 
 @Component({
   selector: 'app-main-chat',
@@ -41,6 +42,9 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
   isChatRoomActive: boolean;
   isMessageRequestEdit: boolean;
   currentMessageEdit: MessageDb;
+  isMobile: boolean;
+  isManipulatingMessageDesktop: boolean;
+  messageSelectedForManipulatingDesktop: Message
 
   @ViewChild('messageList') messageList: ElementRef;
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;
@@ -53,10 +57,17 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
               @Inject(SESSION_STORAGE) private storage: StorageService,
               private router: Router,
               private renderer: Renderer2,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private breakpointObserver: BreakpointObserver) {
   }
 
   ngOnInit(): void {
+
+    this.breakpointObserver.observe([
+      '(max-width: 600px)'
+    ]).subscribe((result: BreakpointState) => {
+      this.isMobile = result.matches;
+    });
 
     this.socketService.initSocket();
 
@@ -215,20 +226,35 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
 
   getMessageManipulatingComponent(message) {
 
+    if (this.messageSelectedForManipulatingDesktop) {
+      this.cancelManipulatingMessageDesktop();
+      return;
+    }
+
     if (!message._id) {
       this.socketService.initSocket();
     }
 
     if (message.action === 'sentMessage') {
-      const dialogRef = this.dialog.open(ChooseMessageManipulatingComponent, {data: {message: message, roomId: this.mainChatRoom.id}});
+      if (this.isMobile) {
+        const dialogRef = this.dialog.open(ChooseMessageManipulatingComponent, {
+          data: {
+            message: message,
+            roomId: this.mainChatRoom.id
+          }
+        });
 
-      dialogRef.afterClosed().subscribe(result => {
-        if (result === 'edit') {
-          this.isMessageRequestEdit = true;
-          this.currentMessageEdit = message;
-          this.messageContent = message.messageContent;
-        }
-      });
+        dialogRef.afterClosed().subscribe(result => {
+          if (result === 'edit') {
+            this.isMessageRequestEdit = true;
+            this.currentMessageEdit = message;
+            this.messageContent = message.messageContent;
+          }
+        });
+      } else {
+        this.isManipulatingMessageDesktop = true;
+        this.messageSelectedForManipulatingDesktop = message;
+      }
     }
   }
 
@@ -236,5 +262,43 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
     this.isMessageRequestEdit = false;
     this.messageContent = null;
     this.currentMessageEdit = null;
+  }
+
+  cancelManipulatingMessageDesktop() {
+    this.isManipulatingMessageDesktop = false;
+    this.messageSelectedForManipulatingDesktop = null;
+  }
+
+  copyMessage(message) {
+    if (message) {
+      let selBox = document.createElement('textarea');
+      selBox.style.position = 'fixed';
+      selBox.style.left = '0';
+      selBox.style.top = '0';
+      selBox.style.opacity = '0';
+      selBox.value = message.messageContent;
+      document.body.appendChild(selBox);
+      selBox.focus();
+      selBox.select();
+      document.execCommand('copy');
+
+      this.cancelManipulatingMessageDesktop();
+    }
+  }
+
+  deleteMessage(message, roomId) {
+    if (!this.socketService.socket) this.socketService.initSocket();
+
+    this.socketService.deleteMessage(message._id, roomId, message.from.id);
+
+    this.cancelManipulatingMessageDesktop();
+  }
+
+  editMessage(message) {
+    this.cancelManipulatingMessageDesktop();
+
+    this.isMessageRequestEdit = true;
+    this.currentMessageEdit = message;
+    this.messageContent = message.messageContent;
   }
 }

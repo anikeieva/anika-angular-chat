@@ -143,6 +143,10 @@
   background-color: #8d63ad!important;
 }
 
+.message-item__selected, .message-item__selected .message-item-time {
+  color: white;
+}
+
 .message-list-item__current-user {
   float: right;
 }

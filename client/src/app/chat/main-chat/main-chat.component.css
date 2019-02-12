@@ -99,6 +99,15 @@
   margin-bottom: 0;
 }
 
+.message-item__selected {
+  background-color: #8d63ad!important;
+}
+
+.message-item__selected, .message-item__selected .message-item-time,
+.message-item__selected .message-list-item-title {
+  color: white;
+}
+
 .message-list-item__current-user {
   float: right;
 }
@@ -276,6 +285,38 @@
 .mat-card-avatar {
   cursor: pointer;
 }
+
+.manipulating-message-desktop {
+  position: relative;
+}
+
+.manipulating-message-desktop__container {
+  list-style: none;
+  margin: 0 auto;
+  width: fit-content;
+  padding: 15px 10px;
+}
+
+.manipulating-message-desktop__item {
+  display: inline-block;
+  padding: 10px 15px;
+  margin-right: 20px;
+  background-color: #8d63ad;
+  color: white;
+  cursor: pointer;
+}
+
+.manipulating-message-desktop__item:last-child {
+  margin-right: 0;
+}
+
+.manipulating-message-desktop__cancel-button {
+  background-color: transparent;
+  border: 0;
+  outline: none;
+  color:  #8d63ad;
+}
+
 
 @media only screen and (max-width: 900px) {
   .message-list {

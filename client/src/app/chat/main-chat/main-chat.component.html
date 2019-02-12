@@ -8,10 +8,11 @@
       <div class="message-list-content">
 
         <div #messageListItem class="message-list-item" *ngFor="let message of messages"
-             [ngClass]="getClassOfMessageList(message, user)" (click)="getMessageManipulatingComponent(message)"
+              [ngClass]="getClassOfMessageList(message, user)" (click)="getMessageManipulatingComponent(message)"
               [class.message-list-item_message]="message.action === 'sentMessage'"
               [class.message-is-edited]="message.edited"
-              [class.message-from-current-user]="message.from.id === user.id && message.action === 'sentMessage'">
+              [class.message-from-current-user]="message.from.id === user.id && message.action === 'sentMessage'"
+              [class.message-item__selected]="message === messageSelectedForManipulatingDesktop">
 
           <p mat-line class="action-line" *ngIf="message.action === 'joined'">
             {{message.messageContent}}
@@ -53,14 +54,28 @@
         <p class="edit-message__message">{{currentMessageEdit.messageContent}}</p>
       </div>
     </div>
-    <mat-icon class="main-chat-container-footer__icon">create</mat-icon>
-    <mat-form-field class="message-input" [floatLabel]="'never'">
-      <mat-label>Type a message...</mat-label>
-      <textarea matInput mat-autosize (keyup.enter)="sendMessage(messageContent)" [(ngModel)]="messageContent"
-                autofocus autocomplete="off" matAutosizeMinRows="2"></textarea>
-    </mat-form-field>
-    <button (click)="sendMessage(messageContent)" class="message-send-button"
-            [class.message-send-button__edit]="isMessageRequestEdit && currentMessageEdit">SEND</button>
+
+    <div *ngIf="!isManipulatingMessageDesktop">
+      <mat-icon class="main-chat-container-footer__icon">create</mat-icon>
+      <mat-form-field class="message-input" [floatLabel]="'never'">
+        <mat-label>Type a message...</mat-label>
+        <textarea matInput mat-autosize (keyup.enter)="sendMessage(messageContent)" [(ngModel)]="messageContent"
+                  autofocus autocomplete="off" matAutosizeMinRows="2"></textarea>
+      </mat-form-field>
+      <button (click)="sendMessage(messageContent)" class="message-send-button"
+              [class.message-send-button__edit]="isMessageRequestEdit && currentMessageEdit">SEND</button>
+    </div>
+
+    <div *ngIf="isManipulatingMessageDesktop" class="manipulating-message-desktop">
+      <ul class="manipulating-message-desktop__container">
+        <li class="manipulating-message-desktop__item" (click)="copyMessage(messageSelectedForManipulatingDesktop)">Copy</li>
+        <li class="manipulating-message-desktop__item" (click)="editMessage(messageSelectedForManipulatingDesktop)"
+            *ngIf="messageSelectedForManipulatingDesktop.from.id === user.id">Edit</li>
+        <li class="manipulating-message-desktop__item" (click)="deleteMessage(messageSelectedForManipulatingDesktop, directMessagesRoomId)">Delete</li>
+        <li (click)="cancelManipulatingMessageDesktop()"
+            class="manipulating-message-desktop__item manipulating-message-desktop__cancel-button">CANCEL</li>
+      </ul>
+    </div>
   </mat-card-footer>
 </mat-card>
 <mat-card class="main-chat-container" layot="column" *ngIf="!user.action.joined">

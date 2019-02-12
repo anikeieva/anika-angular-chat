@@ -208,6 +208,11 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
 
   getMessageManipulatingComponent(message) {
 
+    if (this.messageSelectedForManipulatingDesktop) {
+      this.cancelManipulatingMessageDesktop();
+      return;
+    }
+
     if (message.action === 'sentMessage') {
       if (this.isMobile) {
         const dialogRef = this.dialog.open(ChooseMessageManipulatingComponent, {data: {message: message, roomId: this.directMessagesRoomId}});
@@ -234,6 +239,7 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
 
   cancelManipulatingMessageDesktop() {
     this.isManipulatingMessageDesktop = false;
+    this.messageSelectedForManipulatingDesktop = null;
   }
 
   getClassOfMessageList(message, user) {
