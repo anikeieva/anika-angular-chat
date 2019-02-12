@@ -20,6 +20,7 @@ import {SharedService} from "../../shared/servises/shared.service";
 import {take} from "rxjs/operators";
 import {ChooseMessageManipulatingComponent} from "../../choose-message-manipulating/choose-message-manipulating.component";
 import {MessageDb} from "../../shared/model/messageDb";
+import {BreakpointObserver, BreakpointState} from "@angular/cdk/layout";
 
 @Component({
   selector: 'app-direct-messages-room',
@@ -43,6 +44,7 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
   directRoomUserIdToken: string;
   isMessageRequestEdit: boolean;
   currentMessageEdit: MessageDb;
+  isMobile: boolean;
 
   @ViewChild('messageList') messageList: ElementRef;
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;
@@ -55,9 +57,17 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
               @Inject(SESSION_STORAGE) private storage: StorageService,
               private sharedService: SharedService,
               private renderer: Renderer2,
-              private dialog: MatDialog) {}
+              private dialog: MatDialog,
+              private breakpointObserver: BreakpointObserver) {}
 
   ngOnInit() {
+
+    this.breakpointObserver.observe([
+      '(max-width: 600px)'
+    ]).subscribe((result: BreakpointState) => {
+      this.isMobile = result.matches;
+    });
+
     this.directRoomUserIdToken = currentDirectUserToken;
 
     if (this.storage.has(this.directRoomUserIdToken)) {
@@ -197,15 +207,19 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
   getMessageManipulatingComponent(message) {
 
     if (message.action === 'sentMessage') {
-      const dialogRef = this.dialog.open(ChooseMessageManipulatingComponent, {data: {message: message, roomId: this.directMessagesRoomId}});
+      if (this.isMobile) {
+        const dialogRef = this.dialog.open(ChooseMessageManipulatingComponent, {data: {message: message, roomId: this.directMessagesRoomId}});
 
-      dialogRef.afterClosed().subscribe(result => {
-        if (result === 'edit') {
-          this.isMessageRequestEdit = true;
-          this.currentMessageEdit = message;
-          this.messageContent = message.messageContent;
-        }
-      });
+        dialogRef.afterClosed().subscribe(result => {
+          if (result === 'edit') {
+            this.isMessageRequestEdit = true;
+            this.currentMessageEdit = message;
+            this.messageContent = message.messageContent;
+          }
+        });
+      } else {
+
+      }
     }
   }
 

@@ -84,6 +84,10 @@
   font-size: 15px;
   cursor: pointer;
 }
+
+.message-send-button.message-send-button__edit {
+  top: 75px;
+}
 .action-line {
   text-align: center;
   font-size: 15.5px;

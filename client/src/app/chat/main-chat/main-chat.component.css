@@ -187,6 +187,10 @@
   cursor: pointer;
 }
 
+.message-send-button.message-send-button__edit {
+  top: 75px;
+}
+
 .edit-message__container {
   position: relative;
   left: 34px;
