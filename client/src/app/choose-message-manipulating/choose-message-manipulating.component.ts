@@ -8,7 +8,6 @@ import {SocketService} from "../shared/servises/socket.service";
   styleUrls: ['./choose-message-manipulating.component.css']
 })
 export class ChooseMessageManipulatingComponent implements OnInit {
-
   constructor(@Inject(MAT_DIALOG_DATA) public data: any,
               private socketService: SocketService,
               public dialogRef: MatDialogRef<ChooseMessageManipulatingComponent>) {}

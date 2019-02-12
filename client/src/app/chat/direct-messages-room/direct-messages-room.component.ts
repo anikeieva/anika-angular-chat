@@ -45,6 +45,8 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
   isMessageRequestEdit: boolean;
   currentMessageEdit: MessageDb;
   isMobile: boolean;
+  isManipulatingMessageDesktop: boolean;
+  messageSelectedForManipulatingDesktop: Message
 
   @ViewChild('messageList') messageList: ElementRef;
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;
@@ -218,7 +220,8 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
           }
         });
       } else {
-
+        this.isManipulatingMessageDesktop = true;
+        this.messageSelectedForManipulatingDesktop = message;
       }
     }
   }
@@ -229,6 +232,10 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
     this.currentMessageEdit = null;
   }
 
+  cancelManipulatingMessageDesktop() {
+    this.isManipulatingMessageDesktop = false;
+  }
+
   getClassOfMessageList(message, user) {
     if (message.action === 'sentMessage') {
       if (message.from.id === user.id) {
@@ -237,5 +244,38 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
       return 'message-item';
     }
     return 'action-item';
+  }
+
+  copyMessage(message) {
+    if (message) {
+      let selBox = document.createElement('textarea');
+      selBox.style.position = 'fixed';
+      selBox.style.left = '0';
+      selBox.style.top = '0';
+      selBox.style.opacity = '0';
+      selBox.value = message.messageContent;
+      document.body.appendChild(selBox);
+      selBox.focus();
+      selBox.select();
+      document.execCommand('copy');
+
+      this.cancelManipulatingMessageDesktop();
+    }
+  }
+
+  deleteMessage(message, roomId) {
+    if (!this.socketService.socket) this.socketService.initSocket();
+
+    this.socketService.deleteMessage(message._id, roomId, message.from.id);
+
+    this.cancelManipulatingMessageDesktop();
+  }
+
+  editMessage(message) {
+    this.cancelManipulatingMessageDesktop();
+
+    this.isMessageRequestEdit = true;
+    this.currentMessageEdit = message;
+    this.messageContent = message.messageContent;
   }
 }

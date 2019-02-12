@@ -139,6 +139,10 @@
   clear: both;
 }
 
+.message-item__selected {
+  background-color: #8d63ad!important;
+}
+
 .message-list-item__current-user {
   float: right;
 }
@@ -257,6 +261,37 @@
 
 .message-is-edited {
   min-width: 70px;
+}
+
+.manipulating-message-desktop {
+  position: relative;
+}
+
+.manipulating-message-desktop__container {
+  list-style: none;
+  margin: 0 auto;
+  width: fit-content;
+  padding: 15px 10px;
+}
+
+.manipulating-message-desktop__item {
+  display: inline-block;
+  padding: 10px 15px;
+  margin-right: 20px;
+  background-color: #8d63ad;
+  color: white;
+  cursor: pointer;
+}
+
+.manipulating-message-desktop__item:last-child {
+  margin-right: 0;
+}
+
+.manipulating-message-desktop__cancel-button {
+  background-color: transparent;
+  border: 0;
+  outline: none;
+  color:  #8d63ad;
 }
 
 @media only screen and (max-width: 900px) {
