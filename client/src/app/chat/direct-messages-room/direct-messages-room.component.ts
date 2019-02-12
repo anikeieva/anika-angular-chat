@@ -76,7 +76,6 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
       this.socketService.sendRequestForDirectRoomMessages(this.directMessagesRoomId);
 
       this.socketService.onDirectRoomMessages().subscribe((messages: Message[]) => {
-        console.log(messages);
         if (messages) this.messages = messages;
       });
 

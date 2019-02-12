@@ -29,6 +29,14 @@
   margin: 0 auto;
 }
 
+.chat-room-container-footer {
+  bottom: 0;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin-bottom: 10px;
+}
+
 
 .direct-messages-room__user-activity {
   color: white;
@@ -57,14 +65,6 @@
 
 .message-input textarea.cdk-textarea-autosize-measuring {
   padding: 4px 0 !important;
-}
-
-.chat-room-container-footer {
-  bottom: 0;
-  position: absolute;
-  left: 0;
-  right: 0;
-  margin-bottom: 10px;
 }
 
 .chat-room-container-footer__icon {
@@ -126,6 +126,10 @@
   clear: both;
 }
 
+.message-item:last-child {
+  margin-bottom: 0;
+}
+
 .message-list-item {
   padding: 7px 10px 20px 10px;
   clear: both;
@@ -142,10 +146,6 @@
 
 .message-from-current-user .message-item-time {
   color: white;
-}
-
-.message-item:last-child {
-  margin-bottom: 0;
 }
 
 .message-item__currentUser {
@@ -212,12 +212,6 @@
 
 .mat-card-avatar {
   cursor: pointer;
-}
-
-.chat-room__header::after {
-  display: block;
-  content: '';
-  clear: both;
 }
 
 ::ng-deep .mat-form-field-label-wrapper {

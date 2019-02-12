@@ -83,13 +83,11 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
     if (!this.socketService.socket) this.socketService.initSocket();
 
     this.socketService.onMainChatMessages().subscribe((messages) => {
-      console.log(this.messages);
       this.messages = messages;
     });
 
     this.socketService.onChatRoom('main-chat').subscribe(chatRoom => {
       this.mainChatRoom = chatRoom;
-      console.log(this.mainChatRoom);
     });
   }
 
@@ -121,7 +119,6 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
 
     this.socketService.onChatRoom('main-chat').pipe(take(1)).subscribe(chatRoom => {
       this.mainChatRoom = chatRoom;
-      console.log(this.mainChatRoom);
 
       this.storage.set(this.mainChatRoomToken, JSON.stringify(this.mainChatRoom));
     }, (err) => {

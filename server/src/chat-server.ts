@@ -196,7 +196,6 @@ export class ChatServer {
                     if (err) throw  err;
 
                     if (rooms) {
-                        console.log('all rooms', rooms);
                         socket.join(userId);
                         this.io.to(userId).emit(`get=${userId}AllChatRooms`, rooms);
                     }
@@ -429,13 +428,10 @@ export class ChatServer {
 
                     if (room) {
                         room.lastMessageFromCurrentUser = room.messages[room.messages.length - 1].from.id === room.from;
-                        console.log(room.messages[room.messages.length - 1].from.id === room.from);
-                        console.log(room.lastMessageFromCurrentUser);
-                        console.log(room);
+
                         await room.save((err) => {
                             if (err) throw err;
                         });
-                        console.log(new ClientChatRoom(room));
 
                         this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.from.id}`, new ClientChatRoom(room));
                         this.io.to(roomId).emit('directRoomMessages', room.messages);
@@ -456,7 +452,7 @@ export class ChatServer {
 
                     if (room) {
                         room.lastMessageFromCurrentUser = room.messages[room.messages.length - 1].from.id === room.from;
-                        console.log(room.lastMessageFromCurrentUser);
+
                         await room.save((err) => {
                             if (err) throw err;
                         });
@@ -470,7 +466,6 @@ export class ChatServer {
             };
 
             socket.on('notificationAboutEditUser', async (userBefore: User, userAfter: User) => {
-                console.log('userBefore && userAfter', userBefore && userAfter);
                if (userBefore && userAfter) {
                    const timeNow = new Date();
                    userAfter.action.edit = true;
@@ -480,8 +475,6 @@ export class ChatServer {
 
                          const messageContent = `${userBefore.firstName} ${userBefore.lastName} already is ${userAfter.firstName} ${userAfter.lastName}`;
                          const message = new Message(userAfter, messageContent, timeNow, 'edit', null, false);
-                         console.log(message);
-                         console.log(userAfter.action.joined);
 
                          if (userAfter.action.joined) {
                              sendMainChatMessage(message);
@@ -489,7 +482,6 @@ export class ChatServer {
 
                            await ChatRoomModel.find({type: 'direct', from: userAfter.id}).cursor().eachAsync(async (room) => {
                                if (room) {
-                                   console.log(room);
                                    sendDirectRoomMessage(message, room.id);
                                }
                            });
@@ -521,10 +513,10 @@ export class ChatServer {
                     if (room) {
                         room.lastMessage = room.messages[room.messages.length - 1].messageContent;
                         room.lastMessageFromCurrentUser = room.messages[room.messages.length - 1].from.id === room.from;
+
                         await room.save((err) => {
                             if (err) throw err;
                         });
-                        console.log(room);
 
                         if (room.type === 'chat') {
                             this.io.emit('mainChatMessages', room.messages);
@@ -576,7 +568,6 @@ export class ChatServer {
                         await room.save((err) => {
                             if (err) throw err;
                         });
-                        console.log('edit message room',room);
 
                         if (room.type === 'chat') {
                             this.io.emit('mainChatMessages', room.messages);
@@ -657,8 +648,6 @@ export class ChatServer {
                     await ChatRoomModel.find({$or: [{id: 'main-chat'},{from: userId}]}).cursor().eachAsync(async (room) => {
                         if (room) {
                             room.getActiveUsers();
-
-                            console.log('room get active users', room);
 
                             await room.save((err) => {
                                 if (err) throw err;

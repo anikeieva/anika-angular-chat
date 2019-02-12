@@ -7,7 +7,7 @@ import {ChatRoom} from "../shared/model/chat-room";
 import {getUserStorageToken} from "../shared/model/getStorageToken";
 import {currentUserToken} from "../shared/model/getStorageToken";
 import {Router} from "@angular/router";
-import {BreakpointObserver} from '@angular/cdk/layout';
+import {BreakpointObserver, Breakpoints, BreakpointState} from '@angular/cdk/layout';
 import {take} from "rxjs/operators";
 
 @Component({
@@ -31,7 +31,12 @@ export class ChatComponent implements OnInit {
 
   ngOnInit() {
 
-    this.isMobile = this.breakpointObserver.isMatched('(max-width: 600px)');
+    this.breakpointObserver.observe([
+     '(max-width: 600px)'
+    ]).subscribe((result: BreakpointState) => {
+      this.isMobile = result.matches;
+    });
+
 
     this.isChatRoomActive = this.router.url.includes('main-chat') ||
       this.router.url.includes('room') ||
@@ -111,7 +116,6 @@ export class ChatComponent implements OnInit {
 
       this.socketService.onGetAllChatRooms(this.currentUserId).pipe(take(1)).subscribe((rooms) => {
         this.rooms = rooms;
-        console.log(this.rooms);
       });
     }
   }
