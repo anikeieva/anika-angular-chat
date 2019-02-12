@@ -169,4 +169,9 @@ export class SocketService {
   editMessage(messageContent: string, message_id: string, roomId: string, fromId: string): void {
     this.socket.emit('editMessage', messageContent, message_id, roomId, fromId);
   }
+
+  public sendNotificationAboutEditUser(paramBefore: User, paramAfter: User): void {
+    this.socket.emit('notificationAboutEditUser', paramBefore, paramAfter);
+  }
+
 }

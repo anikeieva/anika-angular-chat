@@ -12,13 +12,18 @@
 
       <div class="message-list-content">
 
-        <div #messageListItem class="message-item" *ngFor="let message of messages"
-             [ngClass]="[(message.from.id === user.id)? 'message-item__currentUser' : '']"
+        <div #messageListItem class="message-list-item" *ngFor="let message of messages"
+             [ngClass]="getClassOfMessageList(message, user)"
              (click)="getMessageManipulatingComponent(message)"
+             [class.message-list-item_message]="message.action === 'sentMessage'"
              [class.message-is-edited]="message.edited"
              [class.message-from-current-user]="message.from.id === user.id && message.action === 'sentMessage'">
 
-          <p class="mat-list-item-message">
+          <p mat-line class="action-line" *ngIf="message.action === 'edit'">
+            {{message.messageContent}}
+          </p>
+
+          <p class="mat-list-item-message" *ngIf="message.action === 'sentMessage'">
             {{message.messageContent}}
           </p>
 

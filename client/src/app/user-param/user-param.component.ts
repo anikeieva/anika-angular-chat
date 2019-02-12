@@ -10,6 +10,7 @@ import {SocketService} from "../shared/servises/socket.service";
 import {currentUserToken, getUserStorageToken} from "../shared/model/getStorageToken";
 import {Router} from "@angular/router";
 import {AvatarCropperComponent} from "./avatar-cropper/avatar-cropper.component";
+import {Message} from "../shared/model/message";
 
 @Component({
   selector: 'app-user-param',
@@ -128,18 +129,19 @@ export class UserParamComponent implements OnInit {
     this.user.action.edit = true;
     this.userToken = getUserStorageToken(this.user.id);
 
-    const param: object = {
-      paramBefore: this.userParametersBeforeEdit,
-      paramAfter: this.user
-    };
+    // const param: object = {
+    //   paramBefore: this.userParametersBeforeEdit,
+    //   paramAfter: this.user
+    // };
 
     if (!this.socketService.socket) this.socketService.initSocket();
 
     this.socketService.sendUser(this.user);
-    // if (this.user.action.joined) this.socketService.sendMainChatUser(this.user);
-    if (this.user.action.joined) this.socketService.sendChatRoomUser(this.user);
-    this.sharedService.editUser(param);
+    if (this.user.action.joined) this.socketService.sendChatRoomUser(this.user); // to split later
+    // this.sharedService.editUser(param);
     this.storage.set(this.userToken, JSON.stringify(this.user));
+
+    this.socketService.sendNotificationAboutEditUser(this.userParametersBeforeEdit, this.user);
   }
 
   isChecked(gender: string) {

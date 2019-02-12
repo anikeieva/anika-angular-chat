@@ -103,6 +103,10 @@
   flex-flow: column-reverse;
 }
 
+.message-list-item_message {
+  cursor: pointer;
+}
+
 .message-list-content, .message-list:hover {
   visibility: visible;
 }
@@ -120,6 +124,15 @@
   word-break: break-word;
   padding: 7px 10px 20px 10px;
   clear: both;
+}
+
+.message-list-item {
+  padding: 7px 10px 20px 10px;
+  clear: both;
+}
+
+.message-list-item__current-user {
+  float: right;
 }
 
 .message-from-current-user {

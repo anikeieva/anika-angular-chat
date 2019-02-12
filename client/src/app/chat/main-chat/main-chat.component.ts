@@ -67,7 +67,6 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
     this.sharedService.listenUser().pipe(take(1)).subscribe(param => {
 
       if (param) {
-        this.onEditUser(param);
         if (param.paramAfter) {
           this.user = param.paramAfter;
         }
@@ -197,27 +196,6 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
     this.sendNotification(this.message);
 
     this.getChatRoom();
-  }
-
-  onEditUser(param): void {
-
-    if (param !== null && param.paramBefore && param.paramAfter) {
-      this.timeNow = new Date();
-      this.user = param.paramAfter;
-      this.user.action.edit = true;
-
-      if (this.user.action.joined === true &&
-        param.paramBefore.firstName !== this.user.firstName ||
-        param.paramBefore.lastName !== this.user.lastName) {
-
-        const messageContent = `${param.paramBefore.firstName} ${param.paramBefore.lastName} already is ${this.user.firstName} ${this.user.lastName}`;
-        this.message = new Message(this.user, messageContent, this.timeNow, 'edit', null, false);
-        console.log(this.message);
-        this.sendNotification(this.message);
-      }
-
-      this.sharedService.editUserClear();
-    }
   }
 
   sendNotification(message): void {

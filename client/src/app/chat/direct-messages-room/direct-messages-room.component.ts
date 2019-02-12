@@ -76,6 +76,7 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
       this.socketService.sendRequestForDirectRoomMessages(this.directMessagesRoomId);
 
       this.socketService.onDirectRoomMessages().subscribe((messages: Message[]) => {
+        console.log(messages);
         if (messages) this.messages = messages;
       });
 
@@ -213,5 +214,15 @@ export class DirectMessagesRoomComponent implements OnInit, AfterViewInit, After
     this.isMessageRequestEdit = false;
     this.messageContent = null;
     this.currentMessageEdit = null;
+  }
+
+  getClassOfMessageList(message, user) {
+    if (message.action === 'sentMessage') {
+      if (message.from.id === user.id) {
+        return 'message-item message-list-item__current-user';
+      }
+      return 'message-item';
+    }
+    return 'action-item';
   }
 }

@@ -393,15 +393,15 @@ export class ChatServer {
                 });
             });
 
-
-            socket.on('mainChatMessage', async (message: Message) => {
-
+            const sendMainChatMessage = async (message: Message) => {
                 await ChatRoomModel.findOne({id: 'main-chat'}, async (err, room) => {
 
                     if (err) console.log('main chat message err: ', err);
 
                     room.messages.push(message);
                     room.lastMessage = message.messageContent;
+
+                    console.log('main-chat',room);
 
                     await room.save((err) => {
                         if (err) throw err;
@@ -410,7 +410,96 @@ export class ChatServer {
                     this.io.emit('mainChatMessages', room.messages);
                     this.io.emit('chatRoomNotification', 'message');
                 });
+            };
+
+            const sendDirectRoomMessage = async (message: Message, roomId: string) => {
+
+                await ChatRoomModel.update({id: roomId}, {
+                    $push: {
+                        messages: message
+                    },
+                    $set: {
+                        lastMessage: message.messageContent
+                    }
+                }, {multi: true});
+
+
+                await ChatRoomModel.findOne({id: roomId, from: message.from.id}, async (err, room) => {
+                    if (err) throw  err;
+
+                    if (room) {
+                        room.lastMessageFromCurrentUser = room.messages[room.messages.length - 1].from.id === room.from;
+                        console.log(room.messages[room.messages.length - 1].from.id === room.from);
+                        console.log(room.lastMessageFromCurrentUser);
+                        console.log(room);
+                        await room.save((err) => {
+                            if (err) throw err;
+                        });
+                        console.log(new ClientChatRoom(room));
+
+                        this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.from.id}`, new ClientChatRoom(room));
+                        this.io.to(roomId).emit('directRoomMessages', room.messages);
+                    }
+
+                    socket.join(message.from.id);
+                    this.io.to(message.from.id).emit('directRoomMessage', message);
+
+                    await ChatRoomModel.find({$or: [{id: 'main-chat'}, {from: message.from.id}]}, {messages: 0}, async (err, rooms) => {
+                        if (err) throw  err;
+                        if (rooms) this.io.to(message.from.id).emit(`get=${message.from.id}AllChatRooms`, rooms);
+                    });
+
+                });
+
+                await ChatRoomModel.findOne({id: roomId, from: message.to.id}, async (err, room) => {
+                    if (err) throw  err;
+
+                    if (room) {
+                        room.lastMessageFromCurrentUser = room.messages[room.messages.length - 1].from.id === room.from;
+                        console.log(room.lastMessageFromCurrentUser);
+                        await room.save((err) => {
+                            if (err) throw err;
+                        });
+                        this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.to.id}`, new ClientChatRoom(room));
+                        this.io.to(roomId).emit('directRoomMessages', room.messages);
+                    }
+
+                    socket.join(message.to.id);
+                    this.io.to(message.to.id).emit('directRoomMessage', message);
+                });
+            };
+
+            socket.on('notificationAboutEditUser', async (userBefore: User, userAfter: User) => {
+                console.log('userBefore && userAfter', userBefore && userAfter);
+               if (userBefore && userAfter) {
+                   const timeNow = new Date();
+                   userAfter.action.edit = true;
+
+                       if (userBefore.firstName !== userAfter.firstName ||
+                         userBefore.lastName !== userAfter.lastName) {
+
+                         const messageContent = `${userBefore.firstName} ${userBefore.lastName} already is ${userAfter.firstName} ${userAfter.lastName}`;
+                         const message = new Message(userAfter, messageContent, timeNow, 'edit', null, false);
+                         console.log(message);
+                         console.log(userAfter.action.joined);
+
+                         if (userAfter.action.joined) {
+                             sendMainChatMessage(message);
+                         }
+
+                           await ChatRoomModel.find({type: 'direct', from: userAfter.id}).cursor().eachAsync(async (room) => {
+                               if (room) {
+                                   console.log(room);
+                                   sendDirectRoomMessage(message, room.id);
+                               }
+                           });
+
+                           this.io.emit('chatRoomNotification', 'message');
+                       }
+               }
             });
+
+            socket.on('mainChatMessage', sendMainChatMessage);
 
             await ChatRoomModel.findOne({id: 'main-chat'}, (err, room) => {
                 if (err) throw  err;
@@ -517,62 +606,8 @@ export class ChatServer {
                 });
             }));
 
-            socket.on('directMessagesRoomMessage', async (message: Message, roomId: string) => {
 
-                await ChatRoomModel.update({id: roomId}, {
-                   $push: {
-                       messages: message
-                   },
-                    $set: {
-                        lastMessage: message.messageContent
-                    }
-                }, {multi: true});
-
-
-                await ChatRoomModel.findOne({id: roomId, from: message.from.id}, async (err, room) => {
-                    if (err) throw  err;
-
-                    if (room) {
-                        room.lastMessageFromCurrentUser = room.messages[room.messages.length - 1].from.id === room.from;
-                        console.log(room.messages[room.messages.length - 1].from.id === room.from);
-                        console.log(room.lastMessageFromCurrentUser);
-                        console.log(room);
-                        await room.save((err) => {
-                            if (err) throw err;
-                        });
-                        console.log(new ClientChatRoom(room));
-
-                        this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.from.id}`, new ClientChatRoom(room));
-                        this.io.to(roomId).emit('directRoomMessages', room.messages);
-                    }
-
-                    socket.join(message.from.id);
-                    this.io.to(message.from.id).emit('directRoomMessage', message);
-
-                    await ChatRoomModel.find({$or: [{id: 'main-chat'},{from: message.from.id}]}, {messages: 0}, async (err, rooms) => {
-                        if (err) throw  err;
-                        if (rooms) this.io.to(message.from.id).emit(`get=${message.from.id}AllChatRooms`, rooms);
-                    });
-
-                });
-
-                await ChatRoomModel.findOne({id: roomId, from: message.to.id}, async (err, room) => {
-                    if (err) throw  err;
-
-                    if (room) {
-                        room.lastMessageFromCurrentUser = room.messages[room.messages.length - 1].from.id === room.from;
-                        console.log(room.lastMessageFromCurrentUser);
-                        await room.save((err) => {
-                            if (err) throw err;
-                        });
-                        this.io.to(roomId).emit(`directMessagesRoomById=${roomId}from=${message.to.id}`, new ClientChatRoom(room));
-                        this.io.to(roomId).emit('directRoomMessages', room.messages);
-                    }
-
-                    socket.join(message.to.id);
-                    this.io.to(message.to.id).emit('directRoomMessage', message);
-                });
-            });
+            socket.on('directMessagesRoomMessage', sendDirectRoomMessage);
 
             socket.on('directRoomMessages', async (roomId: string) => {
 
