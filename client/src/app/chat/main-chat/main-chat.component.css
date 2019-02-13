@@ -22,9 +22,10 @@
   top: 0!important;
   bottom: auto;
   display: block;
+  width: 100%;
 }
 
-.main-chat-container__content, .main-chat-container-footer {
+.main-chat-container-footer {
   width: 90%;
   margin: 0 auto;
 }
@@ -71,6 +72,7 @@
 
 .message-list-item__wrapper {
   margin-bottom: 15px;
+  width: 100%;
 }
 
 .message-list-item__wraper-message {
@@ -83,6 +85,7 @@
 
 .message-list-item__wrapper-selected {
   background-color: #8e62a921;
+  position: relative;
 }
 
 .message-list-content, .message-list:hover {
@@ -98,13 +101,16 @@
   border-radius: 5px;
   margin-bottom: 15px;
   margin-right: 15px;
-  margin-left: 60px;
+  /*margin-left: 60px;*/
   word-break: break-word;
+  margin-left: 12%;
 }
 
 .message-from-current-user {
   background-color: #0d061370;
   color: white;
+  margin-left: 0;
+  margin-right: 10%;
 }
 
 .message-from-current-user .message-item-time {
