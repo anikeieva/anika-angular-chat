@@ -50,6 +50,7 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
   @ViewChildren('messageListItem') messageListItem: QueryList<MatListItem>;
   @ViewChild('chat_room_footer') chatRoomFooter: ElementRef;
   @ViewChild('chat_room_content') chatRoomContent: ElementRef;
+  @ViewChild('manipulating_message_desktop') manipulatingMessageDesktop: ElementRef;
 
 
   constructor(private sharedService: SharedService,
@@ -109,9 +110,20 @@ export class MainChatComponent implements OnInit, AfterViewInit, AfterViewChecke
   }
 
   ngAfterViewChecked() {
+    this.getMessageContentHeight();
+  }
+
+  private getMessageContentHeight() {
     if (this.chatRoomFooter && this.chatRoomContent) {
-      const chatRoomFooterHeight = this.chatRoomFooter.nativeElement.offsetHeight + 30;
-      const chatRoomContentHeight = `calc(100% - 40px - ${chatRoomFooterHeight}px)`;
+      let footerHeight;
+
+      if (this.isManipulatingMessageDesktop) {
+        footerHeight = this.manipulatingMessageDesktop.nativeElement.offsetHeight + 30;
+      } else {
+        footerHeight = this.chatRoomFooter.nativeElement.offsetHeight + 30;
+      }
+
+      const chatRoomContentHeight = `calc(100% - 40px - ${footerHeight}px)`;
       this.renderer.setStyle(this.chatRoomContent.nativeElement, 'height', chatRoomContentHeight);
     }
   }
