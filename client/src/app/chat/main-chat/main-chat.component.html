@@ -8,7 +8,7 @@
       <div class="message-list-content">
 
         <div *ngFor="let message of messages" class="message-list-item__wrapper"
-             [class.message-list-item__wrapper-selected]="message === messageSelectedForManipulatingDesktop"
+             [class.message-list-item__wrapper-selected]="message === messageSelectedForManipulatingDesktop || message === currentMessageEdit"
              (click)="getMessageManipulatingComponent(message)"
               [class.message-list-item__wraper-message]="message.action === 'sentMessage'">
 
@@ -17,7 +17,15 @@
                [class.message-list-item_message]="message.action === 'sentMessage'"
                [class.message-is-edited]="message.edited"
                [class.message-from-current-user]="message.from.id === user.id && message.action === 'sentMessage'"
-               [class.message-item__selected]="message === messageSelectedForManipulatingDesktop">
+               [class.message-item__selected]="message === messageSelectedForManipulatingDesktop || message === currentMessageEdit">
+
+            <mat-icon class="message-list-item__check-circle-outline" *ngIf="!isManipulatingMessageDesktop">
+              check_circle_outline
+            </mat-icon>
+            <mat-icon class="message-list-item__check-circle"
+                      *ngIf="isManipulatingMessageDesktop && message === messageSelectedForManipulatingDesktop || message === currentMessageEdit">
+              check_circle
+            </mat-icon>
 
             <p mat-line class="action-line" *ngIf="message.action === 'joined'">
               {{message.messageContent}}
